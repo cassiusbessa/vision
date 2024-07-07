@@ -1,11 +1,11 @@
 package com.github.cassiusbessa.vision.domain.service.dtos;
 
-public class LoginCredentials {
+public class AuthCredentials {
 
     private final String email;
     private final String password;
 
-    public LoginCredentials(String email, String password) {
+    public AuthCredentials(String email, String password) {
         this.email = email;
         this.password = password;
     }

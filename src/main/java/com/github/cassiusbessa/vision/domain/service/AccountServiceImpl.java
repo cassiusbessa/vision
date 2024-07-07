@@ -4,8 +4,9 @@ import com.github.cassiusbessa.vision.domain.core.entities.Account;
 import com.github.cassiusbessa.vision.domain.service.crypto.CryptoService;
 import com.github.cassiusbessa.vision.domain.service.dtos.AccountCreateCommand;
 import com.github.cassiusbessa.vision.domain.service.dtos.AccountCreatedResponse;
-import com.github.cassiusbessa.vision.domain.service.dtos.LoginCredentials;
-import com.github.cassiusbessa.vision.domain.service.dtos.LoginResponse;
+import com.github.cassiusbessa.vision.domain.service.dtos.AuthCredentials;
+import com.github.cassiusbessa.vision.domain.service.dtos.AuthResponse;
+import com.github.cassiusbessa.vision.domain.service.exceptions.ResourceAlredyExistsException;
 import com.github.cassiusbessa.vision.domain.service.exceptions.ResourceNotFoundException;
 import com.github.cassiusbessa.vision.domain.service.exceptions.UnauthorizedException;
 import com.github.cassiusbessa.vision.domain.service.exceptions.ValidationException;
@@ -48,7 +49,7 @@ public class AccountServiceImpl implements AccountService {
         Account foundAccount = accountRepository.findByEmail(command.getEmail());
         if (foundAccount != null) {
             log.error("Account already exists with email: {}", command.getEmail());
-            throw new ResourceNotFoundException("Account already exists with email: " + command.getEmail());
+            throw new ResourceAlredyExistsException("Account already exists with email: " + command.getEmail());
         }
 
         Account account = accountDataMapper.createAccountCommandToAccount(command);
@@ -65,7 +66,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public LoginResponse login(LoginCredentials credentials) {
+    public AuthResponse auth(AuthCredentials credentials) {
         log.info("Logging in with email: {}", credentials.getEmail());
 
         Account account = accountRepository.findByEmail(credentials.getEmail());
@@ -78,6 +79,6 @@ public class AccountServiceImpl implements AccountService {
             throw new UnauthorizedException("Invalid credentials");
         }
         log.info("Logged in successfully with email: {}", credentials.getEmail());
-        return new LoginResponse(tokenService.generateToken(account.getId().getValue()), "Logged in successfully");
+        return new AuthResponse(tokenService.generateToken(account.getId().getValue()), "Logged in successfully");
     }
 }

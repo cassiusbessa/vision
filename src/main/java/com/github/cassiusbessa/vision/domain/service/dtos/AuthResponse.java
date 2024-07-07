@@ -1,12 +1,12 @@
 package com.github.cassiusbessa.vision.domain.service.dtos;
 
-public class LoginResponse {
+public class AuthResponse {
 
     private final String token;
     private final String message;
 
 
-    public LoginResponse(String token, String message) {
+    public AuthResponse(String token, String message) {
         this.token = token;
         this.message = message;
     }
