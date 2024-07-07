@@ -1,4 +1,4 @@
-package com.github.cassiusbessa.vision.domain.http.controller;
+package com.github.cassiusbessa.vision.http;
 
 import com.github.cassiusbessa.vision.domain.service.dtos.AccountCreateCommand;
 import com.github.cassiusbessa.vision.domain.service.dtos.AccountCreatedResponse;
@@ -33,7 +33,7 @@ public class AccountController {
         try {
             AccountCreatedResponse response = accountService.createAccount(command);
             return new ResponseEntity<>(response, HttpStatus.CREATED);
-        } catch (ValidationException  e) {
+        } catch (ValidationException e) {
             return new ResponseEntity<>(new AccountCreatedResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
         } catch (ResourceAlredyExistsException e) {
             return new ResponseEntity<>(new AccountCreatedResponse(e.getMessage()), HttpStatus.CONFLICT);
