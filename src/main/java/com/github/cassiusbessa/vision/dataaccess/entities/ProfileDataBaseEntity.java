@@ -17,6 +17,9 @@ public class ProfileDataBaseEntity {
     @Column(name = "name", nullable = false)
     private String name;
 
+    @Column(name = "image")
+    private String image;
+
     @Column(name = "title", nullable = false)
     private String title;
 
@@ -42,9 +45,10 @@ public class ProfileDataBaseEntity {
     public ProfileDataBaseEntity() {
     }
 
-    public ProfileDataBaseEntity(UUID id, String name, String title, String description, AccountDataBaseEntity account, ProjectDataBaseEntity starProject, Set<TagDataBaseEntity> technologies) {
+    public ProfileDataBaseEntity(UUID id, String name, String image, String title, String description, AccountDataBaseEntity account, ProjectDataBaseEntity starProject, Set<TagDataBaseEntity> technologies) {
         this.id = id;
         this.name = name;
+        this.image = image;
         this.title = title;
         this.description = description;
         this.account = account;
@@ -66,6 +70,14 @@ public class ProfileDataBaseEntity {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public String getTitle() {

@@ -18,6 +18,9 @@ public class ProjectDataBaseEntity {
     @Column(name = "title", nullable = false)
     private String title;
 
+    @Column(name = "image")
+    private String image;
+
     @Column(name = "description", nullable = false)
     private String description;
 
@@ -41,12 +44,14 @@ public class ProjectDataBaseEntity {
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private Set<TagDataBaseEntity> technologies = new HashSet<>();
 
-    public ProjectDataBaseEntity() {
+    public ProjectDataBaseEntity(String image) {
+        this.image = image;
     }
 
-    public ProjectDataBaseEntity(UUID id, String title, String description, String repositoryLink, AccountDataBaseEntity account, Date createdAt, Set<TagDataBaseEntity> technologies) {
+    public ProjectDataBaseEntity(UUID id, String title, String image, String description, String repositoryLink, AccountDataBaseEntity account, Date createdAt, Set<TagDataBaseEntity> technologies) {
         this.id = id;
         this.title = title;
+        this.image = image;
         this.description = description;
         this.repositoryLink = repositoryLink;
         this.account = account;
@@ -68,6 +73,14 @@ public class ProjectDataBaseEntity {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public String getDescription() {

@@ -1,8 +1,5 @@
 package com.github.cassiusbessa.vision.domain.service.dtos;
 
-import com.github.cassiusbessa.vision.domain.core.valueobjects.Email;
-import com.github.cassiusbessa.vision.domain.core.valueobjects.Password;
-
 public class AccountCreateCommand {
 
     private final String email;

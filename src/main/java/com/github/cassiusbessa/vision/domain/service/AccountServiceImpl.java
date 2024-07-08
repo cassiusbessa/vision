@@ -6,7 +6,7 @@ import com.github.cassiusbessa.vision.domain.service.dtos.AccountCreateCommand;
 import com.github.cassiusbessa.vision.domain.service.dtos.AccountCreatedResponse;
 import com.github.cassiusbessa.vision.domain.service.dtos.AuthCredentials;
 import com.github.cassiusbessa.vision.domain.service.dtos.AuthResponse;
-import com.github.cassiusbessa.vision.domain.service.exceptions.ResourceAlredyExistsException;
+import com.github.cassiusbessa.vision.domain.service.exceptions.ResourceAlreadyExistsException;
 import com.github.cassiusbessa.vision.domain.service.exceptions.ResourceNotFoundException;
 import com.github.cassiusbessa.vision.domain.service.exceptions.UnauthorizedException;
 import com.github.cassiusbessa.vision.domain.service.exceptions.ValidationException;
@@ -49,7 +49,7 @@ public class AccountServiceImpl implements AccountService {
         Account foundAccount = accountRepository.findByEmail(command.getEmail());
         if (foundAccount != null) {
             log.error("Account already exists with email: {}", command.getEmail());
-            throw new ResourceAlredyExistsException("Account already exists with email: " + command.getEmail());
+            throw new ResourceAlreadyExistsException("Account already exists with email: " + command.getEmail());
         }
         Account account = accountDataMapper.createAccountCommandToAccount(command);
 

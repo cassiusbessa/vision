@@ -6,10 +6,10 @@ import com.github.cassiusbessa.vision.dataaccess.repositories.AccountJpaReposito
 import com.github.cassiusbessa.vision.domain.core.entities.Account;
 import com.github.cassiusbessa.vision.domain.service.ports.output.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+import java.util.UUID;
 
 
 @Repository
@@ -29,6 +29,18 @@ public class AccountRepositoryImpl implements AccountRepository {
         Optional<AccountDataBaseEntity> accountDataBaseEntity = accountRepository.findByEmail(email);
 
         return accountDataBaseEntity.map(accountDataBaseMapper::dbEntityToAccount).orElse(null);
+    }
+
+    @Override
+    public Account findById(UUID id) {
+        Optional<AccountDataBaseEntity> accountDataBaseEntity = accountRepository.findById(id);
+
+        return accountDataBaseEntity.map(accountDataBaseMapper::dbEntityToAccount).orElse(null);
+    }
+
+    @Override
+    public boolean existsById(UUID id) {
+        return accountRepository.existsById(id);
     }
 
     @Override

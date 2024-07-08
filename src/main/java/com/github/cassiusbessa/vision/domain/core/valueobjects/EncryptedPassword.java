@@ -1,6 +1,5 @@
 package com.github.cassiusbessa.vision.domain.core.valueobjects;
 
-import com.github.cassiusbessa.vision.domain.core.exceptions.DomainException;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

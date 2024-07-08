@@ -5,7 +5,7 @@ import com.github.cassiusbessa.vision.domain.service.dtos.AccountCreateCommand;
 import com.github.cassiusbessa.vision.domain.service.dtos.AccountCreatedResponse;
 import com.github.cassiusbessa.vision.domain.service.dtos.AuthCredentials;
 import com.github.cassiusbessa.vision.domain.service.dtos.AuthResponse;
-import com.github.cassiusbessa.vision.domain.service.exceptions.ResourceAlredyExistsException;
+import com.github.cassiusbessa.vision.domain.service.exceptions.ResourceAlreadyExistsException;
 import com.github.cassiusbessa.vision.domain.service.exceptions.ResourceNotFoundException;
 import com.github.cassiusbessa.vision.domain.service.exceptions.UnauthorizedException;
 import com.github.cassiusbessa.vision.domain.service.exceptions.ValidationException;
@@ -36,7 +36,7 @@ public class AccountController {
             return new ResponseEntity<>(response, HttpStatus.CREATED);
         } catch (ValidationException | DomainException e) {
             return new ResponseEntity<>(new AccountCreatedResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
-        } catch (ResourceAlredyExistsException e) {
+        } catch (ResourceAlreadyExistsException e) {
             return new ResponseEntity<>(new AccountCreatedResponse(e.getMessage()), HttpStatus.CONFLICT);
         } catch (Exception e) {
             return new ResponseEntity<>(new AccountCreatedResponse(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);

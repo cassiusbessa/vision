@@ -1,12 +1,11 @@
 package com.github.cassiusbessa.vision.domain.core.entities;
 
-import com.github.cassiusbessa.vision.domain.core.valueobjects.AccountId;
 import com.github.cassiusbessa.vision.domain.core.valueobjects.ProfileId;
-import com.github.cassiusbessa.vision.domain.core.valueobjects.ProjectId;
-import com.github.cassiusbessa.vision.domain.core.valueobjects.TagId;
+
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class Profile extends AggregateRoot<ProfileId> {
 
@@ -14,12 +13,12 @@ public class Profile extends AggregateRoot<ProfileId> {
     private final String image;
     private final String title;
     private final String description;
-    private final List<TagId> technologies;
-    private final ProjectId starProject;
-    private final AccountId accountId;
+    private final Set<Tag> technologies;
+    private final Project starProject;
+    private final Account account;
     private final List<String> failureMessages = new ArrayList<>();
 
-    public Profile(ProfileId id, String name, String image, String title, String description, List<TagId> technologies, ProjectId starProject, AccountId accountId) {
+    public Profile(ProfileId id, String name, String image, String title, String description, Set<Tag> technologies, Project starProject, Account account) {
         super.setId(id);
         this.name = name;
         this.image = image;
@@ -27,7 +26,7 @@ public class Profile extends AggregateRoot<ProfileId> {
         this.description = description;
         this.technologies = technologies;
         this.starProject = starProject;
-        this.accountId = accountId;
+        this.account = account;
 
     }
 
@@ -51,16 +50,16 @@ public class Profile extends AggregateRoot<ProfileId> {
         return description;
     }
 
-    public List<TagId> getTechnologies() {
+    public Set<Tag> getTechnologies() {
         return technologies;
     }
 
-    public ProjectId getStarProject() {
+    public Project getStarProject() {
         return starProject;
     }
 
-    public AccountId getAccountId() {
-        return accountId;
+    public Account getAccount() {
+        return account;
     }
 
     public List<String> getFailureMessages() {
@@ -88,7 +87,7 @@ public class Profile extends AggregateRoot<ProfileId> {
             failureMessages.add("Technologies must be less than 6");
         }
 
-        if (accountId == null){
+        if (account == null){
             failureMessages.add("Account must be informed");
         }
 
@@ -100,9 +99,9 @@ public class Profile extends AggregateRoot<ProfileId> {
         private String image;
         private String title;
         private String description;
-        private List<TagId> technologies;
-        private ProjectId starProject;
-        private AccountId accountId;
+        private Set<Tag> technologies;
+        private Project starProject;
+        private Account account;
 
         private Builder() {
         }
@@ -132,23 +131,23 @@ public class Profile extends AggregateRoot<ProfileId> {
             return this;
         }
 
-        public Builder withTechnologies(List<TagId> technologies) {
+        public Builder withTechnologies(Set<Tag> technologies) {
             this.technologies = technologies;
             return this;
         }
 
-        public Builder withStarProject(ProjectId starProject) {
+        public Builder withStarProject(Project starProject) {
             this.starProject = starProject;
             return this;
         }
 
-        public Builder withAccountId(AccountId accountId) {
-            this.accountId = accountId;
+        public Builder withAccount(Account account) {
+            this.account = account;
             return this;
         }
 
         public Profile build() {
-            return new Profile(id, name, image, title, description, technologies, starProject, accountId);
+            return new Profile(id, name, image, title, description, technologies, starProject, account);
         }
     }
 
