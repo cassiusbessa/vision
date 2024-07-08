@@ -51,7 +51,6 @@ public class AccountServiceImpl implements AccountService {
             log.error("Account already exists with email: {}", command.getEmail());
             throw new ResourceAlredyExistsException("Account already exists with email: " + command.getEmail());
         }
-
         Account account = accountDataMapper.createAccountCommandToAccount(command);
 
         account.validate();

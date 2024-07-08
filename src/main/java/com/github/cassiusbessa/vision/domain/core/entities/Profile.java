@@ -11,6 +11,7 @@ import java.util.List;
 public class Profile extends AggregateRoot<ProfileId> {
 
     private final String name;
+    private final String image;
     private final String title;
     private final String description;
     private final List<TagId> technologies;
@@ -18,9 +19,10 @@ public class Profile extends AggregateRoot<ProfileId> {
     private final AccountId accountId;
     private final List<String> failureMessages = new ArrayList<>();
 
-    public Profile(ProfileId id, String name, String title, String description, List<TagId> technologies, ProjectId starProject, AccountId accountId) {
+    public Profile(ProfileId id, String name, String image, String title, String description, List<TagId> technologies, ProjectId starProject, AccountId accountId) {
         super.setId(id);
         this.name = name;
+        this.image = image;
         this.title = title;
         this.description = description;
         this.technologies = technologies;
@@ -35,6 +37,10 @@ public class Profile extends AggregateRoot<ProfileId> {
 
     public String getName() {
         return name;
+    }
+
+    public String getImage() {
+        return image;
     }
 
     public String getTitle() {
@@ -91,6 +97,7 @@ public class Profile extends AggregateRoot<ProfileId> {
     public static final class Builder {
         private ProfileId id;
         private String name;
+        private String image;
         private String title;
         private String description;
         private List<TagId> technologies;
@@ -107,6 +114,11 @@ public class Profile extends AggregateRoot<ProfileId> {
 
         public Builder withName(String name) {
             this.name = name;
+            return this;
+        }
+
+        public Builder withImage(String image) {
+            this.image = image;
             return this;
         }
 
@@ -136,7 +148,7 @@ public class Profile extends AggregateRoot<ProfileId> {
         }
 
         public Profile build() {
-            return new Profile(id, name, title, description, technologies, starProject, accountId);
+            return new Profile(id, name, image, title, description, technologies, starProject, accountId);
         }
     }
 

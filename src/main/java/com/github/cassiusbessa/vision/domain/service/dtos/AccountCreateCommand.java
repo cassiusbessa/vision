@@ -1,9 +1,17 @@
 package com.github.cassiusbessa.vision.domain.service.dtos;
 
+import com.github.cassiusbessa.vision.domain.core.valueobjects.Email;
+import com.github.cassiusbessa.vision.domain.core.valueobjects.Password;
+
 public class AccountCreateCommand {
 
     private final String email;
     private final String password;
+
+    public AccountCreateCommand() {
+        this.email = null;
+        this.password = null;
+    }
 
     public AccountCreateCommand(String email, String password) {
         this.email = email;

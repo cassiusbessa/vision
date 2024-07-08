@@ -1,7 +1,9 @@
 package com.github.cassiusbessa.vision.domain.service.mappers;
 
 import com.github.cassiusbessa.vision.domain.core.entities.Account;
+import com.github.cassiusbessa.vision.domain.core.valueobjects.AccountLevel;
 import com.github.cassiusbessa.vision.domain.core.valueobjects.Email;
+import com.github.cassiusbessa.vision.domain.core.valueobjects.EncryptedPassword;
 import com.github.cassiusbessa.vision.domain.core.valueobjects.Password;
 import com.github.cassiusbessa.vision.domain.service.crypto.CryptoService;
 import com.github.cassiusbessa.vision.domain.service.dtos.AccountCreateCommand;
@@ -24,7 +26,8 @@ public class AccountDataMapper {
         return Account.builder()
                 .withId(UUID.randomUUID())
                 .withEmail(new Email(command.getEmail()))
-                .withPassword(new Password(cryptoService.encrypt(command.getPassword())))
+                .withPassword(new EncryptedPassword(cryptoService.encrypt(command.getPassword())))
+                .withAccountLevel(AccountLevel.FREE)
                 .build();
     }
 }

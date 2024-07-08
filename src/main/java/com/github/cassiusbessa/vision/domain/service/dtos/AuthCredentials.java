@@ -5,6 +5,11 @@ public class AuthCredentials {
     private final String email;
     private final String password;
 
+    public AuthCredentials() {
+        this.email = null;
+        this.password = null;
+    }
+
     public AuthCredentials(String email, String password) {
         this.email = email;
         this.password = password;

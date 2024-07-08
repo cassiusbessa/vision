@@ -1,9 +1,6 @@
 package com.github.cassiusbessa.vision.domain.core.entities;
 
-import com.github.cassiusbessa.vision.domain.core.valueobjects.AccountId;
-import com.github.cassiusbessa.vision.domain.core.valueobjects.AccountLevel;
-import com.github.cassiusbessa.vision.domain.core.valueobjects.Email;
-import com.github.cassiusbessa.vision.domain.core.valueobjects.Password;
+import com.github.cassiusbessa.vision.domain.core.valueobjects.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,12 +9,12 @@ import java.util.UUID;
 public class Account extends AggregateRoot<AccountId> {
 
     private final Email email;
-    private final Password password;
+    private final EncryptedPassword password;
     private final AccountLevel accountLevel;
     private final List<String> failureMessages = new ArrayList<>();
 
 
-    public Account(AccountId id, Email email, Password password, AccountLevel accountLevel) {
+    public Account(AccountId id, Email email, EncryptedPassword password, AccountLevel accountLevel) {
         super.setId(id);
         this.email = email;
         this.password = password;
@@ -28,7 +25,7 @@ public class Account extends AggregateRoot<AccountId> {
         return email;
     }
 
-    public Password getPassword() {
+    public EncryptedPassword getPassword() {
         return password;
     }
 
@@ -63,7 +60,7 @@ public class Account extends AggregateRoot<AccountId> {
     public static final class Builder {
         private AccountId id;
         private Email email;
-        private Password password;
+        private EncryptedPassword password;
         private AccountLevel accountLevel;
 
         private Builder() {
@@ -79,7 +76,7 @@ public class Account extends AggregateRoot<AccountId> {
             return this;
         }
 
-        public Builder withPassword(Password password) {
+        public Builder withPassword(EncryptedPassword password) {
             this.password = password;
             return this;
         }
