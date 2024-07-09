@@ -57,11 +57,14 @@ public class ProfileServiceImpl implements ProfileService {
         }
 
         List<Tag> tags;
-
         if (command.getTechnologies() != null && !command.getTechnologies().isEmpty()) {
             tags = tagRepository.findAllById(command.getTechnologies());
         } else {
             tags = List.of();
+        }
+        if (tags.size() != command.getTechnologies().size()) {
+            log.error("Some tags do not exist: {}, only found: {}", command.getTechnologies(), tags);
+            throw new ResourceNotFoundException("Some tags do not exist: " + command.getTechnologies());
         }
 
         Profile profile = profileDataMapper.profileCreateCommandToProfile(command, account, tags);
@@ -88,6 +91,14 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     public LoadProfileResponse loadProfileByAccountId(LoadProfileByAccountIdQuery query) {
-        return null;
+
+        Profile profile = profileRepository.findByAccountId(query.getId());
+        if (profile == null) {
+            log.error("Profile not found for account: {}", query.getId());
+            throw new ResourceNotFoundException("Profile not found for account: " + query.getId());
+        }
+
+        return new LoadProfileResponse(profile, "Loaded profile successfully");
+
     }
 }
