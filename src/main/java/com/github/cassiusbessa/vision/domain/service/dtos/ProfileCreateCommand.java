@@ -11,6 +11,14 @@ public class ProfileCreateCommand {
     private final List<UUID> technologies;
     private final UUID accountId;
 
+    public ProfileCreateCommand() {
+        this.name = null;
+        this.title = null;
+        this.description = null;
+        this.technologies = null;
+        this.accountId = null;
+    }
+
     public ProfileCreateCommand(String name, String title, String description, List<UUID> technologies, UUID accountId) {
         this.name = name;
         this.title = title;

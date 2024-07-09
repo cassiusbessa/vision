@@ -8,17 +8,19 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.UUID;
 
 @Component
 public class ProfileDataMapper {
 
     public Profile profileCreateCommandToProfile(ProfileCreateCommand command, Account account, List<Tag> tags) {
-        return Profile.builder().
-                withName(command.getName()).
-                withTitle(command.getTitle()).
-                withDescription(command.getDescription()).
-                withTechnologies(new HashSet<>(tags)).
-                withAccount(account).
-                build();
+        return Profile.builder()
+                .withId(UUID.randomUUID())
+                .withName(command.getName())
+                .withTitle(command.getTitle())
+                .withDescription(command.getDescription())
+                .withTechnologies(new HashSet<>(tags))
+                .withAccount(account)
+                .build();
     }
 }

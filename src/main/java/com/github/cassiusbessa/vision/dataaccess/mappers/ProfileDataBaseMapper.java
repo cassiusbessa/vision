@@ -27,7 +27,7 @@ public class ProfileDataBaseMapper {
     public Profile dbEntityToProfile(ProfileDataBaseEntity dbEntity) {
 
         return Profile.builder()
-                .withId(new ProfileId(dbEntity.getId()))
+                .withId(dbEntity.getId())
                 .withName(dbEntity.getName())
                 .withTitle(dbEntity.getTitle())
                 .withDescription(dbEntity.getDescription())

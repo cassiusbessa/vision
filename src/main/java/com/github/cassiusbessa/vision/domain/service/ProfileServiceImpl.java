@@ -39,6 +39,11 @@ public class ProfileServiceImpl implements ProfileService {
     public ProfileCreatedResponse createProfile(ProfileCreateCommand command) {
         log.info("Creating profile for account: {}", command.getAccountId());
 
+        if (command.getAccountId() == null) {
+            log.error("Account ID is required");
+            throw new ValidationException("Account ID is required");
+        }
+
         Account account = accountRepository.findById(command.getAccountId());
         if (account == null) {
             log.error("Account does not exist: {}", command.getAccountId());
@@ -51,7 +56,13 @@ public class ProfileServiceImpl implements ProfileService {
             throw new ResourceAlreadyExistsException("Profile already exists for account: " + command.getAccountId());
         }
 
-        List<Tag> tags = tagRepository.findAllById(command.getTechnologies());
+        List<Tag> tags;
+
+        if (command.getTechnologies() != null && !command.getTechnologies().isEmpty()) {
+            tags = tagRepository.findAllById(command.getTechnologies());
+        } else {
+            tags = List.of();
+        }
 
         Profile profile = profileDataMapper.profileCreateCommandToProfile(command, account, tags);
         profile.validate();

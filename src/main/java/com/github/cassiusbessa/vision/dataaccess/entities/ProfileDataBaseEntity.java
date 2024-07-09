@@ -34,7 +34,7 @@ public class ProfileDataBaseEntity {
     private Set<TagDataBaseEntity> technologies = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "star_project", nullable = false)
+    @JoinColumn(name = "star_project", nullable = true)
     private ProjectDataBaseEntity starProject;
 
 

@@ -20,6 +20,9 @@ public class ProjectDataBaseMapper {
     }
 
     public ProjectDataBaseEntity projectToDbEntity(Project project) {
+        if (project == null) {
+            return null;
+        }
         return new ProjectDataBaseEntity(
                 project.getId().getValue(),
                 project.getTitle(),

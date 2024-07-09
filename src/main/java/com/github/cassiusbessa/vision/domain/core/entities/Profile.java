@@ -6,6 +6,7 @@ import com.github.cassiusbessa.vision.domain.core.valueobjects.ProfileId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 public class Profile extends AggregateRoot<ProfileId> {
 
@@ -71,15 +72,15 @@ public class Profile extends AggregateRoot<ProfileId> {
     }
 
     public void validate() {
-        if (name.length() < 3 || name.length() > 50 || name.isBlank()){
+        if (name == null || name.length() < 3 || name.length() > 50 || name.isBlank()){
             failureMessages.add("Name must be between 3 and 50 characters");
         }
 
-        if (title.length() < 3 || title.length() > 50 || title.isBlank()){
+        if (title == null || title.length() < 3 || title.length() > 50 || title.isBlank()){
             failureMessages.add("Title must be between 3 and 100 characters");
         }
 
-        if (description.length() < 3 || description.length() > 500 || description.isBlank()){
+        if (description == null || description.length() < 3 || description.length() > 2000 || description.isBlank()){
             failureMessages.add("Description must be between 3 and 500 characters");
         }
 
@@ -106,8 +107,8 @@ public class Profile extends AggregateRoot<ProfileId> {
         private Builder() {
         }
 
-        public Builder withId(ProfileId id) {
-            this.id = id;
+        public Builder withId(UUID id) {
+            this.id = new ProfileId(id);
             return this;
         }
 
