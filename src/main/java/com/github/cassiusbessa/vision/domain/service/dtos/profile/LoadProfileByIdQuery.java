@@ -1,4 +1,4 @@
-package com.github.cassiusbessa.vision.domain.service.dtos;
+package com.github.cassiusbessa.vision.domain.service.dtos.profile;
 
 import java.util.UUID;
 

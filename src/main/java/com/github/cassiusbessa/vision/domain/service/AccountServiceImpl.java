@@ -2,10 +2,10 @@ package com.github.cassiusbessa.vision.domain.service;
 
 import com.github.cassiusbessa.vision.domain.core.entities.Account;
 import com.github.cassiusbessa.vision.domain.service.crypto.CryptoService;
-import com.github.cassiusbessa.vision.domain.service.dtos.AccountCreateCommand;
-import com.github.cassiusbessa.vision.domain.service.dtos.AccountCreatedResponse;
-import com.github.cassiusbessa.vision.domain.service.dtos.AuthCredentials;
-import com.github.cassiusbessa.vision.domain.service.dtos.AuthResponse;
+import com.github.cassiusbessa.vision.domain.service.dtos.account.AccountCreateCommand;
+import com.github.cassiusbessa.vision.domain.service.dtos.account.AccountCreatedResponse;
+import com.github.cassiusbessa.vision.domain.service.dtos.auth.AuthCredentials;
+import com.github.cassiusbessa.vision.domain.service.dtos.auth.AuthResponse;
 import com.github.cassiusbessa.vision.domain.service.exceptions.ResourceAlreadyExistsException;
 import com.github.cassiusbessa.vision.domain.service.exceptions.ResourceNotFoundException;
 import com.github.cassiusbessa.vision.domain.service.exceptions.UnauthorizedException;

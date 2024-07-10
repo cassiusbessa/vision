@@ -1,6 +1,5 @@
 package com.github.cassiusbessa.vision.domain.core.entities;
 
-import com.github.cassiusbessa.vision.domain.core.valueobjects.AccountId;
 import com.github.cassiusbessa.vision.domain.core.valueobjects.ProjectId;
 import com.github.cassiusbessa.vision.domain.core.valueobjects.ProjectLinks;
 

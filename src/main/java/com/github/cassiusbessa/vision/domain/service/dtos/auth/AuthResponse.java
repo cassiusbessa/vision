@@ -1,4 +1,4 @@
-package com.github.cassiusbessa.vision.domain.service.dtos;
+package com.github.cassiusbessa.vision.domain.service.dtos.auth;
 
 public class AuthResponse {
 

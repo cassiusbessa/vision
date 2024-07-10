@@ -1,7 +1,10 @@
 package com.github.cassiusbessa.vision.http;
 
 import com.github.cassiusbessa.vision.domain.core.exceptions.DomainException;
-import com.github.cassiusbessa.vision.domain.service.dtos.*;
+import com.github.cassiusbessa.vision.domain.service.dtos.profile.LoadProfileByAccountIdQuery;
+import com.github.cassiusbessa.vision.domain.service.dtos.profile.LoadProfileResponse;
+import com.github.cassiusbessa.vision.domain.service.dtos.profile.ProfileCreateCommand;
+import com.github.cassiusbessa.vision.domain.service.dtos.profile.ProfileCreatedResponse;
 import com.github.cassiusbessa.vision.domain.service.exceptions.ResourceAlreadyExistsException;
 import com.github.cassiusbessa.vision.domain.service.exceptions.ResourceNotFoundException;
 import com.github.cassiusbessa.vision.domain.service.exceptions.ValidationException;

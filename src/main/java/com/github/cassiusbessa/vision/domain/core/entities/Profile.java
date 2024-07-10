@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-
 public class Profile extends AggregateRoot<ProfileId> {
 
     private final String name;
@@ -17,9 +16,10 @@ public class Profile extends AggregateRoot<ProfileId> {
     private final Set<Tag> technologies;
     private final Project starProject;
     private final Account account;
+    private final String link;
     private final List<String> failureMessages = new ArrayList<>();
 
-    public Profile(ProfileId id, String name, String image, String title, String description, Set<Tag> technologies, Project starProject, Account account) {
+    public Profile(ProfileId id, String name, String image, String title, String description, Set<Tag> technologies, Project starProject, Account account, String link) {
         super.setId(id);
         this.name = name;
         this.image = image;
@@ -28,7 +28,7 @@ public class Profile extends AggregateRoot<ProfileId> {
         this.technologies = technologies;
         this.starProject = starProject;
         this.account = account;
-
+        this.link = link;
     }
 
     public static Builder builder() {
@@ -67,6 +67,10 @@ public class Profile extends AggregateRoot<ProfileId> {
         return failureMessages;
     }
 
+    public String getLink() {
+        return link;
+    }
+
     public String getFailureMessagesAsString() {
         return String.join(", ", failureMessages);
     }
@@ -92,6 +96,10 @@ public class Profile extends AggregateRoot<ProfileId> {
             failureMessages.add("Account must be informed");
         }
 
+        if (link == null || link.length() > 50 || link.length() < 3 || link.isBlank()){
+            failureMessages.add("Link must be between 3 and 50 characters");
+        }
+
     }
 
     public static final class Builder {
@@ -103,6 +111,7 @@ public class Profile extends AggregateRoot<ProfileId> {
         private Set<Tag> technologies;
         private Project starProject;
         private Account account;
+        private String link;
 
         private Builder() {
         }
@@ -147,8 +156,13 @@ public class Profile extends AggregateRoot<ProfileId> {
             return this;
         }
 
+        public Builder withLink(String link) {
+            this.link = link;
+            return this;
+        }
+
         public Profile build() {
-            return new Profile(id, name, image, title, description, technologies, starProject, account);
+            return new Profile(id, name, image, title, description, technologies, starProject, account, link);
         }
     }
 

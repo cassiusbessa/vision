@@ -42,10 +42,13 @@ public class ProfileDataBaseEntity {
     @JoinColumn(name = "account_id", nullable = false)
     private AccountDataBaseEntity account;
 
+    @Column(name = "link", unique = true)
+    private String link;
+
     public ProfileDataBaseEntity() {
     }
 
-    public ProfileDataBaseEntity(UUID id, String name, String image, String title, String description, AccountDataBaseEntity account, ProjectDataBaseEntity starProject, Set<TagDataBaseEntity> technologies) {
+    public ProfileDataBaseEntity(UUID id, String name, String image, String title, String description, AccountDataBaseEntity account, ProjectDataBaseEntity starProject, Set<TagDataBaseEntity> technologies, String link) {
         this.id = id;
         this.name = name;
         this.image = image;
@@ -54,6 +57,7 @@ public class ProfileDataBaseEntity {
         this.account = account;
         this.starProject = starProject;
         this.technologies = technologies;
+        this.link = link;
     }
 
     public UUID getId() {
@@ -119,5 +123,9 @@ public class ProfileDataBaseEntity {
     public void setAccount(AccountDataBaseEntity account) {
         this.account = account;
     }
+
+    public String getLink() { return link; }
+
+    public void setLink(String link) { this.link = link; }
 
 }

@@ -1,18 +1,18 @@
-package com.github.cassiusbessa.vision.domain.service.dtos;
+package com.github.cassiusbessa.vision.domain.service.dtos.profile;
 
 import com.github.cassiusbessa.vision.domain.core.entities.Profile;
 
 public class LoadProfileResponse {
 
-    private final Profile profile;
+    private final ProfileDTO profile;
     private final String message;
 
-    public LoadProfileResponse(Profile profile, String message) {
+    public LoadProfileResponse(ProfileDTO profile, String message) {
         this.profile = profile;
         this.message = message;
     }
 
-    public Profile getProfile() {
+    public ProfileDTO getProfile() {
         return profile;
     }
 

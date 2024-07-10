@@ -3,7 +3,6 @@ package com.github.cassiusbessa.vision.dataaccess.mappers;
 import com.github.cassiusbessa.vision.dataaccess.entities.ProfileDataBaseEntity;
 import com.github.cassiusbessa.vision.domain.core.entities.Profile;
 import com.github.cassiusbessa.vision.domain.core.entities.Tag;
-import com.github.cassiusbessa.vision.domain.core.valueobjects.ProfileId;
 import com.github.cassiusbessa.vision.domain.core.valueobjects.TagId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -38,6 +37,7 @@ public class ProfileDataBaseMapper {
                 )
                 .withImage(dbEntity.getImage())
                 .withAccount(accountMapper.dbEntityToAccount(dbEntity.getAccount()))
+                .withLink(dbEntity.getLink())
                 .build();
     }
 
@@ -50,7 +50,8 @@ public class ProfileDataBaseMapper {
                 profile.getDescription(),
                 accountMapper.accountToDbEntity(profile.getAccount()),
                 projectMapper.projectToDbEntity(profile.getStarProject()),
-                profile.getTechnologies().stream().map(tagDataBaseMapper::tagToDbEntity).collect(Collectors.toSet())
+                profile.getTechnologies().stream().map(tagDataBaseMapper::tagToDbEntity).collect(Collectors.toSet()),
+                profile.getLink()
         );
     }
 }

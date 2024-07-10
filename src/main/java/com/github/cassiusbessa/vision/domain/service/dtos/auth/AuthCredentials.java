@@ -1,16 +1,16 @@
-package com.github.cassiusbessa.vision.domain.service.dtos;
+package com.github.cassiusbessa.vision.domain.service.dtos.auth;
 
-public class AccountCreateCommand {
+public class AuthCredentials {
 
     private final String email;
     private final String password;
 
-    public AccountCreateCommand() {
+    public AuthCredentials() {
         this.email = null;
         this.password = null;
     }
 
-    public AccountCreateCommand(String email, String password) {
+    public AuthCredentials(String email, String password) {
         this.email = email;
         this.password = password;
     }

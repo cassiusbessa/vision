@@ -4,9 +4,8 @@ import com.github.cassiusbessa.vision.domain.core.entities.Account;
 import com.github.cassiusbessa.vision.domain.core.valueobjects.AccountLevel;
 import com.github.cassiusbessa.vision.domain.core.valueobjects.Email;
 import com.github.cassiusbessa.vision.domain.core.valueobjects.EncryptedPassword;
-import com.github.cassiusbessa.vision.domain.core.valueobjects.Password;
 import com.github.cassiusbessa.vision.domain.service.crypto.CryptoService;
-import com.github.cassiusbessa.vision.domain.service.dtos.AccountCreateCommand;
+import com.github.cassiusbessa.vision.domain.service.dtos.account.AccountCreateCommand;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
