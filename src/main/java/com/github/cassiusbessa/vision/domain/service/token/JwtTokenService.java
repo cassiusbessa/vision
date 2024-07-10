@@ -1,7 +1,5 @@
 package com.github.cassiusbessa.vision.domain.service.token;
 
-
-import com.github.cassiusbessa.vision.domain.core.valueobjects.AccountId;
 import com.github.cassiusbessa.vision.domain.service.exceptions.UnauthorizedException;
 import com.github.cassiusbessa.vision.domain.service.ports.input.TokenService;
 import org.springframework.stereotype.Component;

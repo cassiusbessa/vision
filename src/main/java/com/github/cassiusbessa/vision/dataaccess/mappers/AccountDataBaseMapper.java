@@ -4,7 +4,7 @@ import com.github.cassiusbessa.vision.dataaccess.entities.AccountDataBaseEntity;
 import com.github.cassiusbessa.vision.domain.core.entities.Account;
 import com.github.cassiusbessa.vision.domain.core.valueobjects.Email;
 import com.github.cassiusbessa.vision.domain.core.valueobjects.EncryptedPassword;
-import com.github.cassiusbessa.vision.domain.core.valueobjects.Password;
+
 import org.springframework.stereotype.Component;
 
 @Component

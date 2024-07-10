@@ -6,7 +6,6 @@ import com.github.cassiusbessa.vision.domain.core.entities.Tag;
 import com.github.cassiusbessa.vision.domain.service.dtos.profile.ProfileCreateCommand;
 import com.github.cassiusbessa.vision.domain.service.dtos.profile.ProfileDTO;
 import com.github.cassiusbessa.vision.domain.service.dtos.profile.ProfileUpdateCommand;
-import com.github.cassiusbessa.vision.domain.service.dtos.project.ProjectDTO;
 import com.github.cassiusbessa.vision.domain.service.dtos.tag.TagDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

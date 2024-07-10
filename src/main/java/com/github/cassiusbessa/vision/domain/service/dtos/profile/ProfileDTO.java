@@ -1,6 +1,5 @@
 package com.github.cassiusbessa.vision.domain.service.dtos.profile;
 
-import com.github.cassiusbessa.vision.domain.core.entities.Tag;
 import com.github.cassiusbessa.vision.domain.service.dtos.project.ProjectDTO;
 import com.github.cassiusbessa.vision.domain.service.dtos.tag.TagDTO;
 

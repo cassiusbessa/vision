@@ -2,8 +2,6 @@ package com.github.cassiusbessa.vision.domain.core.entities;
 
 import com.github.cassiusbessa.vision.domain.core.valueobjects.TagId;
 
-import java.util.UUID;
-
 public class Tag extends BaseEntity<TagId> {
 
         private String name;
