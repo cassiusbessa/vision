@@ -1,7 +1,9 @@
 package com.github.cassiusbessa.vision.domain.service.token;
 
 
+import com.github.cassiusbessa.vision.domain.core.valueobjects.AccountId;
 import com.github.cassiusbessa.vision.domain.service.exceptions.UnauthorizedException;
+import com.github.cassiusbessa.vision.domain.service.ports.input.TokenService;
 import org.springframework.stereotype.Component;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -11,7 +13,7 @@ import java.util.Date;
 import java.util.UUID;
 
 @Component
-public class JwtTokenService {
+public class JwtTokenService implements TokenService {
 
     private static final String SECRET = "your-secure";
 

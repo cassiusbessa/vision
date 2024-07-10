@@ -7,8 +7,11 @@ import com.github.cassiusbessa.vision.domain.service.dtos.profile.ProfileCreateC
 import com.github.cassiusbessa.vision.domain.service.dtos.profile.ProfileCreatedResponse;
 import com.github.cassiusbessa.vision.domain.service.exceptions.ResourceAlreadyExistsException;
 import com.github.cassiusbessa.vision.domain.service.exceptions.ResourceNotFoundException;
+import com.github.cassiusbessa.vision.domain.service.exceptions.UnauthorizedException;
 import com.github.cassiusbessa.vision.domain.service.exceptions.ValidationException;
 import com.github.cassiusbessa.vision.domain.service.ports.input.ProfileService;
+import com.github.cassiusbessa.vision.domain.service.ports.input.TokenService;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,27 +21,35 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
+@Slf4j
 @RestController
 @RequestMapping("/profile")
 public class ProfileController {
 
-    private static final Logger log = LoggerFactory.getLogger(ProfileController.class);
     private final ProfileService profileService;
+    private final TokenService tokenService;
 
     @Autowired
-    public ProfileController(ProfileService profileService) {
+    public ProfileController(ProfileService profileService, TokenService tokenService) {
         this.profileService = profileService;
+        this.tokenService = tokenService;
     }
 
     @PostMapping()
-    public ResponseEntity<ProfileCreatedResponse> createProfile(@RequestBody ProfileCreateCommand command) {
+    public ResponseEntity<ProfileCreatedResponse> createProfile(@RequestBody ProfileCreateCommand command, @RequestHeader("Authorization") String token){
         try {
+            if (!tokenService.getAccountId(token).equals(command.getAccountId())) {
+                log.error("Unauthorized profile creation");
+                return new ResponseEntity<>(new ProfileCreatedResponse("Unauthorized"), HttpStatus.UNAUTHORIZED);
+            }
             ProfileCreatedResponse response = profileService.createProfile(command);
             return ResponseEntity.ok(response);
         } catch (ValidationException | DomainException e) {
             return new ResponseEntity<>(new ProfileCreatedResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
         } catch (ResourceAlreadyExistsException e) {
             return new ResponseEntity<>(new ProfileCreatedResponse(e.getMessage()), HttpStatus.CONFLICT);
+        }  catch (UnauthorizedException e) {
+            return new ResponseEntity<>(new ProfileCreatedResponse(e.getMessage()), HttpStatus.UNAUTHORIZED);
         } catch (Exception e) {
             log.error("Error creating profile", e);
             return new ResponseEntity<>(new ProfileCreatedResponse(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -48,7 +59,6 @@ public class ProfileController {
     @GetMapping("/account/{id}")
     public ResponseEntity<LoadProfileResponse> loadProfileByAccountId(@PathVariable("id") String id) {
         try {
-
             LoadProfileResponse response = profileService.loadProfileByAccountId(new LoadProfileByAccountIdQuery(
                     UUID.fromString(id)
             ));
