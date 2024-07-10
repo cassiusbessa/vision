@@ -7,6 +7,7 @@ import com.github.cassiusbessa.vision.domain.service.dtos.profile.ProfileCreateC
 import com.github.cassiusbessa.vision.domain.service.dtos.profile.ProfileDTO;
 import com.github.cassiusbessa.vision.domain.service.dtos.profile.ProfileUpdateCommand;
 import com.github.cassiusbessa.vision.domain.service.dtos.project.ProjectDTO;
+import com.github.cassiusbessa.vision.domain.service.dtos.tag.TagDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -37,13 +38,20 @@ public class ProfileDataMapper {
     }
 
     public ProfileDTO profileToProfileDTO(Profile profile) {
+
+        var profileDTOTags = new HashSet<TagDTO>();
+
+        for (var tag : profile.getTechnologies()) {
+            profileDTOTags.add(new TagDTO(tag.getId().getValue(), tag.getName()));
+        }
+
         return new ProfileDTO(
                 profile.getId().getValue(),
                 profile.getName(),
                 profile.getImage(),
                 profile.getTitle(),
                 profile.getDescription(),
-                profile.getTechnologies(),
+                profileDTOTags,
                 projectMapper.projectToProjectDTO(profile.getStarProject()),
                 profile.getLink()
         );

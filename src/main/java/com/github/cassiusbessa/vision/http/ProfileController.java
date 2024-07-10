@@ -74,6 +74,22 @@ public class ProfileController {
         }
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<LoadProfileResponse> loadProfileById(@PathVariable("id") String id) {
+        try {
+            LoadProfileResponse response = profileService.loadProfileById(new LoadProfileByIdQuery(
+                    UUID.fromString(id)
+            ));
+            return ResponseEntity.ok(response);
+        } catch (ResourceNotFoundException e) {
+            return new ResponseEntity<>(new LoadProfileResponse(null, e.getMessage()), HttpStatus.NOT_FOUND);
+        }
+        catch (Exception e) {
+            log.error("Error loading profile", e);
+            return new ResponseEntity<>(new LoadProfileResponse(null, e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @GetMapping("/account/{id}")
     public ResponseEntity<LoadProfileResponse> loadProfileByAccountId(@PathVariable("id") String id) {
         try {

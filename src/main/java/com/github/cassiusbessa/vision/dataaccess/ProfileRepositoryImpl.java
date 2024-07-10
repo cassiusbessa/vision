@@ -23,8 +23,12 @@ public class ProfileRepositoryImpl implements ProfileRepository {
     }
 
     @Override
-    public Profile findByProfileId(UUID accountId) {
-        return null;
+    public Profile findByProfileId(UUID profileId) {
+        ProfileDataBaseEntity profileDataBaseEntity = profileRepository.findById(profileId).orElse(null);
+        if (profileDataBaseEntity == null) {
+            return null;
+        }
+        return profileDataBaseMapper.dbEntityToProfile(profileDataBaseEntity);
     }
 
     @Override

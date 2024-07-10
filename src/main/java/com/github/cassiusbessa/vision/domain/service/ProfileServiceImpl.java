@@ -78,6 +78,8 @@ public class ProfileServiceImpl implements ProfileService {
     public LoadProfileResponse loadProfileById(LoadProfileByIdQuery query) {
         log.info("Loading profile: {}", query.getId());
 
+        System.out.println("Loading profile: " + query.getId());
+
         Profile profile = profileRepository.findByProfileId(query.getId());
         if (profile == null) {
             log.error("Profile not found: {}", query.getId());
