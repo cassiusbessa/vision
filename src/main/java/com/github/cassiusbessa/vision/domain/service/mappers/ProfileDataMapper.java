@@ -58,6 +58,7 @@ public class ProfileDataMapper {
                 .withTechnologies(new HashSet<>(tags))
                 .withStarProject(command.getStarProject())
                 .withAccount(account)
+                .withLink(command.getLink())
                 .build();
     }
 }

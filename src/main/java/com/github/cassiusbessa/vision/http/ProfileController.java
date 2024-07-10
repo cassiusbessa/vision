@@ -1,10 +1,7 @@
 package com.github.cassiusbessa.vision.http;
 
 import com.github.cassiusbessa.vision.domain.core.exceptions.DomainException;
-import com.github.cassiusbessa.vision.domain.service.dtos.profile.LoadProfileByAccountIdQuery;
-import com.github.cassiusbessa.vision.domain.service.dtos.profile.LoadProfileResponse;
-import com.github.cassiusbessa.vision.domain.service.dtos.profile.ProfileCreateCommand;
-import com.github.cassiusbessa.vision.domain.service.dtos.profile.ProfileCreatedResponse;
+import com.github.cassiusbessa.vision.domain.service.dtos.profile.*;
 import com.github.cassiusbessa.vision.domain.service.exceptions.ResourceAlreadyExistsException;
 import com.github.cassiusbessa.vision.domain.service.exceptions.ResourceNotFoundException;
 import com.github.cassiusbessa.vision.domain.service.exceptions.UnauthorizedException;
@@ -53,6 +50,27 @@ public class ProfileController {
         } catch (Exception e) {
             log.error("Error creating profile", e);
             return new ResponseEntity<>(new ProfileCreatedResponse(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PutMapping()
+    public ResponseEntity<ProfileUpdatedResponse> updateProfile(@RequestBody ProfileUpdateCommand command, @RequestHeader("Authorization") String token){
+        try {
+            if (!tokenService.getAccountId(token).equals(command.getAccountId())) {
+                log.error("Unauthorized profile update");
+                return new ResponseEntity<>(new ProfileUpdatedResponse("Unauthorized"), HttpStatus.UNAUTHORIZED);
+            }
+            ProfileUpdatedResponse response = profileService.updateProfile(command);
+            return ResponseEntity.ok(response);
+        } catch (ValidationException | DomainException e) {
+            return new ResponseEntity<>(new ProfileUpdatedResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
+        } catch (ResourceAlreadyExistsException e) {
+            return new ResponseEntity<>(new ProfileUpdatedResponse(e.getMessage()), HttpStatus.CONFLICT);
+        }  catch (UnauthorizedException e) {
+            return new ResponseEntity<>(new ProfileUpdatedResponse(e.getMessage()), HttpStatus.UNAUTHORIZED);
+        } catch (Exception e) {
+            log.error("Error updating profile", e);
+            return new ResponseEntity<>(new ProfileUpdatedResponse(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

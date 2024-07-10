@@ -14,8 +14,20 @@ public class ProfileUpdateCommand {
     private final List<UUID> technologies;
     private final Project starProject;
     private final UUID accountId;
+    private final String link;
 
-    public ProfileUpdateCommand(UUID profileId, String name, String title, String description, List<UUID> technologies, Project starProject, UUID accountId) {
+    public ProfileUpdateCommand() {
+        this.profileId = null;
+        this.name = null;
+        this.title = null;
+        this.description = null;
+        this.technologies = null;
+        this.starProject = null;
+        this.accountId = null;
+        this.link = null;
+    }
+
+    public ProfileUpdateCommand(UUID profileId, String name, String title, String description, List<UUID> technologies, Project starProject, UUID accountId, String link) {
         this.profileId = profileId;
         this.name = name;
         this.title = title;
@@ -23,6 +35,7 @@ public class ProfileUpdateCommand {
         this.technologies = technologies;
         this.starProject = starProject;
         this.accountId = accountId;
+        this.link = link;
     }
 
     public UUID getProfileId() { return profileId; }
@@ -49,6 +62,10 @@ public class ProfileUpdateCommand {
 
     public UUID getAccountId() {
         return accountId;
+    }
+
+    public String getLink() {
+        return link;
     }
 
 }

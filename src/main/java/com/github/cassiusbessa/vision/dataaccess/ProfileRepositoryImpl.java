@@ -44,5 +44,12 @@ public class ProfileRepositoryImpl implements ProfileRepository {
     @Override
     public void update(Profile profile) {
 
+        ProfileDataBaseEntity profileDataBaseEntity = profileRepository.findByAccountId(profile.getAccount().getId().getValue()).orElse(null);
+        if (profileDataBaseEntity == null) {
+            return;
+        }
+        profileDataBaseMapper.updateProfile(profile, profileDataBaseEntity);
+        profileRepository.save(profileDataBaseEntity);
+
     }
 }

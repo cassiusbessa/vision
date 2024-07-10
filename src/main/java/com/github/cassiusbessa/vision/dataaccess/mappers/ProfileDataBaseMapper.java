@@ -54,4 +54,17 @@ public class ProfileDataBaseMapper {
                 profile.getLink()
         );
     }
+
+    public void updateProfile(Profile profile, ProfileDataBaseEntity profileDataBaseEntity) {
+        profileDataBaseEntity.setName(profile.getName());
+        profileDataBaseEntity.setTitle(profile.getTitle());
+        profileDataBaseEntity.setDescription(profile.getDescription());
+        profileDataBaseEntity.setTechnologies(
+                profile.getTechnologies().stream()
+                        .map(tagDataBaseMapper::tagToDbEntity)
+                        .collect(Collectors.toSet())
+        );
+        profileDataBaseEntity.setStarProject(projectMapper.projectToDbEntity(profile.getStarProject()));
+        profileDataBaseEntity.setLink(profile.getLink());
+    }
 }

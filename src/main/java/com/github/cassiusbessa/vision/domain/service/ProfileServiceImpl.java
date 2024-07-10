@@ -58,21 +58,21 @@ public class ProfileServiceImpl implements ProfileService {
         return new ProfileCreatedResponse("Profile created successfully");
     }
 
-    @Override
-    public ProfileUpdatedResponse updateProfile(ProfileUpdateCommand command) {
-        log.info("Updating profile: {}", command.getProfileId());
+        @Override
+        public ProfileUpdatedResponse updateProfile(ProfileUpdateCommand command) {
+            log.info("Updating profile: {}", command.getProfileId());
 
-        Account account = getAccount(command.getAccountId());
+            Account account = getAccount(command.getAccountId());
 
-        List<Tag> tags = getTags(command.getTechnologies());
+            List<Tag> tags = getTags(command.getTechnologies());
 
-        Profile profile = profileDataMapper.profileUpdateCommandToProfile(command, account, tags);
-        validateProfile(profile);
+            Profile profile = profileDataMapper.profileUpdateCommandToProfile(command, account, tags);
+            validateProfile(profile);
 
-        profileRepository.save(profile);
-        log.info("Profile updated successfully: {}", command.getProfileId());
-        return new ProfileUpdatedResponse("Profile updated successfully");
-    }
+            profileRepository.update(profile);
+            log.info("Profile updated successfully: {}", command.getProfileId());
+            return new ProfileUpdatedResponse("Profile updated successfully");
+        }
 
     @Override
     public LoadProfileResponse loadProfileById(LoadProfileByIdQuery query) {
