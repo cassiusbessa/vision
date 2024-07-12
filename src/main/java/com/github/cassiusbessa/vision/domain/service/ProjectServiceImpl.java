@@ -5,7 +5,7 @@ import com.github.cassiusbessa.vision.domain.core.entities.Project;
 import com.github.cassiusbessa.vision.domain.core.entities.Tag;
 import com.github.cassiusbessa.vision.domain.core.events.ProjectCreatedEvent;
 import com.github.cassiusbessa.vision.domain.service.dtos.ProjectCreateCommand;
-import com.github.cassiusbessa.vision.domain.service.dtos.ProjectCreateResponse;
+import com.github.cassiusbessa.vision.domain.service.dtos.ProjectCreatedResponse;
 import com.github.cassiusbessa.vision.domain.service.exceptions.ResourceNotFoundException;
 import com.github.cassiusbessa.vision.domain.service.exceptions.ValidationException;
 import com.github.cassiusbessa.vision.domain.service.mappers.ProjectMapper;
@@ -45,7 +45,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     @Transactional
-    public ProjectCreateResponse createProject(ProjectCreateCommand command) {
+    public ProjectCreatedResponse createProject(ProjectCreateCommand command) {
         log.info("Creating project {}, for account: {}", command.title(), command.userId());
 
         Account account = getAccount(command.userId());
@@ -61,7 +61,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         fireProjectCreatedEvent(project);
 
-        return new ProjectCreateResponse(project.getId().getValue(), "Project created successfully");
+        return new ProjectCreatedResponse(project.getId().getValue(), "Project created successfully");
 
     }
 

@@ -1,9 +1,9 @@
 package com.github.cassiusbessa.vision.domain.service.ports.input;
 
 import com.github.cassiusbessa.vision.domain.service.dtos.ProjectCreateCommand;
-import com.github.cassiusbessa.vision.domain.service.dtos.ProjectCreateResponse;
+import com.github.cassiusbessa.vision.domain.service.dtos.ProjectCreatedResponse;
 
 public interface ProjectService {
 
-    ProjectCreateResponse createProject(ProjectCreateCommand command);
+    ProjectCreatedResponse createProject(ProjectCreateCommand command);
 }
