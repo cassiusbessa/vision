@@ -70,6 +70,32 @@ public class Project extends BaseEntity<ProjectId>{
         return failureMessages;
     }
 
+    public String getFailureMessagesAsString() {
+        return String.join(", ", failureMessages);
+    }
+
+    public void validate() {
+        if (account == null) {
+            failureMessages.add("Account is required");
+        }
+        if (title == null || title.isEmpty()) {
+            failureMessages.add("Title is required");
+        }
+        if (description == null || description.isEmpty()) {
+            failureMessages.add("Description is required");
+        }
+        if (technologies.size() > 6){
+            failureMessages.add("Technologies must be less than 6");
+        }
+        if (createdAt == null) {
+            failureMessages.add("Creation date is required");
+        }
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
     public static final class Builder {
         private ProjectId id;
         private Account account;
@@ -80,15 +106,13 @@ public class Project extends BaseEntity<ProjectId>{
         private Set<Tag> technologies;
         private Date createdAt;
 
-        private Builder() {
-        }
 
         public Builder withId(ProjectId id) {
             this.id = id;
             return this;
         }
 
-        public Builder withAccountId(Account account) {
+        public Builder withAccount(Account account) {
             this.account = account;
             return this;
         }
