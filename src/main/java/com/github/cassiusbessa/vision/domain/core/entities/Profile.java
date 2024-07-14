@@ -32,10 +32,6 @@ public class Profile extends AggregateRoot<ProfileId> {
         this.link = link;
     }
 
-    public static Builder builder() {
-        return new Builder();
-    }
-
     public String getName() {
         return name;
     }
@@ -101,6 +97,10 @@ public class Profile extends AggregateRoot<ProfileId> {
             failureMessages.add("Link must be between 3 and 50 characters");
         }
 
+    }
+
+    public static Builder builder() {
+        return new Builder();
     }
 
     public static final class Builder {

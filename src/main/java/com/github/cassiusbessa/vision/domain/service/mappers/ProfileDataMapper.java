@@ -2,6 +2,7 @@ package com.github.cassiusbessa.vision.domain.service.mappers;
 
 import com.github.cassiusbessa.vision.domain.core.entities.Account;
 import com.github.cassiusbessa.vision.domain.core.entities.Profile;
+import com.github.cassiusbessa.vision.domain.core.entities.Project;
 import com.github.cassiusbessa.vision.domain.core.entities.Tag;
 import com.github.cassiusbessa.vision.domain.service.dtos.profile.ProfileCreateCommand;
 import com.github.cassiusbessa.vision.domain.service.dtos.profile.ProfileDTO;
@@ -56,14 +57,14 @@ public class ProfileDataMapper {
         );
     }
 
-    public Profile profileUpdateCommandToProfile(ProfileUpdateCommand command, Account account, List<Tag> tags) {
+    public Profile profileUpdateCommandToProfile(ProfileUpdateCommand command, Account account, List<Tag> tags, Project startProject) {
         return Profile.builder()
                 .withId(command.getProfileId())
                 .withName(command.getName())
                 .withTitle(command.getTitle())
                 .withDescription(command.getDescription())
                 .withTechnologies(new HashSet<>(tags))
-                .withStarProject(command.getStarProject())
+                .withStarProject(startProject)
                 .withAccount(account)
                 .withLink(command.getLink())
                 .build();

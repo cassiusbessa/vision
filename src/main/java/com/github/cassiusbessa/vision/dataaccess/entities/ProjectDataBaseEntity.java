@@ -24,10 +24,10 @@ public class ProjectDataBaseEntity {
     @Column(name = "description", nullable = false)
     private String description;
 
-    @Column(name = "repository", nullable = false)
+    @Column(name = "repository")
     private String repositoryLink;
 
-    @Column(name = "demo", nullable = false)
+    @Column(name = "demo")
     private String demoLink;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -44,9 +44,7 @@ public class ProjectDataBaseEntity {
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private Set<TagDataBaseEntity> technologies = new HashSet<>();
 
-    public ProjectDataBaseEntity(String image) {
-        this.image = image;
-    }
+    public ProjectDataBaseEntity() {}
 
     public ProjectDataBaseEntity(UUID id, String title, String image, String description, String repositoryLink, AccountDataBaseEntity account, Date createdAt, Set<TagDataBaseEntity> technologies) {
         this.id = id;

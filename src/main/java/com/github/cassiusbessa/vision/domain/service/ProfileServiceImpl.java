@@ -2,15 +2,18 @@ package com.github.cassiusbessa.vision.domain.service;
 
 import com.github.cassiusbessa.vision.domain.core.entities.Account;
 import com.github.cassiusbessa.vision.domain.core.entities.Profile;
+import com.github.cassiusbessa.vision.domain.core.entities.Project;
 import com.github.cassiusbessa.vision.domain.core.entities.Tag;
 import com.github.cassiusbessa.vision.domain.service.dtos.profile.*;
 import com.github.cassiusbessa.vision.domain.service.exceptions.ResourceAlreadyExistsException;
 import com.github.cassiusbessa.vision.domain.service.exceptions.ResourceNotFoundException;
+import com.github.cassiusbessa.vision.domain.service.exceptions.UnauthorizedException;
 import com.github.cassiusbessa.vision.domain.service.exceptions.ValidationException;
 import com.github.cassiusbessa.vision.domain.service.mappers.ProfileDataMapper;
 import com.github.cassiusbessa.vision.domain.service.ports.input.ProfileService;
 import com.github.cassiusbessa.vision.domain.service.ports.output.AccountRepository;
 import com.github.cassiusbessa.vision.domain.service.ports.output.ProfileRepository;
+import com.github.cassiusbessa.vision.domain.service.ports.output.ProjectRepository;
 import com.github.cassiusbessa.vision.domain.service.ports.output.TagRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,13 +30,15 @@ public class ProfileServiceImpl implements ProfileService {
     private final ProfileRepository profileRepository;
     private final AccountRepository accountRepository;
     private final TagRepository tagRepository;
+    private final ProjectRepository projectRepository;
 
     @Autowired
-    public ProfileServiceImpl(ProfileDataMapper profileDataMapper, ProfileRepository profileRepository, AccountRepository accountRepository, TagRepository tagRepository) {
+    public ProfileServiceImpl(ProfileDataMapper profileDataMapper, ProfileRepository profileRepository, AccountRepository accountRepository, TagRepository tagRepository, ProjectRepository projectRepository) {
         this.profileDataMapper = profileDataMapper;
         this.profileRepository = profileRepository;
         this.accountRepository = accountRepository;
         this.tagRepository = tagRepository;
+        this.projectRepository = projectRepository;
     }
 
     @Override
@@ -66,7 +71,18 @@ public class ProfileServiceImpl implements ProfileService {
 
             List<Tag> tags = getTags(command.getTechnologies());
 
-            Profile profile = profileDataMapper.profileUpdateCommandToProfile(command, account, tags);
+            Project startProject = projectRepository.findByProjectId(command.getStarProjectId());
+
+            if (startProject == null) {
+                log.error("Project does not exist: {}", command.getStarProjectId());
+                throw new ResourceNotFoundException("Project does not exist: " + command.getStarProjectId());
+            }
+            if (!startProject.getAccount().getId().equals(account.getId())) {
+                log.error("Project does not belong to account: {}", command.getStarProjectId());
+                throw new UnauthorizedException("Project does not belong to account: " + command.getStarProjectId());
+            }
+
+            Profile profile = profileDataMapper.profileUpdateCommandToProfile(command, account, tags, startProject);
             validateProfile(profile);
 
             profileRepository.update(profile);

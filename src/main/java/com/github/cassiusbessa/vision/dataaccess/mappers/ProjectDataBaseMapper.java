@@ -2,6 +2,8 @@ package com.github.cassiusbessa.vision.dataaccess.mappers;
 
 import com.github.cassiusbessa.vision.dataaccess.entities.ProjectDataBaseEntity;
 import com.github.cassiusbessa.vision.domain.core.entities.Project;
+import com.github.cassiusbessa.vision.domain.core.valueobjects.ProjectId;
+import com.github.cassiusbessa.vision.domain.core.valueobjects.ProjectLinks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -33,5 +35,23 @@ public class ProjectDataBaseMapper {
                 project.getCreatedAt(),
                 project.getTechnologies().stream().map(tagMapper::tagToDbEntity).collect(Collectors.toSet())
         );
+    }
+
+    public Project dbEntityToProject(ProjectDataBaseEntity projectDataBaseEntity) {
+        if (projectDataBaseEntity == null) {
+            return null;
+        }
+        return Project.builder()
+                .withId(new ProjectId(projectDataBaseEntity.getId()))
+                .withTitle(projectDataBaseEntity.getTitle())
+                .withImage(projectDataBaseEntity.getImage())
+                .withDescription(projectDataBaseEntity.getDescription())
+                .withLinks(
+                        new ProjectLinks(projectDataBaseEntity.getRepositoryLink(), projectDataBaseEntity.getDemoLink())
+                )
+                .withAccount(accountMapper.dbEntityToAccount(projectDataBaseEntity.getAccount()))
+                .withCreatedAt(projectDataBaseEntity.getCreatedAt())
+                .withTechnologies(projectDataBaseEntity.getTechnologies().stream().map(tagMapper::dbEntityToTag).collect(Collectors.toSet()))
+                .build();
     }
 }

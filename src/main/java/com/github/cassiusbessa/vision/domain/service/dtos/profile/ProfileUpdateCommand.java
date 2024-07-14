@@ -1,7 +1,5 @@
 package com.github.cassiusbessa.vision.domain.service.dtos.profile;
 
-import com.github.cassiusbessa.vision.domain.core.entities.Project;
-
 import java.util.List;
 import java.util.UUID;
 
@@ -12,7 +10,7 @@ public class ProfileUpdateCommand {
     private final String title;
     private final String description;
     private final List<UUID> technologies;
-    private final Project starProject;
+    private final UUID starProjectId;
     private final UUID accountId;
     private final String link;
 
@@ -22,18 +20,18 @@ public class ProfileUpdateCommand {
         this.title = null;
         this.description = null;
         this.technologies = null;
-        this.starProject = null;
+        this.starProjectId = null;
         this.accountId = null;
         this.link = null;
     }
 
-    public ProfileUpdateCommand(UUID profileId, String name, String title, String description, List<UUID> technologies, Project starProject, UUID accountId, String link) {
+    public ProfileUpdateCommand(UUID profileId, String name, String title, String description, List<UUID> technologies, UUID starProjectId, UUID accountId, String link) {
         this.profileId = profileId;
         this.name = name;
         this.title = title;
         this.description = description;
         this.technologies = technologies;
-        this.starProject = starProject;
+        this.starProjectId = starProjectId;
         this.accountId = accountId;
         this.link = link;
     }
@@ -56,8 +54,8 @@ public class ProfileUpdateCommand {
         return technologies;
     }
 
-    public Project getStarProject() {
-        return starProject;
+    public UUID getStarProjectId() {
+        return starProjectId;
     }
 
     public UUID getAccountId() {

@@ -33,7 +33,7 @@ public class ProfileDataBaseEntity {
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private Set<TagDataBaseEntity> technologies = new HashSet<>();
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "star_project", nullable = true)
     private ProjectDataBaseEntity starProject;
 

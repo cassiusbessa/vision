@@ -38,6 +38,7 @@ public class ProfileDataBaseMapper {
                 .withImage(dbEntity.getImage())
                 .withAccount(accountMapper.dbEntityToAccount(dbEntity.getAccount()))
                 .withLink(dbEntity.getLink())
+                .withStarProject(projectMapper.dbEntityToProject(dbEntity.getStarProject()))
                 .build();
     }
 

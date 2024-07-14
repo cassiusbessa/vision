@@ -67,6 +67,10 @@ public class Project extends BaseEntity<ProjectId>{
         return failureMessages;
     }
 
+    public static Builder builder() {
+        return new Builder();
+    }
+
     public static final class Builder {
         private ProjectId id;
         private Account account;
@@ -85,7 +89,7 @@ public class Project extends BaseEntity<ProjectId>{
             return this;
         }
 
-        public Builder withAccountId(Account account) {
+        public Builder withAccount(Account account) {
             this.account = account;
             return this;
         }

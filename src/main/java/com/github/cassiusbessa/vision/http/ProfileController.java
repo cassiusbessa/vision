@@ -60,6 +60,8 @@ public class ProfileController {
             }
             ProfileUpdatedResponse response = profileService.updateProfile(command);
             return ResponseEntity.ok(response);
+        } catch (ResourceNotFoundException e) {
+            return new ResponseEntity<>(new ProfileUpdatedResponse(e.getMessage()), HttpStatus.NOT_FOUND);
         } catch (ValidationException | DomainException e) {
             return new ResponseEntity<>(new ProfileUpdatedResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
         } catch (ResourceAlreadyExistsException e) {
