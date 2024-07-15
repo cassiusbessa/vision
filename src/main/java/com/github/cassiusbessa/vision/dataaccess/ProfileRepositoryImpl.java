@@ -4,6 +4,7 @@ import com.github.cassiusbessa.vision.dataaccess.entities.ProfileDataBaseEntity;
 import com.github.cassiusbessa.vision.dataaccess.mappers.ProfileDataBaseMapper;
 import com.github.cassiusbessa.vision.dataaccess.repositories.ProfileJpaRepository;
 import com.github.cassiusbessa.vision.domain.core.entities.Profile;
+import com.github.cassiusbessa.vision.domain.service.exceptions.ResourceNotFoundException;
 import com.github.cassiusbessa.vision.domain.service.ports.output.ProfileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -48,9 +49,9 @@ public class ProfileRepositoryImpl implements ProfileRepository {
     @Override
     public void update(Profile profile) {
 
-        ProfileDataBaseEntity profileDataBaseEntity = profileRepository.findByAccountId(profile.getAccount().getId().getValue()).orElse(null);
+        ProfileDataBaseEntity profileDataBaseEntity = profileRepository.findById(profile.getId().getValue()).orElse(null);
         if (profileDataBaseEntity == null) {
-            return;
+            throw new ResourceNotFoundException("Profile not found");
         }
         profileDataBaseMapper.updateProfile(profile, profileDataBaseEntity);
         profileRepository.save(profileDataBaseEntity);

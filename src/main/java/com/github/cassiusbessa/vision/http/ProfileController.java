@@ -34,7 +34,7 @@ public class ProfileController {
     public ResponseEntity<ProfileCreatedResponse> createProfile(@RequestBody ProfileCreateCommand command, @RequestHeader("Authorization") String token){
         try {
             if (!tokenService.getAccountId(token).equals(command.getAccountId())) {
-                log.error("Unauthorized profile creation");
+                log.error("Unauthorized profile creation, invalid token");
                 return new ResponseEntity<>(new ProfileCreatedResponse("Unauthorized"), HttpStatus.UNAUTHORIZED);
             }
             ProfileCreatedResponse response = profileService.createProfile(command);
@@ -55,7 +55,7 @@ public class ProfileController {
     public ResponseEntity<ProfileUpdatedResponse> updateProfile(@RequestBody ProfileUpdateCommand command, @RequestHeader("Authorization") String token){
         try {
             if (!tokenService.getAccountId(token).equals(command.getAccountId())) {
-                log.error("Unauthorized profile update");
+                log.error("Unauthorized profile update, invalid token");
                 return new ResponseEntity<>(new ProfileUpdatedResponse("Unauthorized"), HttpStatus.UNAUTHORIZED);
             }
             ProfileUpdatedResponse response = profileService.updateProfile(command);
