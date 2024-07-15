@@ -46,9 +46,9 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     @Transactional
     public ProjectCreatedResponse createProject(ProjectCreateCommand command) {
-        log.info("Creating project {}, for account: {}", command.title(), command.userId());
+        log.info("Creating project {}, for account: {}", command.title(), command.accountId());
 
-        Account account = getAccount(command.userId());
+        Account account = getAccount(command.accountId());
 
         List<Tag> tags = getTags(command.technologies());
 
@@ -61,7 +61,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         fireProjectCreatedEvent(project);
 
-        return new ProjectCreatedResponse(project.getId().getValue(), "Project created successfully");
+        return new ProjectCreatedResponse("Project created successfully");
 
     }
 
@@ -74,6 +74,9 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     private List<Tag> getTags(List<UUID> tagIds) {
+        if (tagIds == null || tagIds.isEmpty()) {
+            return List.of();
+        }
         List<Tag> tags = tagRepository.findAllById(tagIds);
         validateTags(tags, tagIds);
         return tags;

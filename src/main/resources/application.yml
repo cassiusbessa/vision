@@ -1,4 +1,6 @@
 spring:
+  server:
+    port: 0
   datasource:
     url: jdbc:postgresql://localhost:5432/vision?createDatabaseIfNotExist=true
     username: root
