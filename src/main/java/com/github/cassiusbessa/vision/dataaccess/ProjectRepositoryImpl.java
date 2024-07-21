@@ -1,8 +1,10 @@
 package com.github.cassiusbessa.vision.dataaccess;
 
+import com.github.cassiusbessa.vision.dataaccess.entities.ProjectDataBaseEntity;
 import com.github.cassiusbessa.vision.dataaccess.mappers.ProjectDataBaseMapper;
 import com.github.cassiusbessa.vision.dataaccess.repositories.ProjectJpaRepository;
 import com.github.cassiusbessa.vision.domain.core.entities.Project;
+import com.github.cassiusbessa.vision.domain.service.exceptions.ResourceNotFoundException;
 import com.github.cassiusbessa.vision.domain.service.ports.output.repositories.ProjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -40,6 +42,13 @@ public class ProjectRepositoryImpl implements ProjectRepository {
     @Override
     public void update(Project project) {
 
+        ProjectDataBaseEntity projectDataBaseEntity = projectRepository.findById(project.getId().getValue()).orElse(null);
+        if (projectDataBaseEntity == null) {
+            throw new ResourceNotFoundException("Project not found");
+        }
+
+        projectDataBaseMapper.updateProject(project, projectDataBaseEntity);
+        projectRepository.save(projectDataBaseEntity);
     }
 
     @Override

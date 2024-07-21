@@ -4,13 +4,16 @@ import com.github.cassiusbessa.vision.domain.core.entities.Account;
 import com.github.cassiusbessa.vision.domain.core.entities.Project;
 import com.github.cassiusbessa.vision.domain.core.entities.Tag;
 import com.github.cassiusbessa.vision.domain.core.events.ProjectCreatedEvent;
+import com.github.cassiusbessa.vision.domain.core.events.ProjectUpdatedEvent;
 import com.github.cassiusbessa.vision.domain.service.dtos.ProjectCreateCommand;
 import com.github.cassiusbessa.vision.domain.service.dtos.ProjectCreatedResponse;
+import com.github.cassiusbessa.vision.domain.service.dtos.ProjectUpdateCommand;
+import com.github.cassiusbessa.vision.domain.service.dtos.ProjectUpdatedResponse;
 import com.github.cassiusbessa.vision.domain.service.exceptions.ResourceNotFoundException;
 import com.github.cassiusbessa.vision.domain.service.exceptions.ValidationException;
 import com.github.cassiusbessa.vision.domain.service.mappers.ProjectMapper;
 import com.github.cassiusbessa.vision.domain.service.ports.input.ProjectService;
-import com.github.cassiusbessa.vision.domain.service.ports.output.messages.ProjectCreatedMessagePublisher;
+import com.github.cassiusbessa.vision.domain.service.ports.output.messages.ProjectEventMessagePublisher;
 import com.github.cassiusbessa.vision.domain.service.ports.output.repositories.AccountRepository;
 import com.github.cassiusbessa.vision.domain.service.ports.output.repositories.ProjectRepository;
 import com.github.cassiusbessa.vision.domain.service.ports.output.repositories.TagRepository;
@@ -29,18 +32,18 @@ import java.util.concurrent.CompletableFuture;
 public class ProjectServiceImpl implements ProjectService {
 
     private final ProjectMapper projectMapper;
-    private final ProjectCreatedMessagePublisher projectCreatedMessagePublisher;
     private final ProjectRepository projectRepository;
     private final TagRepository tagRepository;
     private final AccountRepository accountRepository;
+    private final ProjectEventMessagePublisher projectEventPublisher;
 
     @Autowired
-    public ProjectServiceImpl(ProjectMapper projectMapper, ProjectCreatedMessagePublisher projectCreatedMessagePublisher, ProjectRepository projectRepository, TagRepository tagRepository, AccountRepository accountRepository) {
+    public ProjectServiceImpl(ProjectMapper projectMapper, ProjectRepository projectRepository, TagRepository tagRepository, AccountRepository accountRepository, ProjectEventMessagePublisher projectEventPublisher) {
         this.projectMapper = projectMapper;
-        this.projectCreatedMessagePublisher = projectCreatedMessagePublisher;
         this.projectRepository = projectRepository;
         this.tagRepository = tagRepository;
         this.accountRepository = accountRepository;
+        this.projectEventPublisher = projectEventPublisher;
     }
 
     @Override
@@ -62,7 +65,27 @@ public class ProjectServiceImpl implements ProjectService {
         fireProjectCreatedEvent(project);
 
         return new ProjectCreatedResponse("Project created successfully");
+    }
 
+    @Override
+    @Transactional
+    public ProjectUpdatedResponse updateProject(ProjectUpdateCommand command) {
+        log.info("Updating project {}, for account: {}", command.title(), command.accountId());
+
+        Account account = getAccount(command.accountId());
+
+        List<Tag> tags = getTags(command.technologies());
+
+        Project project = projectMapper.projectUpdateCommandToProject(command, account, tags);
+
+        validateProject(project);
+
+        projectRepository.update(project);
+        log.info("Project updated successfully: {}", project.getId().getValue());
+
+        fireProjectUpdatedEvent(project);
+
+        return new ProjectUpdatedResponse("Project updated successfully");
     }
 
     private void validateProject(Project project) {
@@ -104,8 +127,15 @@ public class ProjectServiceImpl implements ProjectService {
 
     private void fireProjectCreatedEvent(Project project) {
         CompletableFuture.runAsync(() -> {
-            new ProjectCreatedEvent(project, new Date(), projectCreatedMessagePublisher).fire();
+            new ProjectCreatedEvent(project, new Date(), projectEventPublisher).fire();
             log.info("Project created event fired: {}", project.getId().getValue());
+        });
+    }
+
+    private void fireProjectUpdatedEvent(Project project) {
+        CompletableFuture.runAsync(() -> {
+            new ProjectUpdatedEvent(project, new Date(), projectEventPublisher).fire();
+            log.info("Project updated event fired: {}", project.getId().getValue());
         });
     }
 

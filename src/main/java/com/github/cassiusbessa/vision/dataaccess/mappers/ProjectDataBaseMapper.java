@@ -34,4 +34,14 @@ public class ProjectDataBaseMapper {
                 project.getTechnologies().stream().map(tagMapper::tagToDbEntity).collect(Collectors.toSet())
         );
     }
+
+    public void updateProject(Project project, ProjectDataBaseEntity projectDataBaseEntity) {
+        projectDataBaseEntity.setTitle(project.getTitle());
+        projectDataBaseEntity.setImage(project.getImage());
+        projectDataBaseEntity.setDescription(project.getDescription());
+        projectDataBaseEntity.setRepositoryLink(project.getLinks().getRepository());
+        projectDataBaseEntity.setDemoLink(project.getLinks().getDemo());
+        projectDataBaseEntity.setCreatedAt(project.getCreatedAt());
+        projectDataBaseEntity.setTechnologies(project.getTechnologies().stream().map(tagMapper::tagToDbEntity).collect(Collectors.toSet()));
+    }
 }
