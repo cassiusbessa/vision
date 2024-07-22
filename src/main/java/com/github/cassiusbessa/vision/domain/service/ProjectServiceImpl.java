@@ -4,11 +4,9 @@ import com.github.cassiusbessa.vision.domain.core.entities.Account;
 import com.github.cassiusbessa.vision.domain.core.entities.Project;
 import com.github.cassiusbessa.vision.domain.core.entities.Tag;
 import com.github.cassiusbessa.vision.domain.core.events.ProjectCreatedEvent;
+import com.github.cassiusbessa.vision.domain.core.events.ProjectDeletedEvent;
 import com.github.cassiusbessa.vision.domain.core.events.ProjectUpdatedEvent;
-import com.github.cassiusbessa.vision.domain.service.dtos.ProjectCreateCommand;
-import com.github.cassiusbessa.vision.domain.service.dtos.ProjectCreatedResponse;
-import com.github.cassiusbessa.vision.domain.service.dtos.ProjectUpdateCommand;
-import com.github.cassiusbessa.vision.domain.service.dtos.ProjectUpdatedResponse;
+import com.github.cassiusbessa.vision.domain.service.dtos.*;
 import com.github.cassiusbessa.vision.domain.service.exceptions.ResourceNotFoundException;
 import com.github.cassiusbessa.vision.domain.service.exceptions.ValidationException;
 import com.github.cassiusbessa.vision.domain.service.mappers.ProjectMapper;
@@ -88,6 +86,24 @@ public class ProjectServiceImpl implements ProjectService {
         return new ProjectUpdatedResponse("Project updated successfully");
     }
 
+    @Override
+    public ProjectDeletedResponse deleteProject(ProjectDeleteCommand command) {
+        log.info("Deleting project: {}", command.projectId());
+
+        Project isDeleted = projectRepository.delete(command.projectId());
+        if (isDeleted == null) {
+            log.error("Project does not exist: {}", command.projectId());
+            throw new ResourceNotFoundException("Project does not exist: " + command.projectId());
+        }
+
+        log.info("Project deleted successfully: {}", command.projectId());
+
+
+
+        return new ProjectDeletedResponse("Project deleted successfully");
+    }
+
+
     private void validateProject(Project project) {
         project.validate();
         if (!project.getFailureMessages().isEmpty()) {
@@ -136,6 +152,13 @@ public class ProjectServiceImpl implements ProjectService {
         CompletableFuture.runAsync(() -> {
             new ProjectUpdatedEvent(project, new Date(), projectEventPublisher).fire();
             log.info("Project updated event fired: {}", project.getId().getValue());
+        });
+    }
+
+    private void fireProjectDeletedEvent(Project project) {
+        CompletableFuture.runAsync(() -> {
+            new ProjectDeletedEvent(project, new Date(), projectEventPublisher).fire();
+            log.info("Project deleted event fired: {}", project.getId().getValue());
         });
     }
 

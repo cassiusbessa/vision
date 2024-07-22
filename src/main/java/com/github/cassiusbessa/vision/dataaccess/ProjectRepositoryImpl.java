@@ -1,27 +1,30 @@
 package com.github.cassiusbessa.vision.dataaccess;
 
 import com.github.cassiusbessa.vision.dataaccess.entities.ProjectDataBaseEntity;
+import com.github.cassiusbessa.vision.dataaccess.entities.TagDataBaseEntity;
 import com.github.cassiusbessa.vision.dataaccess.mappers.ProjectDataBaseMapper;
 import com.github.cassiusbessa.vision.dataaccess.repositories.ProjectJpaRepository;
+import com.github.cassiusbessa.vision.dataaccess.repositories.TagJpaRepository;
 import com.github.cassiusbessa.vision.domain.core.entities.Project;
 import com.github.cassiusbessa.vision.domain.service.exceptions.ResourceNotFoundException;
 import com.github.cassiusbessa.vision.domain.service.ports.output.repositories.ProjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 
 @Repository
 public class ProjectRepositoryImpl implements ProjectRepository {
 
     private final ProjectJpaRepository projectRepository;
+    private final TagJpaRepository tagJpaRepository;
     private final ProjectDataBaseMapper projectDataBaseMapper;
 
     @Autowired
-    public ProjectRepositoryImpl(ProjectJpaRepository projectRepository, ProjectDataBaseMapper projectDataBaseMapper) {
+    public ProjectRepositoryImpl(ProjectJpaRepository projectRepository, TagJpaRepository tagJpaRepository, ProjectDataBaseMapper projectDataBaseMapper) {
         this.projectRepository = projectRepository;
+        this.tagJpaRepository = tagJpaRepository;
         this.projectDataBaseMapper = projectDataBaseMapper;
     }
 
@@ -52,7 +55,24 @@ public class ProjectRepositoryImpl implements ProjectRepository {
     }
 
     @Override
-    public void delete(Project project) {
+    public Project delete(UUID projectId) {
+
+        Optional<ProjectDataBaseEntity> projectDataBaseEntity = projectRepository.findById(projectId);
+        if (projectDataBaseEntity.isEmpty()) {
+            throw new ResourceNotFoundException("Project not found");
+        }
+
+        Set<TagDataBaseEntity> tags = projectDataBaseEntity.get().getTechnologies();
+
+//        for (TagDataBaseEntity tag : tags) {
+//            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+//            System.out.println(tag.getName());
+//            tag.getProjects().remove(projectDataBaseEntity.get());
+//            tagJpaRepository.save(tag);
+//        }
+
+        projectRepository.delete(projectDataBaseEntity.get());
+        return projectDataBaseMapper.dbEntityToProject(projectDataBaseEntity.get());
 
     }
 }

@@ -1,6 +1,8 @@
 package com.github.cassiusbessa.vision.dataaccess.entities;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -37,7 +39,8 @@ public class ProjectDataBaseEntity {
     @Column(name = "created_at", nullable = false)
     private Date createdAt;
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinTable(
             name = "projects_tags",
             joinColumns = @JoinColumn(name = "project_id"),

@@ -1,10 +1,7 @@
 package com.github.cassiusbessa.vision.http;
 
 import com.github.cassiusbessa.vision.domain.core.exceptions.DomainException;
-import com.github.cassiusbessa.vision.domain.service.dtos.ProjectCreateCommand;
-import com.github.cassiusbessa.vision.domain.service.dtos.ProjectCreatedResponse;
-import com.github.cassiusbessa.vision.domain.service.dtos.ProjectUpdateCommand;
-import com.github.cassiusbessa.vision.domain.service.dtos.ProjectUpdatedResponse;
+import com.github.cassiusbessa.vision.domain.service.dtos.*;
 import com.github.cassiusbessa.vision.domain.service.exceptions.ResourceAlreadyExistsException;
 import com.github.cassiusbessa.vision.domain.service.exceptions.ResourceNotFoundException;
 import com.github.cassiusbessa.vision.domain.service.exceptions.UnauthorizedException;
@@ -77,6 +74,26 @@ public class ProjectController {
         } catch (Exception e) {
             log.error("Error creating project", e);
             return new ResponseEntity<>(new ProjectUpdatedResponse(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @DeleteMapping("/{projectId}")
+    public ResponseEntity<ProjectDeletedResponse> deleteProject(@PathVariable("projectId") UUID projectId, @RequestHeader("Authorization") String token) {
+        try {
+            UUID accountId = tokenService.getAccountId(token);
+            ProjectDeletedResponse response = projectService.deleteProject(new ProjectDeleteCommand(projectId, accountId));
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (ResourceNotFoundException e) {
+            return new ResponseEntity<>(new ProjectDeletedResponse(e.getMessage()), HttpStatus.NOT_FOUND);
+        } catch (ValidationException | DomainException e) {
+            return new ResponseEntity<>(new ProjectDeletedResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
+        } catch (ResourceAlreadyExistsException e) {
+            return new ResponseEntity<>(new ProjectDeletedResponse(e.getMessage()), HttpStatus.CONFLICT);
+        }  catch (UnauthorizedException e) {
+            return new ResponseEntity<>(new ProjectDeletedResponse(e.getMessage()), HttpStatus.UNAUTHORIZED);
+        } catch (Exception e) {
+            log.error("Error creating project", e);
+            return new ResponseEntity<>(new ProjectDeletedResponse(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
