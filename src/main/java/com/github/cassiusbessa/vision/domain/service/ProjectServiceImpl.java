@@ -6,7 +6,15 @@ import com.github.cassiusbessa.vision.domain.core.entities.Tag;
 import com.github.cassiusbessa.vision.domain.core.events.ProjectCreatedEvent;
 import com.github.cassiusbessa.vision.domain.core.events.ProjectDeletedEvent;
 import com.github.cassiusbessa.vision.domain.core.events.ProjectUpdatedEvent;
-import com.github.cassiusbessa.vision.domain.service.dtos.*;
+import com.github.cassiusbessa.vision.domain.service.dtos.project.ProjectDTO;
+import com.github.cassiusbessa.vision.domain.service.dtos.project.commands.ProjectCreateCommand;
+import com.github.cassiusbessa.vision.domain.service.dtos.project.commands.ProjectDeleteCommand;
+import com.github.cassiusbessa.vision.domain.service.dtos.project.commands.ProjectUpdateCommand;
+import com.github.cassiusbessa.vision.domain.service.dtos.project.queries.LoadProjectsByAccountIdQuery;
+import com.github.cassiusbessa.vision.domain.service.dtos.project.responses.LoadedProjectsResponse;
+import com.github.cassiusbessa.vision.domain.service.dtos.project.responses.ProjectCreatedResponse;
+import com.github.cassiusbessa.vision.domain.service.dtos.project.responses.ProjectDeletedResponse;
+import com.github.cassiusbessa.vision.domain.service.dtos.project.responses.ProjectUpdatedResponse;
 import com.github.cassiusbessa.vision.domain.service.exceptions.ResourceNotFoundException;
 import com.github.cassiusbessa.vision.domain.service.exceptions.ValidationException;
 import com.github.cassiusbessa.vision.domain.service.mappers.ProjectMapper;
@@ -101,6 +109,22 @@ public class ProjectServiceImpl implements ProjectService {
 
 
         return new ProjectDeletedResponse("Project deleted successfully");
+    }
+
+    @Override
+    public LoadedProjectsResponse loadProjectsByAccountId(LoadProjectsByAccountIdQuery query) {
+        log.info("Getting projects for account: {}", query.accountId());
+
+        List<ProjectDTO> projects = projectRepository.findAllByAccountId(query.accountId()).stream().map(projectMapper::projectToProjectDTO).toList();
+
+        log.info("Projects found: {}", projects.size());
+
+        if (projects.isEmpty()) {
+            log.error("No projects found for account: {}", query.accountId());
+            throw new ResourceNotFoundException("No projects found for account: " + query.accountId());
+        }
+
+        return new LoadedProjectsResponse(projects, "Projects loaded successfully");
     }
 
 

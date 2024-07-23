@@ -30,8 +30,8 @@ public class ProjectRepositoryImpl implements ProjectRepository {
 
 
     @Override
-    public List<Project> findALlByAccountId(UUID accountId) {
-        return List.of();
+    public List<Project> findAllByAccountId(UUID accountId) {
+        return projectRepository.findAllByAccountId(accountId).stream().map(projectDataBaseMapper::dbEntityToProject).toList();
     }
 
     @Override

@@ -1,7 +1,11 @@
 package com.github.cassiusbessa.vision.http;
 
 import com.github.cassiusbessa.vision.domain.core.exceptions.DomainException;
-import com.github.cassiusbessa.vision.domain.service.dtos.*;
+import com.github.cassiusbessa.vision.domain.service.dtos.project.commands.ProjectCreateCommand;
+import com.github.cassiusbessa.vision.domain.service.dtos.project.commands.ProjectDeleteCommand;
+import com.github.cassiusbessa.vision.domain.service.dtos.project.commands.ProjectUpdateCommand;
+import com.github.cassiusbessa.vision.domain.service.dtos.project.queries.LoadProjectsByAccountIdQuery;
+import com.github.cassiusbessa.vision.domain.service.dtos.project.responses.*;
 import com.github.cassiusbessa.vision.domain.service.exceptions.ResourceAlreadyExistsException;
 import com.github.cassiusbessa.vision.domain.service.exceptions.ResourceNotFoundException;
 import com.github.cassiusbessa.vision.domain.service.exceptions.UnauthorizedException;
@@ -14,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -94,6 +99,20 @@ public class ProjectController {
         } catch (Exception e) {
             log.error("Error creating project", e);
             return new ResponseEntity<>(new ProjectDeletedResponse(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/account/{accountId}")
+    public ResponseEntity<LoadedProjectsResponse> loadProjectsByAccountId(@PathVariable("accountId") UUID accountId) {
+        try {
+            LoadedProjectsResponse projects = projectService.loadProjectsByAccountId(new LoadProjectsByAccountIdQuery(accountId));
+            return ResponseEntity.ok(projects);
+        } catch (ResourceNotFoundException e) {
+            return new ResponseEntity<>(new LoadedProjectsResponse(null, e.getMessage()), HttpStatus.NOT_FOUND);
+        }
+        catch (Exception e) {
+            log.error("Error loading projects", e);
+            return new ResponseEntity<>(new LoadedProjectsResponse(null, e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

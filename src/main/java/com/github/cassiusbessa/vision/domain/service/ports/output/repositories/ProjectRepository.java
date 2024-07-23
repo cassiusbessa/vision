@@ -8,7 +8,7 @@ import java.util.UUID;
 
 public interface ProjectRepository {
 
-    List<Project> findALlByAccountId(UUID accountId);
+    List<Project> findAllByAccountId(UUID accountId);
 
     Project findByTitle(String title);
 
