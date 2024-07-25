@@ -50,5 +50,8 @@ func (service *PostService) CreatePost(command *dtos.CreatePostCommand) (dtos.Cr
 		return dtos.CreatedPostResponse{}, err
 	}
 
-	return dtos.CreatedPostResponse{}, nil
+	return dtos.CreatedPostResponse{
+		ID:      post.ID.String(),
+		Message: "Post created",
+	}, nil
 }
