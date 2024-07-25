@@ -3,7 +3,7 @@ package data
 import "context"
 
 func CreateTable(db DBTX) {
-	_, err := db.Exec(context.Background(), `CREATE TABLE posts (
+	_, err := db.Exec(context.Background(), `CREATE TABLE IF NOT EXISTS posts (
     id UUID PRIMARY KEY,
     project_id UUID NOT NULL,
     author_id UUID NOT NULL,
