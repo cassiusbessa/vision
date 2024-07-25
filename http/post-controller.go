@@ -33,3 +33,19 @@ func (controller *PostController) CreatePost(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, response)
 }
+
+func (controller *PostController) UpdatePost(c *gin.Context) {
+	var command dto.UpdatePostCommand
+	if err := c.ShouldBindJSON(&command); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	response, err := controller.postService.UpdatePost(&command)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, response)
+}

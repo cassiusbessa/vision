@@ -24,22 +24,99 @@ type ProjectPost struct {
 	FailureMessage []string
 }
 
-func NewProjectPost(projectID, authorID uuid.UUID, title, content, repoLink, demoLink, postImage string) *ProjectPost {
-	return &ProjectPost{
-		ID:           uuid.New(),
-		ProjectID:    projectID,
-		AuthorID:     authorID,
-		Title:        title,
-		Content:      content,
-		RepoLink:     repoLink,
-		DemoLink:     demoLink,
-		PostImage:    postImage,
-		LikeCount:    0,
-		CommentCount: 0,
-		Reactions:    []Reaction{},
-		Comments:     []Comment{},
-		CreatedAt:    time.Now(),
-		UpdatedAt:    time.Now(),
+type Option func(*ProjectPost)
+
+func NewProjectPost(opts ...Option) *ProjectPost {
+
+	p := &ProjectPost{}
+
+	for _, opt := range opts {
+		opt(p)
+	}
+	return p
+}
+
+func WithID(id uuid.UUID) Option {
+	return func(p *ProjectPost) {
+		p.ID = id
+	}
+}
+
+func WithProjectID(projectID uuid.UUID) Option {
+	return func(p *ProjectPost) {
+		p.ProjectID = projectID
+	}
+}
+
+func WithAuthorID(authorID uuid.UUID) Option {
+	return func(p *ProjectPost) {
+		p.AuthorID = authorID
+	}
+}
+
+func WithTitle(title string) Option {
+	return func(p *ProjectPost) {
+		p.Title = title
+	}
+}
+
+func WithContent(content string) Option {
+	return func(p *ProjectPost) {
+		p.Content = content
+	}
+}
+
+func WithRepoLink(repoLink string) Option {
+	return func(p *ProjectPost) {
+		p.RepoLink = repoLink
+	}
+}
+
+func WithDemoLink(demoLink string) Option {
+	return func(p *ProjectPost) {
+		p.DemoLink = demoLink
+	}
+}
+
+func WithPostImage(postImage string) Option {
+	return func(p *ProjectPost) {
+		p.PostImage = postImage
+	}
+}
+
+func WithLikeCount(likeCount int) Option {
+	return func(p *ProjectPost) {
+		p.LikeCount = likeCount
+	}
+}
+
+func WithCommentCount(commentCount int) Option {
+	return func(p *ProjectPost) {
+		p.CommentCount = commentCount
+	}
+}
+
+func WithReactions(reactions []Reaction) Option {
+	return func(p *ProjectPost) {
+		p.Reactions = reactions
+	}
+}
+
+func WithComments(comments []Comment) Option {
+	return func(p *ProjectPost) {
+		p.Comments = comments
+	}
+}
+
+func WithCreatedAt(createdAt time.Time) Option {
+	return func(p *ProjectPost) {
+		p.CreatedAt = createdAt
+	}
+}
+
+func WithUpdatedAt(updatedAt time.Time) Option {
+	return func(p *ProjectPost) {
+		p.UpdatedAt = updatedAt
 	}
 }
 

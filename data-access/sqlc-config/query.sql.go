@@ -124,3 +124,45 @@ func (q *Queries) GetPostByID(ctx context.Context, id pgtype.UUID) (Post, error)
 	)
 	return i, err
 }
+
+const updatePost = `-- name: UpdatePost :one
+UPDATE posts SET title = $2, content = $3, repo_link = $4, demo_link = $5, post_image = $6, updated_at = $7 WHERE id = $1 RETURNING id, project_id, author_id, title, content, repo_link, demo_link, post_image, like_count, comment_count, created_at, updated_at
+`
+
+type UpdatePostParams struct {
+	ID        pgtype.UUID
+	Title     string
+	Content   string
+	RepoLink  pgtype.Text
+	DemoLink  pgtype.Text
+	PostImage pgtype.Text
+	UpdatedAt pgtype.Timestamptz
+}
+
+func (q *Queries) UpdatePost(ctx context.Context, arg UpdatePostParams) (Post, error) {
+	row := q.db.QueryRow(ctx, updatePost,
+		arg.ID,
+		arg.Title,
+		arg.Content,
+		arg.RepoLink,
+		arg.DemoLink,
+		arg.PostImage,
+		arg.UpdatedAt,
+	)
+	var i Post
+	err := row.Scan(
+		&i.ID,
+		&i.ProjectID,
+		&i.AuthorID,
+		&i.Title,
+		&i.Content,
+		&i.RepoLink,
+		&i.DemoLink,
+		&i.PostImage,
+		&i.LikeCount,
+		&i.CommentCount,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}

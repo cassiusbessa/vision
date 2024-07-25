@@ -1,6 +1,7 @@
 package http
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/cassiusbessa/vision-social-media/domain/service/errors"
@@ -22,7 +23,8 @@ func ErrorHandler() gin.HandlerFunc {
 			case *errors.ResourceAlreadyExists:
 				c.AbortWithStatusJSON(http.StatusConflict, gin.H{"error": err.Err.Error()})
 			default:
-				c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Err.Error()})
+				log.Println(err.Err)
+				c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
 			}
 		}
 	}
