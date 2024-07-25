@@ -1,6 +1,8 @@
 package main
 
 import (
+	"log"
+
 	data "github.com/cassiusbessa/vision-social-media/data-access"
 	sqlc "github.com/cassiusbessa/vision-social-media/data-access/sqlc-config"
 	service "github.com/cassiusbessa/vision-social-media/domain/service"
@@ -19,9 +21,15 @@ func main() {
 	sqlc.CreateTable(postgresDb)
 
 	r := http.Router()
+
+	r.Use(http.ErrorHandler())
 	r.POST("/posts", postController.CreatePost)
 
-	if err := r.Run(":8080"); err != nil {
+	go func() {
+		log.Println("Server started on port 8888")
+	}()
+
+	if err := r.Run(":8888"); err != nil {
 		panic(err)
 	}
 }

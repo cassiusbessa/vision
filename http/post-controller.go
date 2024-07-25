@@ -27,7 +27,7 @@ func (controller *PostController) CreatePost(c *gin.Context) {
 
 	response, err := controller.postService.CreatePost(&command)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.Error(err)
 		return
 	}
 
