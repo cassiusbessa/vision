@@ -5,36 +5,42 @@
 package data
 
 import (
-	"github.com/jackc/pgx/v5/pgtype"
+	"database/sql"
+	"time"
+
+	"github.com/google/uuid"
 )
 
 type Comment struct {
-	ID        pgtype.UUID
-	PostID    pgtype.UUID
-	UserID    pgtype.UUID
+	ID        uuid.UUID
+	PostID    uuid.UUID
+	ParentID  uuid.NullUUID
+	UserID    uuid.UUID
 	Content   string
-	CreatedAt pgtype.Timestamptz
+	CreatedAt sql.NullTime
+	UpdatedAt sql.NullTime
 }
 
 type Post struct {
-	ID           pgtype.UUID
-	ProjectID    pgtype.UUID
-	AuthorID     pgtype.UUID
+	ID           uuid.UUID
+	ProjectID    uuid.UUID
+	AuthorID     uuid.UUID
 	Title        string
 	Content      string
-	RepoLink     pgtype.Text
-	DemoLink     pgtype.Text
-	PostImage    pgtype.Text
-	LikeCount    pgtype.Int4
-	CommentCount pgtype.Int4
-	CreatedAt    pgtype.Timestamptz
-	UpdatedAt    pgtype.Timestamptz
+	RepoLink     sql.NullString
+	DemoLink     sql.NullString
+	PostImage    sql.NullString
+	LikeCount    int32
+	CommentCount int32
+	CreatedAt    time.Time
+	UpdatedAt    time.Time
 }
 
 type Reaction struct {
-	ID           pgtype.UUID
-	PostID       pgtype.UUID
-	UserID       pgtype.UUID
+	ID           uuid.UUID
+	PostID       uuid.UUID
+	CommentID    uuid.NullUUID
+	UserID       uuid.UUID
 	ReactionType string
-	CreatedAt    pgtype.Timestamptz
+	CreatedAt    sql.NullTime
 }

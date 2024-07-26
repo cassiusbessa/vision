@@ -78,3 +78,18 @@ func (service *PostService) UpdatePost(command *dtos.UpdatePostCommand) (dtos.Up
 		Message: "Post updated",
 	}, nil
 }
+
+func (service *PostService) LoadOrderedPosts(query *dtos.LoadOrderedPostsQuery) ([]dtos.LoadedPostResponse, error) {
+
+	posts, err := service.postRepo.LoadOrderedPosts()
+	if err != nil {
+		return nil, err
+	}
+
+	loadedPosts := make([]dtos.LoadedPostResponse, 0)
+	for _, post := range posts {
+		loadedPosts = append(loadedPosts, mappers.PostEntityToLoadedPostResponse(post))
+	}
+
+	return loadedPosts, nil
+}

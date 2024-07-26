@@ -24,9 +24,9 @@ type ProjectPost struct {
 	FailureMessage []string
 }
 
-type Option func(*ProjectPost)
+type PostOption func(*ProjectPost)
 
-func NewProjectPost(opts ...Option) *ProjectPost {
+func NewProjectPost(opts ...PostOption) *ProjectPost {
 
 	p := &ProjectPost{}
 
@@ -36,88 +36,98 @@ func NewProjectPost(opts ...Option) *ProjectPost {
 	return p
 }
 
-func WithID(id uuid.UUID) Option {
+func PostWithID(id uuid.UUID) PostOption {
 	return func(p *ProjectPost) {
 		p.ID = id
 	}
 }
 
-func WithProjectID(projectID uuid.UUID) Option {
+func PostWithProjectID(projectID uuid.UUID) PostOption {
 	return func(p *ProjectPost) {
 		p.ProjectID = projectID
 	}
 }
 
-func WithAuthorID(authorID uuid.UUID) Option {
+func PostWithAuthorID(authorID uuid.UUID) PostOption {
 	return func(p *ProjectPost) {
 		p.AuthorID = authorID
 	}
 }
 
-func WithTitle(title string) Option {
+func PostWithTitle(title string) PostOption {
 	return func(p *ProjectPost) {
 		p.Title = title
 	}
 }
 
-func WithContent(content string) Option {
+func PostWithContent(content string) PostOption {
 	return func(p *ProjectPost) {
 		p.Content = content
 	}
 }
 
-func WithRepoLink(repoLink string) Option {
+func PostWithRepoLink(repoLink string) PostOption {
 	return func(p *ProjectPost) {
 		p.RepoLink = repoLink
 	}
 }
 
-func WithDemoLink(demoLink string) Option {
+func PostWithDemoLink(demoLink string) PostOption {
 	return func(p *ProjectPost) {
 		p.DemoLink = demoLink
 	}
 }
 
-func WithPostImage(postImage string) Option {
+func PostWithPostImage(postImage string) PostOption {
 	return func(p *ProjectPost) {
 		p.PostImage = postImage
 	}
 }
 
-func WithLikeCount(likeCount int) Option {
+func PostWithLikeCount(likeCount int) PostOption {
 	return func(p *ProjectPost) {
 		p.LikeCount = likeCount
 	}
 }
 
-func WithCommentCount(commentCount int) Option {
+func PostWithCommentCount(commentCount int) PostOption {
 	return func(p *ProjectPost) {
 		p.CommentCount = commentCount
 	}
 }
 
-func WithReactions(reactions []Reaction) Option {
+func PostWithReactions(reactions []Reaction) PostOption {
 	return func(p *ProjectPost) {
 		p.Reactions = reactions
 	}
 }
 
-func WithComments(comments []Comment) Option {
+func PostWithComments(comments []Comment) PostOption {
 	return func(p *ProjectPost) {
 		p.Comments = comments
 	}
 }
 
-func WithCreatedAt(createdAt time.Time) Option {
+func PostWithCreatedAt(createdAt time.Time) PostOption {
 	return func(p *ProjectPost) {
 		p.CreatedAt = createdAt
 	}
 }
 
-func WithUpdatedAt(updatedAt time.Time) Option {
+func WithUpdatedAt(updatedAt time.Time) PostOption {
 	return func(p *ProjectPost) {
 		p.UpdatedAt = updatedAt
 	}
+}
+
+func (p *ProjectPost) AddReaction(reaction *Reaction) {
+	p.Reactions = append(p.Reactions, *reaction)
+	p.LikeCount++
+}
+
+func (p *ProjectPost) AddComment(comment *Comment) {
+	p.Comments = append(p.Comments, *comment)
+	p.CommentCount++
 }
 
 func (p *ProjectPost) Validate() {

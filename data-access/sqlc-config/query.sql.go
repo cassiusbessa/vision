@@ -7,8 +7,10 @@ package data
 
 import (
 	"context"
+	"database/sql"
+	"time"
 
-	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/google/uuid"
 )
 
 const createPost = `-- name: CreatePost :one
@@ -16,16 +18,16 @@ INSERT INTO posts (id, project_id, author_id, title, content, repo_link, demo_li
 `
 
 type CreatePostParams struct {
-	ID        pgtype.UUID
-	ProjectID pgtype.UUID
-	AuthorID  pgtype.UUID
+	ID        uuid.UUID
+	ProjectID uuid.UUID
+	AuthorID  uuid.UUID
 	Title     string
 	Content   string
-	RepoLink  pgtype.Text
-	DemoLink  pgtype.Text
-	PostImage pgtype.Text
-	CreatedAt pgtype.Timestamptz
-	UpdatedAt pgtype.Timestamptz
+	RepoLink  sql.NullString
+	DemoLink  sql.NullString
+	PostImage sql.NullString
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
 func (q *Queries) CreatePost(ctx context.Context, arg CreatePostParams) (Post, error) {
@@ -59,53 +61,11 @@ func (q *Queries) CreatePost(ctx context.Context, arg CreatePostParams) (Post, e
 	return i, err
 }
 
-const getOrderedPosts = `-- name: GetOrderedPosts :many
-SELECT id, project_id, author_id, title, content, repo_link, demo_link, post_image, like_count, comment_count, created_at, updated_at FROM posts ORDER BY created_at DESC LIMIT $1 OFFSET $2
-`
-
-type GetOrderedPostsParams struct {
-	Limit  int32
-	Offset int32
-}
-
-func (q *Queries) GetOrderedPosts(ctx context.Context, arg GetOrderedPostsParams) ([]Post, error) {
-	rows, err := q.db.Query(ctx, getOrderedPosts, arg.Limit, arg.Offset)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []Post
-	for rows.Next() {
-		var i Post
-		if err := rows.Scan(
-			&i.ID,
-			&i.ProjectID,
-			&i.AuthorID,
-			&i.Title,
-			&i.Content,
-			&i.RepoLink,
-			&i.DemoLink,
-			&i.PostImage,
-			&i.LikeCount,
-			&i.CommentCount,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
 const getPostByID = `-- name: GetPostByID :one
 SELECT id, project_id, author_id, title, content, repo_link, demo_link, post_image, like_count, comment_count, created_at, updated_at FROM posts WHERE id = $1
 `
 
-func (q *Queries) GetPostByID(ctx context.Context, id pgtype.UUID) (Post, error) {
+func (q *Queries) GetPostByID(ctx context.Context, id uuid.UUID) (Post, error) {
 	row := q.db.QueryRow(ctx, getPostByID, id)
 	var i Post
 	err := row.Scan(
@@ -125,18 +85,129 @@ func (q *Queries) GetPostByID(ctx context.Context, id pgtype.UUID) (Post, error)
 	return i, err
 }
 
+const loadOrderedPosts = `-- name: LoadOrderedPosts :many
+SELECT
+    p.id AS post_id,
+    p.author_id,
+    p.project_id,
+    p.title,
+    p.content AS post_content,
+    p.repo_link,
+    p.demo_link,
+    p.post_image,
+    p.like_count,
+    p.comment_count,
+    p.created_at AS post_created_at,
+    p.updated_at AS post_updated_at,
+    c.id AS comment_id,
+    c.post_id AS comment_post_id,
+    c.parent_id AS comment_parent_id,
+    c.user_id AS comment_user_id,
+    c.content AS comment_content,
+    c.created_at AS comment_created_at,
+    c.updated_at AS comment_updated_at,
+    r.id AS reaction_id,
+    r.post_id AS reaction_post_id,
+    r.comment_id AS reaction_comment_id,
+    r.user_id AS reaction_user_id,
+    r.reaction_type,
+    r.created_at AS reaction_created_at
+FROM
+    posts p
+LEFT JOIN comments c ON p.id = c.post_id
+LEFT JOIN reactions r ON p.id = r.post_id
+ORDER BY
+    p.created_at DESC,
+    c.created_at,
+    r.created_at
+`
+
+type LoadOrderedPostsRow struct {
+	PostID            uuid.UUID
+	AuthorID          uuid.UUID
+	ProjectID         uuid.UUID
+	Title             string
+	PostContent       string
+	RepoLink          sql.NullString
+	DemoLink          sql.NullString
+	PostImage         sql.NullString
+	LikeCount         int32
+	CommentCount      int32
+	PostCreatedAt     time.Time
+	PostUpdatedAt     time.Time
+	CommentID         uuid.NullUUID
+	CommentPostID     uuid.NullUUID
+	CommentParentID   uuid.NullUUID
+	CommentUserID     uuid.NullUUID
+	CommentContent    sql.NullString
+	CommentCreatedAt  sql.NullTime
+	CommentUpdatedAt  sql.NullTime
+	ReactionID        uuid.NullUUID
+	ReactionPostID    uuid.NullUUID
+	ReactionCommentID uuid.NullUUID
+	ReactionUserID    uuid.NullUUID
+	ReactionType      sql.NullString
+	ReactionCreatedAt sql.NullTime
+}
+
+func (q *Queries) LoadOrderedPosts(ctx context.Context) ([]LoadOrderedPostsRow, error) {
+	rows, err := q.db.Query(ctx, loadOrderedPosts)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []LoadOrderedPostsRow
+	for rows.Next() {
+		var i LoadOrderedPostsRow
+		if err := rows.Scan(
+			&i.PostID,
+			&i.AuthorID,
+			&i.ProjectID,
+			&i.Title,
+			&i.PostContent,
+			&i.RepoLink,
+			&i.DemoLink,
+			&i.PostImage,
+			&i.LikeCount,
+			&i.CommentCount,
+			&i.PostCreatedAt,
+			&i.PostUpdatedAt,
+			&i.CommentID,
+			&i.CommentPostID,
+			&i.CommentParentID,
+			&i.CommentUserID,
+			&i.CommentContent,
+			&i.CommentCreatedAt,
+			&i.CommentUpdatedAt,
+			&i.ReactionID,
+			&i.ReactionPostID,
+			&i.ReactionCommentID,
+			&i.ReactionUserID,
+			&i.ReactionType,
+			&i.ReactionCreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const updatePost = `-- name: UpdatePost :one
 UPDATE posts SET title = $2, content = $3, repo_link = $4, demo_link = $5, post_image = $6, updated_at = $7 WHERE id = $1 RETURNING id, project_id, author_id, title, content, repo_link, demo_link, post_image, like_count, comment_count, created_at, updated_at
 `
 
 type UpdatePostParams struct {
-	ID        pgtype.UUID
+	ID        uuid.UUID
 	Title     string
 	Content   string
-	RepoLink  pgtype.Text
-	DemoLink  pgtype.Text
-	PostImage pgtype.Text
-	UpdatedAt pgtype.Timestamptz
+	RepoLink  sql.NullString
+	DemoLink  sql.NullString
+	PostImage sql.NullString
+	UpdatedAt time.Time
 }
 
 func (q *Queries) UpdatePost(ctx context.Context, arg UpdatePostParams) (Post, error) {

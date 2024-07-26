@@ -7,4 +7,5 @@ import (
 type PostService interface {
 	CreatePost(command *dtos.CreatePostCommand) (dtos.CreatedPostResponse, error)
 	UpdatePost(command *dtos.UpdatePostCommand) (dtos.UpdatedPostResponse, error)
+	LoadOrderedPosts(query *dtos.LoadOrderedPostsQuery) ([]dtos.LoadedPostResponse, error)
 }

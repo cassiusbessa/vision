@@ -7,4 +7,9 @@ sql:
       go:
         package: "data"
         out: "./data-access/sqlc-config"
-        sql_package: "pgx/v5"
+        sql_package: "pgx/v4"
+        overrides:
+        - db_type: "uuid"
+          go_type:
+            import: "github.com/google/uuid"
+            type: "UUID"

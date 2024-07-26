@@ -8,23 +8,73 @@ import (
 
 type Comment struct {
 	ID             uuid.UUID
-	ProjectID      uuid.UUID
+	PostID         uuid.UUID
+	ParentID       uuid.UUID
 	UserID         uuid.UUID
 	Content        string
+	Reactions      []Reaction
 	CreatedAt      time.Time
 	UpdatedAt      time.Time
 	FailureMessage []string
 }
 
-func NewComment(projectID, userID uuid.UUID, content string) *Comment {
-	return &Comment{
-		ID:             uuid.New(),
-		ProjectID:      projectID,
-		UserID:         userID,
-		Content:        content,
-		CreatedAt:      time.Now(),
-		UpdatedAt:      time.Now(),
-		FailureMessage: []string{},
+type CommentOption func(*Comment)
+
+func NewComment(opts ...CommentOption) *Comment {
+
+	c := &Comment{}
+
+	for _, opt := range opts {
+		opt(c)
+	}
+	return c
+}
+
+func CommentWithID(id uuid.UUID) CommentOption {
+	return func(c *Comment) {
+		c.ID = id
+	}
+}
+
+func CommentWithPostID(postID uuid.UUID) CommentOption {
+	return func(c *Comment) {
+		c.PostID = postID
+	}
+}
+
+func CommentWithParentID(parentID uuid.UUID) CommentOption {
+	return func(c *Comment) {
+		c.ParentID = parentID
+	}
+}
+
+func CommentWithUserID(userID uuid.UUID) CommentOption {
+	return func(c *Comment) {
+		c.UserID = userID
+	}
+}
+
+func CommentWithContent(content string) CommentOption {
+	return func(c *Comment) {
+		c.Content = content
+	}
+}
+
+func CommentWithReactions(reactions []Reaction) CommentOption {
+	return func(c *Comment) {
+		c.Reactions = reactions
+	}
+}
+
+func CommentWithCreatedAt(createdAt time.Time) CommentOption {
+	return func(c *Comment) {
+		c.CreatedAt = createdAt
+	}
+}
+
+func CommentWithUpdatedAt(updatedAt time.Time) CommentOption {
+	return func(c *Comment) {
+		c.UpdatedAt = updatedAt
 	}
 }
 

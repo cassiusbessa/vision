@@ -6,7 +6,6 @@ import (
 	sqlc "github.com/cassiusbessa/vision-social-media/data-access/sqlc-config"
 	"github.com/cassiusbessa/vision-social-media/domain/core/entities"
 	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type PostRepository struct {
@@ -30,14 +29,41 @@ func (repo *PostRepository) UpdatePost(post *entities.ProjectPost) error {
 }
 
 func (repo *PostRepository) GetPostByID(postID uuid.UUID) (*entities.ProjectPost, error) {
-	var id pgtype.UUID
-	id.Bytes = [16]byte(postID)
-	id.Valid = true
 
-	post, err := repo.queries.GetPostByID(context.Background(), id)
+	post, err := repo.queries.GetPostByID(context.Background(), postID)
 	if err != nil {
 		return nil, err
 	}
 
 	return postDBEntityToProjectPost(post), nil
+}
+
+func (repo *PostRepository) LoadOrderedPosts() ([]entities.ProjectPost, error) {
+	posts, err := repo.queries.LoadOrderedPosts(context.Background())
+	if err != nil {
+		return nil, err
+	}
+
+	entitiesPosts := map[uuid.UUID]*entities.ProjectPost{}
+
+	for _, post := range posts {
+		if _, ok := entitiesPosts[post.PostID]; !ok {
+			entitiesPosts[post.PostID] = loadOrderedPostRowToProjectPosts(post)
+		}
+
+		if post.CommentID.Valid {
+			entitiesPosts[post.PostID].AddComment(loadOrderedPostRowToProjectComment(post))
+		}
+
+		if post.ReactionID.Valid {
+			entitiesPosts[post.PostID].AddReaction(loadOrderedPostRowToProjectReaction(post))
+		}
+	}
+
+	result := make([]entities.ProjectPost, 0, len(entitiesPosts))
+	for _, post := range entitiesPosts {
+		result = append(result, *post)
+	}
+
+	return result, nil
 }
