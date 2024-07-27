@@ -155,6 +155,7 @@ func ReactToPostCommandToReactionEntity(command dtos.ReactToPostCommand) (*entit
 		entities.ReactionWithUserID(uuidUser),
 		entities.ReactionWithReactionType(reactionType),
 		entities.ReactionWithParentID(parentId),
+		entities.ReactionWithCreatedAt(time.Now()),
 	)
 
 	return reaction, nil

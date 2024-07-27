@@ -17,8 +17,8 @@ type Comment struct {
 	ParentID  uuid.NullUUID
 	UserID    uuid.UUID
 	Content   string
-	CreatedAt sql.NullTime
-	UpdatedAt sql.NullTime
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
 type Post struct {
@@ -42,5 +42,5 @@ type Reaction struct {
 	CommentID    uuid.NullUUID
 	UserID       uuid.UUID
 	ReactionType string
-	CreatedAt    sql.NullTime
+	CreatedAt    time.Time
 }

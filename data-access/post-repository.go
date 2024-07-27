@@ -3,6 +3,7 @@ package data
 import (
 	"context"
 
+	"github.com/cassiusbessa/vision-social-media/data-access/mappers"
 	sqlc "github.com/cassiusbessa/vision-social-media/data-access/sqlc-config"
 	"github.com/cassiusbessa/vision-social-media/domain/core/entities"
 	"github.com/google/uuid"
@@ -22,12 +23,12 @@ func NewPostRepository(queries *sqlc.Queries, db *pgx.Conn) *PostRepository {
 }
 
 func (repo *PostRepository) SavePost(post *entities.ProjectPost) error {
-	err := repo.queries.CreatePost(context.Background(), projectEntityToCreateQueryParams(post))
+	err := repo.queries.CreatePost(context.Background(), mappers.PostEntityToCreateQueryParams(post))
 	return err
 }
 
 func (repo *PostRepository) UpdatePost(post *entities.ProjectPost) error {
-	err := repo.queries.UpdatePost(context.Background(), projectEntityToUpdateQueryParams(post))
+	err := repo.queries.UpdatePost(context.Background(), mappers.PostEntityToUpdateQueryParams(post))
 	return err
 }
 
@@ -48,7 +49,7 @@ func (repo *PostRepository) GetPostByID(postID uuid.UUID) (*entities.ProjectPost
 		return nil, err
 	}
 
-	return postDBEntityToProjectPost(post, comments, reactions), nil
+	return mappers.PostDBEntityToProjectPost(post, comments, reactions), nil
 }
 
 func (repo *PostRepository) LoadOrderedPosts() ([]entities.ProjectPost, error) {
@@ -61,15 +62,15 @@ func (repo *PostRepository) LoadOrderedPosts() ([]entities.ProjectPost, error) {
 
 	for _, post := range posts {
 		if _, ok := entitiesPosts[post.PostID]; !ok {
-			entitiesPosts[post.PostID] = loadOrderedPostRowToProjectPosts(post)
+			entitiesPosts[post.PostID] = mappers.LoadOrderedPostRowToProjectPosts(post)
 		}
 
 		if post.CommentID.Valid {
-			entitiesPosts[post.PostID].AddComment(loadOrderedPostRowToProjectComment(post))
+			entitiesPosts[post.PostID].AddComment(mappers.LoadOrderedPostRowToPostComment(post))
 		}
 
 		if post.ReactionID.Valid {
-			entitiesPosts[post.PostID].AddReaction(loadOrderedPostRowToProjectReaction(post))
+			entitiesPosts[post.PostID].AddReaction(mappers.LoadOrderedPostRowToPostReaction(post))
 		}
 	}
 
@@ -101,7 +102,7 @@ func (repo *PostRepository) AddReactionToPost(reaction *entities.Reaction) error
 
 	qtx := repo.queries.WithTx(tx)
 
-	err = qtx.CreateReaction(ctx, reactionEntityToCreateQueryParams(reaction))
+	err = qtx.CreateReaction(ctx, mappers.ReactionEntityToCreateReactionQueryParams(reaction))
 	if err != nil {
 		return err
 	}

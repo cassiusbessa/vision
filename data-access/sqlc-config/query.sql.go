@@ -65,7 +65,7 @@ type CreateReactionParams struct {
 	CommentID    uuid.NullUUID
 	UserID       uuid.UUID
 	ReactionType string
-	CreatedAt    sql.NullTime
+	CreatedAt    time.Time
 }
 
 func (q *Queries) CreateReaction(ctx context.Context, arg CreateReactionParams) error {
