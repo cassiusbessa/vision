@@ -78,11 +78,12 @@ func commentEntityToLoadedCommentResponse(comment entities.Comment) dtos.LoadCom
 func reactionEntityToLoadedReactionResponse(reaction entities.Reaction) dtos.LoadReactionResponse {
 
 	return dtos.LoadReactionResponse{
-		ID:       reaction.ID.String(),
-		UserID:   reaction.UserID.String(),
-		PostID:   reaction.PostID.String(),
-		ParentID: reaction.ParentID.UUID.String(),
-		Type:     reaction.Type,
+		ID:        reaction.ID.String(),
+		UserID:    reaction.UserID.String(),
+		PostID:    reaction.PostID.String(),
+		ParentID:  reaction.ParentID.UUID.String(),
+		Type:      reaction.Type,
+		CreatedAt: reaction.CreatedAt.Format(time.RFC3339),
 	}
 }
 

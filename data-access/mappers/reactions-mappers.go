@@ -27,6 +27,7 @@ func LoadOrderedPostRowToPostReaction(post data.LoadOrderedPostsRow) *entities.R
 		entities.ReactionWithPostID(post.PostID),
 		entities.ReactionWithUserID(post.ReactionUserID.UUID),
 		entities.ReactionWithReactionType(reactionType),
+		entities.ReactionWithCreatedAt(post.ReactionCreatedAt.Time),
 	)
 }
 
