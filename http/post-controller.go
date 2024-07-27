@@ -49,3 +49,18 @@ func (controller *PostController) UpdatePost(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response)
 }
+
+func (controller *PostController) GetPosts(c *gin.Context) {
+	posts, err := controller.postService.LoadOrderedPosts(
+		&dto.LoadOrderedPostsQuery{
+			Limit:  10,
+			Offset: 0,
+		},
+	)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, posts)
+}

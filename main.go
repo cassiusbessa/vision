@@ -25,6 +25,7 @@ func main() {
 	r.Use(http.ErrorHandler())
 	r.POST("/posts", postController.CreatePost)
 	r.PUT("/posts", postController.UpdatePost)
+	r.GET("/posts", postController.GetPosts)
 
 	go func() {
 		log.Println("Server started on port 8888")

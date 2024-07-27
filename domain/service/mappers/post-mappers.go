@@ -75,12 +75,29 @@ func commentEntityToLoadedCommentResponse(comment entities.Comment) dtos.LoadCom
 	}
 }
 
+func reactionEntityToLoadedReactionResponse(reaction entities.Reaction) dtos.LoadReactionResponse {
+
+	return dtos.LoadReactionResponse{
+		ID:       reaction.ID.String(),
+		UserID:   reaction.UserID.String(),
+		PostID:   reaction.PostID.String(),
+		ParentID: reaction.ParentID.UUID.String(),
+		Type:     reaction.Type,
+	}
+}
+
 func PostEntityToLoadedPostResponse(post entities.ProjectPost) dtos.LoadedPostResponse {
 
 	comments := make([]dtos.LoadCommentResponse, 0)
 	for _, comment := range post.Comments {
 		comments = append(comments, commentEntityToLoadedCommentResponse(comment))
 	}
+
+	reactions := make([]dtos.LoadReactionResponse, 0)
+	for _, reaction := range post.Reactions {
+		reactions = append(reactions, reactionEntityToLoadedReactionResponse(reaction))
+	}
+
 	return dtos.LoadedPostResponse{
 		ID:           post.ID.String(),
 		ProjectID:    post.ProjectID.String(),
@@ -93,6 +110,7 @@ func PostEntityToLoadedPostResponse(post entities.ProjectPost) dtos.LoadedPostRe
 		LikeCount:    post.LikeCount,
 		CommentCount: post.CommentCount,
 		Comments:     comments,
+		Reactions:    reactions,
 		CreatedAt:    post.CreatedAt.Format(time.RFC3339),
 		UpdatedAt:    post.UpdatedAt.Format(time.RFC3339),
 	}

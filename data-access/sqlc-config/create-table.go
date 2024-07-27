@@ -20,6 +20,36 @@ func CreateTable(db DBTX) {
     FOREIGN KEY (author_id) REFERENCES accounts(id)
     );`)
 	if err != nil {
-		panic(err)
+		panic(err.Error())
 	}
+
+	_, err = db.Exec(context.Background(), `
+    CREATE TABLE IF NOT EXISTS comments (
+    id UUID PRIMARY KEY,
+    post_id UUID REFERENCES posts(id) ON DELETE CASCADE NOT NULL,
+    parent_id UUID REFERENCES comments(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL,
+    content TEXT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES accounts(id)
+    );`)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	_, err = db.Exec(context.Background(), `
+        CREATE TABLE IF NOT EXISTS reactions (
+        id UUID PRIMARY KEY,
+        post_id UUID REFERENCES posts(id) ON DELETE CASCADE NOT NULL,
+        comment_id UUID REFERENCES comments(id) ON DELETE CASCADE,
+        user_id UUID NOT NULL,
+        reaction_type VARCHAR(50) NOT NULL,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES accounts(id)
+        );`)
+	if err != nil {
+		panic(err.Error())
+	}
+
 }
