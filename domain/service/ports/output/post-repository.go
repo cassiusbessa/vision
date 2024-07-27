@@ -10,4 +10,5 @@ type PostRepository interface {
 	UpdatePost(post *entities.ProjectPost) error
 	GetPostByID(postID uuid.UUID) (*entities.ProjectPost, error)
 	LoadOrderedPosts() ([]entities.ProjectPost, error)
+	AddReactionToPost(reaction *entities.Reaction) error
 }

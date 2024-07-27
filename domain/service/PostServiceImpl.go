@@ -93,3 +93,44 @@ func (service *PostService) LoadOrderedPosts(query *dtos.LoadOrderedPostsQuery) 
 
 	return loadedPosts, nil
 }
+
+func (service *PostService) ReactToPost(command *dtos.ReactToPostCommand) (dtos.ReactToPostResponse, error) {
+
+	uuidPost, err := uuid.Parse(command.PostID)
+	if err != nil {
+		return dtos.ReactToPostResponse{}, errors.NewInvalidArgument("Invalid post ID")
+	}
+
+	post, err := service.postRepo.GetPostByID(uuidPost)
+	if err != nil {
+		return dtos.ReactToPostResponse{}, err
+	}
+	if post == nil {
+		return dtos.ReactToPostResponse{}, errors.NewResourceNotFound("Post not found")
+	}
+	for _, reaction := range post.Reactions {
+		if reaction.UserID == uuid.MustParse(command.UserID) {
+			return dtos.ReactToPostResponse{}, errors.NewResourceAlreadyExists("User already reacted to this post")
+		}
+	}
+
+	reaction, err := mappers.ReactToPostCommandToReactionEntity(*command)
+	if err != nil {
+		return dtos.ReactToPostResponse{}, err
+	}
+
+	reaction.Validate()
+	if len(reaction.FailureMessage) > 0 {
+		return dtos.ReactToPostResponse{}, errors.NewValidationError(strings.Join(reaction.FailureMessage, ", "))
+	}
+
+	err = service.postRepo.AddReactionToPost(reaction)
+	if err != nil {
+		return dtos.ReactToPostResponse{}, err
+	}
+
+	return dtos.ReactToPostResponse{
+		ID:      reaction.ID.String(),
+		Message: "Reaction saved",
+	}, nil
+}

@@ -1,6 +1,8 @@
 package entities
 
 import (
+	"time"
+
 	"github.com/google/uuid"
 )
 
@@ -20,6 +22,7 @@ type Reaction struct {
 	ParentID       uuid.NullUUID
 	UserID         uuid.UUID
 	Type           ReactionType
+	CreatedAt      time.Time
 	FailureMessage []string
 }
 
@@ -62,6 +65,12 @@ func ReactionWithUserID(userID uuid.UUID) ReactionOption {
 func ReactionWithReactionType(reactionType ReactionType) ReactionOption {
 	return func(r *Reaction) {
 		r.Type = reactionType
+	}
+}
+
+func ReactionWithCreatedAt(createdAt time.Time) ReactionOption {
+	return func(r *Reaction) {
+		r.CreatedAt = createdAt
 	}
 }
 

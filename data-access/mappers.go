@@ -64,7 +64,17 @@ func projectEntityToUpdateQueryParams(post *entities.ProjectPost) data.UpdatePos
 	}
 }
 
-func postDBEntityToProjectPost(post data.Post) *entities.ProjectPost {
+func postDBEntityToProjectPost(post data.Post, comments []data.Comment, reactions []data.Reaction) *entities.ProjectPost {
+
+	entityComments := make([]entities.Comment, 0, len(comments))
+	for _, comment := range comments {
+		entityComments = append(entityComments, *commentDbEntityToComment(comment))
+	}
+
+	entityReactions := make([]entities.Reaction, 0, len(reactions))
+	for _, reaction := range reactions {
+		entityReactions = append(entityReactions, *reactionDbEntityToReaction(reaction))
+	}
 
 	return entities.NewProjectPost(
 		entities.PostWithID(post.ID),
@@ -77,8 +87,8 @@ func postDBEntityToProjectPost(post data.Post) *entities.ProjectPost {
 		entities.PostWithPostImage(post.PostImage.String),
 		entities.PostWithLikeCount(int(post.LikeCount)),
 		entities.PostWithCommentCount(int(post.CommentCount)),
-		entities.PostWithReactions([]entities.Reaction{}),
-		entities.PostWithComments([]entities.Comment{}),
+		entities.PostWithReactions(entityReactions),
+		entities.PostWithComments(entityComments),
 		entities.PostWithCreatedAt(post.CreatedAt),
 		entities.WithUpdatedAt(post.UpdatedAt),
 	)
@@ -140,5 +150,54 @@ func loadOrderedPostRowToProjectPosts(post data.LoadOrderedPostsRow) *entities.P
 		entities.PostWithComments([]entities.Comment{}),
 		entities.PostWithCreatedAt(post.PostCreatedAt),
 		entities.WithUpdatedAt(post.PostUpdatedAt),
+	)
+}
+
+func reactionEntityToCreateQueryParams(reaction *entities.Reaction) data.CreateReactionParams {
+	return data.CreateReactionParams{
+		ID:           reaction.ID,
+		PostID:       reaction.PostID,
+		CommentID:    reaction.ParentID,
+		UserID:       reaction.UserID,
+		ReactionType: string(reaction.Type),
+	}
+}
+
+func reactionDbEntityToReaction(reaction data.Reaction) *entities.Reaction {
+
+	var reactionType entities.ReactionType
+
+	switch reaction.ReactionType {
+	case "Like":
+		reactionType = entities.Like
+	case "Dislike":
+		reactionType = entities.Dislike
+	case "Love":
+		reactionType = entities.Love
+	case "Wow":
+		reactionType = entities.Wow
+	case "Angry":
+		reactionType = entities.Angry
+	}
+
+	return entities.NewReaction(
+		entities.ReactionWithID(reaction.ID),
+		entities.ReactionWithPostID(reaction.PostID),
+		entities.ReactionWithUserID(reaction.UserID),
+		entities.ReactionWithReactionType(reactionType),
+	)
+}
+
+func commentDbEntityToComment(comment data.Comment) *entities.Comment {
+
+	return entities.NewComment(
+		entities.CommentWithID(comment.ID),
+		entities.CommentWithPostID(comment.PostID),
+		entities.CommentWithParentID(comment.ParentID.UUID),
+		entities.CommentWithUserID(comment.UserID),
+		entities.CommentWithContent(comment.Content),
+		entities.CommentWithReactions([]entities.Reaction{}),
+		entities.CommentWithCreatedAt(comment.CreatedAt.Time),
+		entities.CommentWithUpdatedAt(comment.UpdatedAt.Time),
 	)
 }

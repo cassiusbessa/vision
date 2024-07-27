@@ -1,6 +1,12 @@
 -- name: GetPostByID :one
 SELECT * FROM posts WHERE id = $1;
 
+-- name: GetReactionsByPostID :many
+SELECT * FROM reactions WHERE post_id = $1;
+
+-- name: GetCommentsByPostID :many
+SELECT * FROM comments WHERE post_id = $1;
+
 -- name: LoadOrderedPosts :many
 SELECT
     p.id AS post_id,
@@ -37,8 +43,14 @@ ORDER BY
     c.created_at,
     r.created_at;  
 
--- name: CreatePost :one
-INSERT INTO posts (id, project_id, author_id, title, content, repo_link, demo_link, post_image, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *;
+-- name: CreatePost :exec
+INSERT INTO posts (id, project_id, author_id, title, content, repo_link, demo_link, post_image, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);
 
--- name: UpdatePost :one
-UPDATE posts SET title = $2, content = $3, repo_link = $4, demo_link = $5, post_image = $6, updated_at = $7 WHERE id = $1 RETURNING *;
+-- name: UpdatePost :exec
+UPDATE posts SET title = $2, content = $3, repo_link = $4, demo_link = $5, post_image = $6, updated_at = $7 WHERE id = $1;
+
+-- name: CreateReaction :exec
+INSERT INTO reactions (id, post_id, comment_id, user_id, reaction_type, created_at) VALUES ($1, $2, $3, $4, $5, $6);
+
+-- name: AddReactionCount :exec
+UPDATE posts SET like_count = like_count + 1 WHERE id = $1;

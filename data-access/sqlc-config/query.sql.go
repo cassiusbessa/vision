@@ -13,8 +13,17 @@ import (
 	"github.com/google/uuid"
 )
 
-const createPost = `-- name: CreatePost :one
-INSERT INTO posts (id, project_id, author_id, title, content, repo_link, demo_link, post_image, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id, project_id, author_id, title, content, repo_link, demo_link, post_image, like_count, comment_count, created_at, updated_at
+const addReactionCount = `-- name: AddReactionCount :exec
+UPDATE posts SET like_count = like_count + 1 WHERE id = $1
+`
+
+func (q *Queries) AddReactionCount(ctx context.Context, id uuid.UUID) error {
+	_, err := q.db.Exec(ctx, addReactionCount, id)
+	return err
+}
+
+const createPost = `-- name: CreatePost :exec
+INSERT INTO posts (id, project_id, author_id, title, content, repo_link, demo_link, post_image, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
 `
 
 type CreatePostParams struct {
@@ -30,8 +39,8 @@ type CreatePostParams struct {
 	UpdatedAt time.Time
 }
 
-func (q *Queries) CreatePost(ctx context.Context, arg CreatePostParams) (Post, error) {
-	row := q.db.QueryRow(ctx, createPost,
+func (q *Queries) CreatePost(ctx context.Context, arg CreatePostParams) error {
+	_, err := q.db.Exec(ctx, createPost,
 		arg.ID,
 		arg.ProjectID,
 		arg.AuthorID,
@@ -43,22 +52,64 @@ func (q *Queries) CreatePost(ctx context.Context, arg CreatePostParams) (Post, e
 		arg.CreatedAt,
 		arg.UpdatedAt,
 	)
-	var i Post
-	err := row.Scan(
-		&i.ID,
-		&i.ProjectID,
-		&i.AuthorID,
-		&i.Title,
-		&i.Content,
-		&i.RepoLink,
-		&i.DemoLink,
-		&i.PostImage,
-		&i.LikeCount,
-		&i.CommentCount,
-		&i.CreatedAt,
-		&i.UpdatedAt,
+	return err
+}
+
+const createReaction = `-- name: CreateReaction :exec
+INSERT INTO reactions (id, post_id, comment_id, user_id, reaction_type, created_at) VALUES ($1, $2, $3, $4, $5, $6)
+`
+
+type CreateReactionParams struct {
+	ID           uuid.UUID
+	PostID       uuid.UUID
+	CommentID    uuid.NullUUID
+	UserID       uuid.UUID
+	ReactionType string
+	CreatedAt    sql.NullTime
+}
+
+func (q *Queries) CreateReaction(ctx context.Context, arg CreateReactionParams) error {
+	_, err := q.db.Exec(ctx, createReaction,
+		arg.ID,
+		arg.PostID,
+		arg.CommentID,
+		arg.UserID,
+		arg.ReactionType,
+		arg.CreatedAt,
 	)
-	return i, err
+	return err
+}
+
+const getCommentsByPostID = `-- name: GetCommentsByPostID :many
+SELECT id, post_id, parent_id, user_id, content, created_at, updated_at FROM comments WHERE post_id = $1
+`
+
+func (q *Queries) GetCommentsByPostID(ctx context.Context, postID uuid.UUID) ([]Comment, error) {
+	rows, err := q.db.Query(ctx, getCommentsByPostID, postID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Comment
+	for rows.Next() {
+		var i Comment
+		if err := rows.Scan(
+			&i.ID,
+			&i.PostID,
+			&i.ParentID,
+			&i.UserID,
+			&i.Content,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const getPostByID = `-- name: GetPostByID :one
@@ -83,6 +134,37 @@ func (q *Queries) GetPostByID(ctx context.Context, id uuid.UUID) (Post, error) {
 		&i.UpdatedAt,
 	)
 	return i, err
+}
+
+const getReactionsByPostID = `-- name: GetReactionsByPostID :many
+SELECT id, post_id, comment_id, user_id, reaction_type, created_at FROM reactions WHERE post_id = $1
+`
+
+func (q *Queries) GetReactionsByPostID(ctx context.Context, postID uuid.UUID) ([]Reaction, error) {
+	rows, err := q.db.Query(ctx, getReactionsByPostID, postID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Reaction
+	for rows.Next() {
+		var i Reaction
+		if err := rows.Scan(
+			&i.ID,
+			&i.PostID,
+			&i.CommentID,
+			&i.UserID,
+			&i.ReactionType,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const loadOrderedPosts = `-- name: LoadOrderedPosts :many
@@ -196,8 +278,8 @@ func (q *Queries) LoadOrderedPosts(ctx context.Context) ([]LoadOrderedPostsRow, 
 	return items, nil
 }
 
-const updatePost = `-- name: UpdatePost :one
-UPDATE posts SET title = $2, content = $3, repo_link = $4, demo_link = $5, post_image = $6, updated_at = $7 WHERE id = $1 RETURNING id, project_id, author_id, title, content, repo_link, demo_link, post_image, like_count, comment_count, created_at, updated_at
+const updatePost = `-- name: UpdatePost :exec
+UPDATE posts SET title = $2, content = $3, repo_link = $4, demo_link = $5, post_image = $6, updated_at = $7 WHERE id = $1
 `
 
 type UpdatePostParams struct {
@@ -210,8 +292,8 @@ type UpdatePostParams struct {
 	UpdatedAt time.Time
 }
 
-func (q *Queries) UpdatePost(ctx context.Context, arg UpdatePostParams) (Post, error) {
-	row := q.db.QueryRow(ctx, updatePost,
+func (q *Queries) UpdatePost(ctx context.Context, arg UpdatePostParams) error {
+	_, err := q.db.Exec(ctx, updatePost,
 		arg.ID,
 		arg.Title,
 		arg.Content,
@@ -220,20 +302,5 @@ func (q *Queries) UpdatePost(ctx context.Context, arg UpdatePostParams) (Post, e
 		arg.PostImage,
 		arg.UpdatedAt,
 	)
-	var i Post
-	err := row.Scan(
-		&i.ID,
-		&i.ProjectID,
-		&i.AuthorID,
-		&i.Title,
-		&i.Content,
-		&i.RepoLink,
-		&i.DemoLink,
-		&i.PostImage,
-		&i.LikeCount,
-		&i.CommentCount,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-	)
-	return i, err
+	return err
 }

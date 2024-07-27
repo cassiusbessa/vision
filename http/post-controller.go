@@ -64,3 +64,19 @@ func (controller *PostController) GetPosts(c *gin.Context) {
 
 	c.JSON(http.StatusOK, posts)
 }
+
+func (controller *PostController) ReactToPost(c *gin.Context) {
+	var command dto.ReactToPostCommand
+	if err := c.ShouldBindJSON(&command); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	response, err := controller.postService.ReactToPost(&command)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusCreated, response)
+}

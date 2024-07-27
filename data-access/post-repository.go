@@ -6,25 +6,28 @@ import (
 	sqlc "github.com/cassiusbessa/vision-social-media/data-access/sqlc-config"
 	"github.com/cassiusbessa/vision-social-media/domain/core/entities"
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v4"
 )
 
 type PostRepository struct {
 	queries *sqlc.Queries
+	db      *pgx.Conn
 }
 
-func NewPostRepository(queries *sqlc.Queries) *PostRepository {
+func NewPostRepository(queries *sqlc.Queries, db *pgx.Conn) *PostRepository {
 	return &PostRepository{
 		queries: queries,
+		db:      db,
 	}
 }
 
 func (repo *PostRepository) SavePost(post *entities.ProjectPost) error {
-	_, err := repo.queries.CreatePost(context.Background(), projectEntityToCreateQueryParams(post))
+	err := repo.queries.CreatePost(context.Background(), projectEntityToCreateQueryParams(post))
 	return err
 }
 
 func (repo *PostRepository) UpdatePost(post *entities.ProjectPost) error {
-	_, err := repo.queries.UpdatePost(context.Background(), projectEntityToUpdateQueryParams(post))
+	err := repo.queries.UpdatePost(context.Background(), projectEntityToUpdateQueryParams(post))
 	return err
 }
 
@@ -35,7 +38,17 @@ func (repo *PostRepository) GetPostByID(postID uuid.UUID) (*entities.ProjectPost
 		return nil, err
 	}
 
-	return postDBEntityToProjectPost(post), nil
+	comments, err := repo.queries.GetCommentsByPostID(context.Background(), postID)
+	if err != nil {
+		return nil, err
+	}
+
+	reactions, err := repo.queries.GetReactionsByPostID(context.Background(), postID)
+	if err != nil {
+		return nil, err
+	}
+
+	return postDBEntityToProjectPost(post, comments, reactions), nil
 }
 
 func (repo *PostRepository) LoadOrderedPosts() ([]entities.ProjectPost, error) {
@@ -66,4 +79,62 @@ func (repo *PostRepository) LoadOrderedPosts() ([]entities.ProjectPost, error) {
 	}
 
 	return result, nil
+}
+
+func (repo *PostRepository) AddReactionToPost(reaction *entities.Reaction) error {
+
+	ctx := context.Background()
+
+	tx, err := repo.db.Begin(ctx)
+	if err != nil {
+		return err
+	}
+
+	defer func() {
+		if p := recover(); p != nil {
+			tx.Rollback(ctx)
+			panic(p)
+		} else if err != nil {
+			tx.Rollback(ctx)
+		}
+	}()
+
+	qtx := repo.queries.WithTx(tx)
+
+	err = qtx.CreateReaction(ctx, reactionEntityToCreateQueryParams(reaction))
+	if err != nil {
+		return err
+	}
+
+	err = qtx.AddReactionCount(ctx, reaction.PostID)
+	if err != nil {
+		return err
+	}
+
+	return tx.Commit(ctx)
+}
+
+func withTransaction(ctx context.Context, db *pgx.Conn, fn func(context.Context, *sqlc.Queries) error) error {
+	tx, err := db.Begin(ctx)
+	if err != nil {
+		return err
+	}
+
+	defer func() {
+		if p := recover(); p != nil {
+			tx.Rollback(ctx)
+			panic(p)
+		} else if err != nil {
+			tx.Rollback(ctx)
+		}
+	}()
+
+	qtx := sqlc.New(tx)
+
+	err = fn(ctx, qtx)
+	if err != nil {
+		return err
+	}
+
+	return tx.Commit(ctx)
 }

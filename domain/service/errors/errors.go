@@ -23,11 +23,16 @@ func NewResourceNotFound(message string) *ResourceNotFound {
 
 type ResourceAlreadyExists struct {
 	Message string
-	Cause   error
 }
 
 func (r *ResourceAlreadyExists) Error() string {
 	return r.Message
+}
+
+func NewResourceAlreadyExists(message string) *ResourceAlreadyExists {
+	return &ResourceAlreadyExists{
+		Message: message,
+	}
 }
 
 type InvalidArgument struct {

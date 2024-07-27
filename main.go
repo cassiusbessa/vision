@@ -12,7 +12,7 @@ import (
 func main() {
 	postgresDb := data.NewDbConn()
 	queries := sqlc.New(postgresDb)
-	postRepo := data.NewPostRepository(queries)
+	postRepo := data.NewPostRepository(queries, postgresDb)
 
 	postService := service.NewPostService(postRepo)
 
@@ -26,6 +26,7 @@ func main() {
 	r.POST("/posts", postController.CreatePost)
 	r.PUT("/posts", postController.UpdatePost)
 	r.GET("/posts", postController.GetPosts)
+	r.POST("/posts/react", postController.ReactToPost)
 
 	go func() {
 		log.Println("Server started on port 8888")

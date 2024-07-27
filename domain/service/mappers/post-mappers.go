@@ -115,3 +115,47 @@ func PostEntityToLoadedPostResponse(post entities.ProjectPost) dtos.LoadedPostRe
 		UpdatedAt:    post.UpdatedAt.Format(time.RFC3339),
 	}
 }
+
+func ReactToPostCommandToReactionEntity(command dtos.ReactToPostCommand) (*entities.Reaction, error) {
+	uuidPost, err := uuid.Parse(command.PostID)
+	if err != nil {
+		return &entities.Reaction{}, errors.NewInvalidArgument("Invalid post ID")
+	}
+
+	uuidUser, err := uuid.Parse(command.UserID)
+	if err != nil {
+		return &entities.Reaction{}, errors.NewInvalidArgument("Invalid user ID")
+	}
+
+	var reactionType entities.ReactionType
+
+	switch command.Type {
+	case "Like":
+		reactionType = entities.Like
+	case "Dislike":
+		reactionType = entities.Dislike
+	case "Love":
+		reactionType = entities.Love
+	case "Wow":
+		reactionType = entities.Wow
+	case "Angry":
+		reactionType = entities.Angry
+	default:
+		return &entities.Reaction{}, errors.NewInvalidArgument("Invalid reaction type")
+	}
+
+	parentId := uuid.NullUUID{
+		UUID:  uuid.Nil,
+		Valid: false,
+	}
+
+	reaction := entities.NewReaction(
+		entities.ReactionWithID(uuid.New()),
+		entities.ReactionWithPostID(uuidPost),
+		entities.ReactionWithUserID(uuidUser),
+		entities.ReactionWithReactionType(reactionType),
+		entities.ReactionWithParentID(parentId),
+	)
+
+	return reaction, nil
+}
