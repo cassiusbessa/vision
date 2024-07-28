@@ -115,6 +115,22 @@ func (repo *PostRepository) RemovePostReaction(reactionID, postID uuid.UUID) (bo
 	})
 }
 
+func (repo *PostRepository) AddCommentToPost(comment *entities.Comment) error {
+	return withTransaction(context.Background(), repo.db, func(ctx context.Context, qtx *sqlc.Queries) error {
+		err := qtx.CreateComment(ctx, mappers.CommentEntityToCreateQueryParams(comment))
+		if err != nil {
+			return err
+		}
+
+		err = qtx.AddCommentCount(ctx, comment.PostID)
+		if err != nil {
+			return err
+		}
+
+		return nil
+	})
+}
+
 func withTransaction(ctx context.Context, db *pgx.Conn, fn func(context.Context, *sqlc.Queries) error) error {
 	tx, err := db.Begin(ctx)
 	if err != nil {

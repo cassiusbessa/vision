@@ -12,4 +12,5 @@ type PostRepository interface {
 	LoadOrderedPosts() ([]entities.ProjectPost, error)
 	AddReactionToPost(reaction *entities.Reaction) error
 	RemovePostReaction(reactionID, postID uuid.UUID) (bool, error)
+	AddCommentToPost(comment *entities.Comment) error
 }

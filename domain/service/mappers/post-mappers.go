@@ -161,3 +161,26 @@ func ReactToPostCommandToReactionEntity(command dtos.ReactToPostCommand) (*entit
 
 	return reaction, nil
 }
+
+func AddCommentToPostCommandToCommentEntity(command dtos.AddCommentToPostCommand) (*entities.Comment, error) {
+	uuidPost, err := uuid.Parse(command.PostID)
+	if err != nil {
+		return &entities.Comment{}, errors.NewInvalidArgument("Invalid post ID")
+	}
+
+	uuidUser, err := uuid.Parse(command.AuthorID)
+	if err != nil {
+		return &entities.Comment{}, errors.NewInvalidArgument("Invalid user ID")
+	}
+
+	comment := entities.NewComment(
+		entities.CommentWithID(uuid.New()),
+		entities.CommentWithPostID(uuidPost),
+		entities.CommentWithUserID(uuidUser),
+		entities.CommentWithContent(command.Content),
+		entities.CommentWithCreatedAt(time.Now()),
+		entities.CommentWithUpdatedAt(time.Now()),
+	)
+
+	return comment, nil
+}

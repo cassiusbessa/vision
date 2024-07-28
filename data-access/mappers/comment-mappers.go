@@ -3,6 +3,7 @@ package mappers
 import (
 	data "github.com/cassiusbessa/vision-social-media/data-access/sqlc-config"
 	"github.com/cassiusbessa/vision-social-media/domain/core/entities"
+	"github.com/google/uuid"
 )
 
 func LoadOrderedPostRowToPostComment(post data.LoadOrderedPostsRow) *entities.Comment {
@@ -31,4 +32,25 @@ func CommentDbEntityToComment(comment data.Comment) *entities.Comment {
 		entities.CommentWithCreatedAt(comment.CreatedAt),
 		entities.CommentWithUpdatedAt(comment.UpdatedAt),
 	)
+}
+
+func CommentEntityToCreateQueryParams(comment *entities.Comment) data.CreateCommentParams {
+
+	var parentID uuid.NullUUID
+
+	if comment.ParentID != uuid.Nil {
+		parentID = uuid.NullUUID{
+			UUID:  comment.ParentID,
+			Valid: true,
+		}
+	}
+	return data.CreateCommentParams{
+		ID:        comment.ID,
+		PostID:    comment.PostID,
+		ParentID:  parentID,
+		UserID:    comment.UserID,
+		Content:   comment.Content,
+		CreatedAt: comment.CreatedAt,
+		UpdatedAt: comment.UpdatedAt,
+	}
 }

@@ -13,12 +13,48 @@ import (
 	"github.com/google/uuid"
 )
 
+const addCommentCount = `-- name: AddCommentCount :exec
+UPDATE posts SET comment_count = comment_count + 1 WHERE id = $1
+`
+
+func (q *Queries) AddCommentCount(ctx context.Context, id uuid.UUID) error {
+	_, err := q.db.Exec(ctx, addCommentCount, id)
+	return err
+}
+
 const addReactionCount = `-- name: AddReactionCount :exec
 UPDATE posts SET like_count = like_count + 1 WHERE id = $1
 `
 
 func (q *Queries) AddReactionCount(ctx context.Context, id uuid.UUID) error {
 	_, err := q.db.Exec(ctx, addReactionCount, id)
+	return err
+}
+
+const createComment = `-- name: CreateComment :exec
+INSERT INTO comments (id, post_id, parent_id, user_id, content, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7)
+`
+
+type CreateCommentParams struct {
+	ID        uuid.UUID
+	PostID    uuid.UUID
+	ParentID  uuid.NullUUID
+	UserID    uuid.UUID
+	Content   string
+	CreatedAt time.Time
+	UpdatedAt time.Time
+}
+
+func (q *Queries) CreateComment(ctx context.Context, arg CreateCommentParams) error {
+	_, err := q.db.Exec(ctx, createComment,
+		arg.ID,
+		arg.PostID,
+		arg.ParentID,
+		arg.UserID,
+		arg.Content,
+		arg.CreatedAt,
+		arg.UpdatedAt,
+	)
 	return err
 }
 

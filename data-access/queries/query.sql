@@ -60,3 +60,9 @@ UPDATE posts SET like_count = like_count + 1 WHERE id = $1;
 
 -- name: RemoveReactionCount :exec
 UPDATE posts SET like_count = like_count - 1 WHERE id = $1;
+
+-- name: CreateComment :exec
+INSERT INTO comments (id, post_id, parent_id, user_id, content, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7);
+
+-- name: AddCommentCount :exec
+UPDATE posts SET comment_count = comment_count + 1 WHERE id = $1;

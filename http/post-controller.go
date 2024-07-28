@@ -96,3 +96,19 @@ func (controller *PostController) RemovePostReaction(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response)
 }
+
+func (controller *PostController) AddCommentToPost(c *gin.Context) {
+	var command dto.AddCommentToPostCommand
+	if err := c.ShouldBindJSON(&command); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	response, err := controller.postService.AddCommentToPost(&command)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusCreated, response)
+}

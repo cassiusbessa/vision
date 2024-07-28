@@ -80,6 +80,6 @@ func CommentWithUpdatedAt(updatedAt time.Time) CommentOption {
 
 func (c *Comment) Validate() {
 	if c.Content == "" || len(c.Content) > 1000 {
-		c.FailureMessage = append(c.FailureMessage, "Comment content cannot be empty")
+		c.FailureMessage = append(c.FailureMessage, "Comment content must be between 1 and 1000 characters")
 	}
 }

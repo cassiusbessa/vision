@@ -158,3 +158,39 @@ func (service *PostService) RemovePostReaction(command *dtos.RemovePostReactionC
 		Message: "Reaction removed",
 	}, nil
 }
+
+func (service *PostService) AddCommentToPost(command *dtos.AddCommentToPostCommand) (dtos.AddCommentToPostResponse, error) {
+
+	uuidPost, err := uuid.Parse(command.PostID)
+	if err != nil {
+		return dtos.AddCommentToPostResponse{}, errors.NewInvalidArgument("Invalid post ID")
+	}
+
+	post, err := service.postRepo.GetPostByID(uuidPost)
+	if err != nil {
+		return dtos.AddCommentToPostResponse{}, err
+	}
+	if post == nil {
+		return dtos.AddCommentToPostResponse{}, errors.NewResourceNotFound("Post not found")
+	}
+
+	comment, err := mappers.AddCommentToPostCommandToCommentEntity(*command)
+	if err != nil {
+		return dtos.AddCommentToPostResponse{}, err
+	}
+
+	comment.Validate()
+	if len(comment.FailureMessage) > 0 {
+		return dtos.AddCommentToPostResponse{}, errors.NewValidationError(strings.Join(comment.FailureMessage, ", "))
+	}
+
+	err = service.postRepo.AddCommentToPost(comment)
+	if err != nil {
+		return dtos.AddCommentToPostResponse{}, err
+	}
+
+	return dtos.AddCommentToPostResponse{
+		CommentID: comment.ID.String(),
+		Message:   "Comment saved",
+	}, nil
+}
