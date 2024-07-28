@@ -3,7 +3,9 @@ package http
 import (
 	"net/http"
 
-	dto "github.com/cassiusbessa/vision-social-media/domain/service/dtos"
+	commentDTO "github.com/cassiusbessa/vision-social-media/domain/service/dtos/comment"
+	postDTO "github.com/cassiusbessa/vision-social-media/domain/service/dtos/post"
+	reactionDTO "github.com/cassiusbessa/vision-social-media/domain/service/dtos/reaction"
 	ports "github.com/cassiusbessa/vision-social-media/domain/service/ports/input"
 	"github.com/gin-gonic/gin"
 )
@@ -19,7 +21,7 @@ func NewPostController(postService ports.PostService) *PostController {
 }
 
 func (controller *PostController) CreatePost(c *gin.Context) {
-	var command dto.CreatePostCommand
+	var command postDTO.CreatePostCommand
 	if err := c.ShouldBindJSON(&command); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -35,7 +37,7 @@ func (controller *PostController) CreatePost(c *gin.Context) {
 }
 
 func (controller *PostController) UpdatePost(c *gin.Context) {
-	var command dto.UpdatePostCommand
+	var command postDTO.UpdatePostCommand
 	if err := c.ShouldBindJSON(&command); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -52,7 +54,7 @@ func (controller *PostController) UpdatePost(c *gin.Context) {
 
 func (controller *PostController) GetPosts(c *gin.Context) {
 	posts, err := controller.postService.LoadOrderedPosts(
-		&dto.LoadOrderedPostsQuery{
+		&postDTO.LoadOrderedPostsQuery{
 			Limit:  10,
 			Offset: 0,
 		},
@@ -66,7 +68,7 @@ func (controller *PostController) GetPosts(c *gin.Context) {
 }
 
 func (controller *PostController) ReactToPost(c *gin.Context) {
-	var command dto.ReactToPostCommand
+	var command reactionDTO.ReactToPostCommand
 	if err := c.ShouldBindJSON(&command); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -82,7 +84,7 @@ func (controller *PostController) ReactToPost(c *gin.Context) {
 }
 
 func (controller *PostController) RemovePostReaction(c *gin.Context) {
-	var command dto.RemovePostReactionCommand
+	var command reactionDTO.RemovePostReactionCommand
 	if err := c.ShouldBindJSON(&command); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -98,7 +100,7 @@ func (controller *PostController) RemovePostReaction(c *gin.Context) {
 }
 
 func (controller *PostController) AddCommentToPost(c *gin.Context) {
-	var command dto.AddCommentToPostCommand
+	var command commentDTO.AddCommentToPostCommand
 	if err := c.ShouldBindJSON(&command); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -111,4 +113,20 @@ func (controller *PostController) AddCommentToPost(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, response)
+}
+
+func (controller *PostController) RemovePostComment(c *gin.Context) {
+	var command commentDTO.RemovePostCommentCommand
+	if err := c.ShouldBindJSON(&command); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	response, err := controller.postService.RemovePostComment(&command)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, response)
 }

@@ -3,7 +3,9 @@ package service
 import (
 	"strings"
 
-	dtos "github.com/cassiusbessa/vision-social-media/domain/service/dtos"
+	commentDTO "github.com/cassiusbessa/vision-social-media/domain/service/dtos/comment"
+	postDTO "github.com/cassiusbessa/vision-social-media/domain/service/dtos/post"
+	reactionDTO "github.com/cassiusbessa/vision-social-media/domain/service/dtos/reaction"
 	errors "github.com/cassiusbessa/vision-social-media/domain/service/errors"
 	"github.com/cassiusbessa/vision-social-media/domain/service/mappers"
 	outputPorts "github.com/cassiusbessa/vision-social-media/domain/service/ports/output"
@@ -20,73 +22,73 @@ func NewPostService(postRepo outputPorts.PostRepository) *PostService {
 	}
 }
 
-func (service *PostService) CreatePost(command *dtos.CreatePostCommand) (dtos.CreatedPostResponse, error) {
+func (service *PostService) CreatePost(command *postDTO.CreatePostCommand) (postDTO.CreatedPostResponse, error) {
 
 	post, err := mappers.CreatePostCommandToPostEntity(*command)
 	if err != nil {
-		return dtos.CreatedPostResponse{}, err
+		return postDTO.CreatedPostResponse{}, err
 	}
 
 	post.Validate()
 	if len(post.FailureMessage) > 0 {
-		return dtos.CreatedPostResponse{}, errors.NewValidationError(strings.Join(post.FailureMessage, ", "))
+		return postDTO.CreatedPostResponse{}, errors.NewValidationError(strings.Join(post.FailureMessage, ", "))
 	}
 
 	err = service.postRepo.SavePost(post)
 	if err != nil {
-		return dtos.CreatedPostResponse{}, err
+		return postDTO.CreatedPostResponse{}, err
 	}
 
-	return dtos.CreatedPostResponse{
+	return postDTO.CreatedPostResponse{
 		ID:      post.ID.String(),
 		Message: "Post created",
 	}, nil
 }
 
-func (service *PostService) UpdatePost(command *dtos.UpdatePostCommand) (dtos.UpdatedPostResponse, error) {
+func (service *PostService) UpdatePost(command *postDTO.UpdatePostCommand) (postDTO.UpdatedPostResponse, error) {
 
 	uuidPost, err := uuid.Parse(command.ID)
 	if err != nil {
-		return dtos.UpdatedPostResponse{}, errors.NewInvalidArgument("Invalid post ID")
+		return postDTO.UpdatedPostResponse{}, errors.NewInvalidArgument("Invalid post ID")
 	}
 
 	post, err := service.postRepo.GetPostByID(uuidPost)
 	if err != nil {
-		return dtos.UpdatedPostResponse{}, err
+		return postDTO.UpdatedPostResponse{}, err
 	}
 	if post == nil {
-		return dtos.UpdatedPostResponse{}, errors.NewResourceNotFound("Post not found")
+		return postDTO.UpdatedPostResponse{}, errors.NewResourceNotFound("Post not found")
 	}
 
 	updatedPost, err := mappers.UpdatePostCommandToPostEntity(*command, *post)
 	if err != nil {
-		return dtos.UpdatedPostResponse{}, err
+		return postDTO.UpdatedPostResponse{}, err
 	}
 
 	post.Validate()
 	if len(post.FailureMessage) > 0 {
-		return dtos.UpdatedPostResponse{}, errors.NewValidationError(strings.Join(post.FailureMessage, ", "))
+		return postDTO.UpdatedPostResponse{}, errors.NewValidationError(strings.Join(post.FailureMessage, ", "))
 	}
 
 	err = service.postRepo.UpdatePost(updatedPost)
 	if err != nil {
-		return dtos.UpdatedPostResponse{}, err
+		return postDTO.UpdatedPostResponse{}, err
 	}
 
-	return dtos.UpdatedPostResponse{
+	return postDTO.UpdatedPostResponse{
 		ID:      post.ID.String(),
 		Message: "Post updated",
 	}, nil
 }
 
-func (service *PostService) LoadOrderedPosts(query *dtos.LoadOrderedPostsQuery) ([]dtos.LoadedPostResponse, error) {
+func (service *PostService) LoadOrderedPosts(query *postDTO.LoadOrderedPostsQuery) ([]postDTO.LoadedPostResponse, error) {
 
 	posts, err := service.postRepo.LoadOrderedPosts()
 	if err != nil {
 		return nil, err
 	}
 
-	loadedPosts := make([]dtos.LoadedPostResponse, 0)
+	loadedPosts := make([]postDTO.LoadedPostResponse, 0)
 	for _, post := range posts {
 		loadedPosts = append(loadedPosts, mappers.PostEntityToLoadedPostResponse(post))
 	}
@@ -94,102 +96,102 @@ func (service *PostService) LoadOrderedPosts(query *dtos.LoadOrderedPostsQuery) 
 	return loadedPosts, nil
 }
 
-func (service *PostService) ReactToPost(command *dtos.ReactToPostCommand) (dtos.ReactToPostResponse, error) {
+func (service *PostService) ReactToPost(command *reactionDTO.ReactToPostCommand) (reactionDTO.ReactToPostResponse, error) {
 
 	uuidPost, err := uuid.Parse(command.PostID)
 	if err != nil {
-		return dtos.ReactToPostResponse{}, errors.NewInvalidArgument("Invalid post ID")
+		return reactionDTO.ReactToPostResponse{}, errors.NewInvalidArgument("Invalid post ID")
 	}
 
 	post, err := service.postRepo.GetPostByID(uuidPost)
 	if err != nil {
-		return dtos.ReactToPostResponse{}, err
+		return reactionDTO.ReactToPostResponse{}, err
 	}
 	if post == nil {
-		return dtos.ReactToPostResponse{}, errors.NewResourceNotFound("Post not found")
+		return reactionDTO.ReactToPostResponse{}, errors.NewResourceNotFound("Post not found")
 	}
 	for _, reaction := range post.Reactions {
 		if reaction.UserID == uuid.MustParse(command.UserID) {
-			return dtos.ReactToPostResponse{}, errors.NewResourceAlreadyExists("User already reacted to this post")
+			return reactionDTO.ReactToPostResponse{}, errors.NewResourceAlreadyExists("User already reacted to this post")
 		}
 	}
 
 	reaction, err := mappers.ReactToPostCommandToReactionEntity(*command)
 	if err != nil {
-		return dtos.ReactToPostResponse{}, err
+		return reactionDTO.ReactToPostResponse{}, err
 	}
 
 	reaction.Validate()
 	if len(reaction.FailureMessage) > 0 {
-		return dtos.ReactToPostResponse{}, errors.NewValidationError(strings.Join(reaction.FailureMessage, ", "))
+		return reactionDTO.ReactToPostResponse{}, errors.NewValidationError(strings.Join(reaction.FailureMessage, ", "))
 	}
 
 	err = service.postRepo.AddReactionToPost(reaction)
 	if err != nil {
-		return dtos.ReactToPostResponse{}, err
+		return reactionDTO.ReactToPostResponse{}, err
 	}
 
-	return dtos.ReactToPostResponse{
+	return reactionDTO.ReactToPostResponse{
 		ID:      reaction.ID.String(),
 		Message: "Reaction saved",
 	}, nil
 }
 
-func (service *PostService) RemovePostReaction(command *dtos.RemovePostReactionCommand) (dtos.RemovePostReactionResponse, error) {
+func (service *PostService) RemovePostReaction(command *reactionDTO.RemovePostReactionCommand) (reactionDTO.RemovePostReactionResponse, error) {
 	uuidReaction, err := uuid.Parse(command.ReactionID)
 	if err != nil {
-		return dtos.RemovePostReactionResponse{}, errors.NewInvalidArgument("Invalid reaction ID")
+		return reactionDTO.RemovePostReactionResponse{}, errors.NewInvalidArgument("Invalid reaction ID")
 	}
 
 	uuidPost, err := uuid.Parse(command.PostID)
 	if err != nil {
-		return dtos.RemovePostReactionResponse{}, errors.NewInvalidArgument("Invalid post ID")
+		return reactionDTO.RemovePostReactionResponse{}, errors.NewInvalidArgument("Invalid post ID")
 	}
 
 	removed, err := service.postRepo.RemovePostReaction(uuidReaction, uuidPost)
 	if err != nil {
-		return dtos.RemovePostReactionResponse{}, err
+		return reactionDTO.RemovePostReactionResponse{}, err
 	}
 	if !removed {
-		return dtos.RemovePostReactionResponse{}, errors.NewResourceNotFound("Reaction not found")
+		return reactionDTO.RemovePostReactionResponse{}, errors.NewResourceNotFound("Reaction not found")
 	}
 
-	return dtos.RemovePostReactionResponse{
+	return reactionDTO.RemovePostReactionResponse{
 		Message: "Reaction removed",
 	}, nil
 }
 
-func (service *PostService) AddCommentToPost(command *dtos.AddCommentToPostCommand) (dtos.AddCommentToPostResponse, error) {
+func (service *PostService) AddCommentToPost(command *commentDTO.AddCommentToPostCommand) (commentDTO.AddCommentToPostResponse, error) {
 
 	uuidPost, err := uuid.Parse(command.PostID)
 	if err != nil {
-		return dtos.AddCommentToPostResponse{}, errors.NewInvalidArgument("Invalid post ID")
+		return commentDTO.AddCommentToPostResponse{}, errors.NewInvalidArgument("Invalid post ID")
 	}
 
 	post, err := service.postRepo.GetPostByID(uuidPost)
 	if err != nil {
-		return dtos.AddCommentToPostResponse{}, err
+		return commentDTO.AddCommentToPostResponse{}, err
 	}
 	if post == nil {
-		return dtos.AddCommentToPostResponse{}, errors.NewResourceNotFound("Post not found")
+		return commentDTO.AddCommentToPostResponse{}, errors.NewResourceNotFound("Post not found")
 	}
 
 	comment, err := mappers.AddCommentToPostCommandToCommentEntity(*command)
 	if err != nil {
-		return dtos.AddCommentToPostResponse{}, err
+		return commentDTO.AddCommentToPostResponse{}, err
 	}
 
 	comment.Validate()
 	if len(comment.FailureMessage) > 0 {
-		return dtos.AddCommentToPostResponse{}, errors.NewValidationError(strings.Join(comment.FailureMessage, ", "))
+		return commentDTO.AddCommentToPostResponse{}, errors.NewValidationError(strings.Join(comment.FailureMessage, ", "))
 	}
 
 	err = service.postRepo.AddCommentToPost(comment)
 	if err != nil {
-		return dtos.AddCommentToPostResponse{}, err
+		return commentDTO.AddCommentToPostResponse{}, err
 	}
 
-	return dtos.AddCommentToPostResponse{
+	return commentDTO.AddCommentToPostResponse{
 		CommentID: comment.ID.String(),
 		Message:   "Comment saved",
 	}, nil

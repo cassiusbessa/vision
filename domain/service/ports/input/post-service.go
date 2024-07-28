@@ -1,14 +1,17 @@
 package ports
 
 import (
-	"github.com/cassiusbessa/vision-social-media/domain/service/dtos"
+	commentDTO "github.com/cassiusbessa/vision-social-media/domain/service/dtos/comment"
+	postDTO "github.com/cassiusbessa/vision-social-media/domain/service/dtos/post"
+	reactionDTO "github.com/cassiusbessa/vision-social-media/domain/service/dtos/reaction"
 )
 
 type PostService interface {
-	CreatePost(command *dtos.CreatePostCommand) (dtos.CreatedPostResponse, error)
-	UpdatePost(command *dtos.UpdatePostCommand) (dtos.UpdatedPostResponse, error)
-	LoadOrderedPosts(query *dtos.LoadOrderedPostsQuery) ([]dtos.LoadedPostResponse, error)
-	ReactToPost(command *dtos.ReactToPostCommand) (dtos.ReactToPostResponse, error)
-	RemovePostReaction(command *dtos.RemovePostReactionCommand) (dtos.RemovePostReactionResponse, error)
-	AddCommentToPost(command *dtos.AddCommentToPostCommand) (dtos.AddCommentToPostResponse, error)
+	CreatePost(command *postDTO.CreatePostCommand) (postDTO.CreatedPostResponse, error)
+	UpdatePost(command *postDTO.UpdatePostCommand) (postDTO.UpdatedPostResponse, error)
+	LoadOrderedPosts(query *postDTO.LoadOrderedPostsQuery) ([]postDTO.LoadedPostResponse, error)
+	ReactToPost(command *reactionDTO.ReactToPostCommand) (reactionDTO.ReactToPostResponse, error)
+	RemovePostReaction(command *reactionDTO.RemovePostReactionCommand) (reactionDTO.RemovePostReactionResponse, error)
+	AddCommentToPost(command *commentDTO.AddCommentToPostCommand) (commentDTO.AddCommentToPostResponse, error)
+	RemovePostComment(command *commentDTO.RemovePostCommentCommand) (commentDTO.RemovePostCommentResponse, error)
 }

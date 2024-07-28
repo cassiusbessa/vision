@@ -4,12 +4,14 @@ import (
 	"time"
 
 	"github.com/cassiusbessa/vision-social-media/domain/core/entities"
-	"github.com/cassiusbessa/vision-social-media/domain/service/dtos"
+	commentDTO "github.com/cassiusbessa/vision-social-media/domain/service/dtos/comment"
+	postDTO "github.com/cassiusbessa/vision-social-media/domain/service/dtos/post"
+	reactionDTO "github.com/cassiusbessa/vision-social-media/domain/service/dtos/reaction"
 	"github.com/cassiusbessa/vision-social-media/domain/service/errors"
 	"github.com/google/uuid"
 )
 
-func CreatePostCommandToPostEntity(command dtos.CreatePostCommand) (*entities.ProjectPost, error) {
+func CreatePostCommandToPostEntity(command postDTO.CreatePostCommand) (*entities.ProjectPost, error) {
 	uuidProject, err := uuid.Parse(command.ProjectID)
 	if err != nil {
 		return &entities.ProjectPost{}, errors.NewInvalidArgument("Invalid project ID")
@@ -38,7 +40,7 @@ func CreatePostCommandToPostEntity(command dtos.CreatePostCommand) (*entities.Pr
 	return post, nil
 }
 
-func UpdatePostCommandToPostEntity(command dtos.UpdatePostCommand, post entities.ProjectPost) (*entities.ProjectPost, error) {
+func UpdatePostCommandToPostEntity(command postDTO.UpdatePostCommand, post entities.ProjectPost) (*entities.ProjectPost, error) {
 
 	uuidPost, err := uuid.Parse(command.ID)
 	if err != nil {
@@ -65,8 +67,8 @@ func UpdatePostCommandToPostEntity(command dtos.UpdatePostCommand, post entities
 	return updatedPost, nil
 }
 
-func commentEntityToLoadedCommentResponse(comment entities.Comment) dtos.LoadCommentResponse {
-	return dtos.LoadCommentResponse{
+func commentEntityToLoadedCommentResponse(comment entities.Comment) commentDTO.LoadCommentResponse {
+	return commentDTO.LoadCommentResponse{
 		ID:        comment.ID.String(),
 		AuthorID:  comment.UserID.String(),
 		Content:   comment.Content,
@@ -75,9 +77,9 @@ func commentEntityToLoadedCommentResponse(comment entities.Comment) dtos.LoadCom
 	}
 }
 
-func reactionEntityToLoadedReactionResponse(reaction entities.Reaction) dtos.LoadReactionResponse {
+func reactionEntityToLoadedReactionResponse(reaction entities.Reaction) reactionDTO.LoadReactionResponse {
 
-	return dtos.LoadReactionResponse{
+	return reactionDTO.LoadReactionResponse{
 		ID:        reaction.ID.String(),
 		UserID:    reaction.UserID.String(),
 		PostID:    reaction.PostID.String(),
@@ -87,19 +89,19 @@ func reactionEntityToLoadedReactionResponse(reaction entities.Reaction) dtos.Loa
 	}
 }
 
-func PostEntityToLoadedPostResponse(post entities.ProjectPost) dtos.LoadedPostResponse {
+func PostEntityToLoadedPostResponse(post entities.ProjectPost) postDTO.LoadedPostResponse {
 
-	comments := make([]dtos.LoadCommentResponse, 0)
+	comments := make([]commentDTO.LoadCommentResponse, 0)
 	for _, comment := range post.Comments {
 		comments = append(comments, commentEntityToLoadedCommentResponse(comment))
 	}
 
-	reactions := make([]dtos.LoadReactionResponse, 0)
+	reactions := make([]reactionDTO.LoadReactionResponse, 0)
 	for _, reaction := range post.Reactions {
 		reactions = append(reactions, reactionEntityToLoadedReactionResponse(reaction))
 	}
 
-	return dtos.LoadedPostResponse{
+	return postDTO.LoadedPostResponse{
 		ID:           post.ID.String(),
 		ProjectID:    post.ProjectID.String(),
 		AuthorID:     post.AuthorID.String(),
@@ -117,7 +119,7 @@ func PostEntityToLoadedPostResponse(post entities.ProjectPost) dtos.LoadedPostRe
 	}
 }
 
-func ReactToPostCommandToReactionEntity(command dtos.ReactToPostCommand) (*entities.Reaction, error) {
+func ReactToPostCommandToReactionEntity(command reactionDTO.ReactToPostCommand) (*entities.Reaction, error) {
 	uuidPost, err := uuid.Parse(command.PostID)
 	if err != nil {
 		return &entities.Reaction{}, errors.NewInvalidArgument("Invalid post ID")
@@ -162,7 +164,7 @@ func ReactToPostCommandToReactionEntity(command dtos.ReactToPostCommand) (*entit
 	return reaction, nil
 }
 
-func AddCommentToPostCommandToCommentEntity(command dtos.AddCommentToPostCommand) (*entities.Comment, error) {
+func AddCommentToPostCommandToCommentEntity(command commentDTO.AddCommentToPostCommand) (*entities.Comment, error) {
 	uuidPost, err := uuid.Parse(command.PostID)
 	if err != nil {
 		return &entities.Comment{}, errors.NewInvalidArgument("Invalid post ID")

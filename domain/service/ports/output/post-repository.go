@@ -13,4 +13,5 @@ type PostRepository interface {
 	AddReactionToPost(reaction *entities.Reaction) error
 	RemovePostReaction(reactionID, postID uuid.UUID) (bool, error)
 	AddCommentToPost(comment *entities.Comment) error
+	RemovePostComment(commentID, postID uuid.UUID) (bool, error)
 }
