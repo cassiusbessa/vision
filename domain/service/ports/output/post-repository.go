@@ -11,4 +11,5 @@ type PostRepository interface {
 	GetPostByID(postID uuid.UUID) (*entities.ProjectPost, error)
 	LoadOrderedPosts() ([]entities.ProjectPost, error)
 	AddReactionToPost(reaction *entities.Reaction) error
+	RemovePostReaction(reactionID, postID uuid.UUID) (bool, error)
 }

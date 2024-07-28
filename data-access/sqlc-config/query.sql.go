@@ -80,6 +80,15 @@ func (q *Queries) CreateReaction(ctx context.Context, arg CreateReactionParams) 
 	return err
 }
 
+const deleteReactionById = `-- name: DeleteReactionById :exec
+DELETE FROM reactions WHERE id = $1
+`
+
+func (q *Queries) DeleteReactionById(ctx context.Context, id uuid.UUID) error {
+	_, err := q.db.Exec(ctx, deleteReactionById, id)
+	return err
+}
+
 const getCommentsByPostID = `-- name: GetCommentsByPostID :many
 SELECT id, post_id, parent_id, user_id, content, created_at, updated_at FROM comments WHERE post_id = $1
 `
@@ -276,6 +285,15 @@ func (q *Queries) LoadOrderedPosts(ctx context.Context) ([]LoadOrderedPostsRow, 
 		return nil, err
 	}
 	return items, nil
+}
+
+const removeReactionCount = `-- name: RemoveReactionCount :exec
+UPDATE posts SET like_count = like_count - 1 WHERE id = $1
+`
+
+func (q *Queries) RemoveReactionCount(ctx context.Context, id uuid.UUID) error {
+	_, err := q.db.Exec(ctx, removeReactionCount, id)
+	return err
 }
 
 const updatePost = `-- name: UpdatePost :exec

@@ -134,3 +134,27 @@ func (service *PostService) ReactToPost(command *dtos.ReactToPostCommand) (dtos.
 		Message: "Reaction saved",
 	}, nil
 }
+
+func (service *PostService) RemovePostReaction(command *dtos.RemovePostReactionCommand) (dtos.RemovePostReactionResponse, error) {
+	uuidReaction, err := uuid.Parse(command.ReactionID)
+	if err != nil {
+		return dtos.RemovePostReactionResponse{}, errors.NewInvalidArgument("Invalid reaction ID")
+	}
+
+	uuidPost, err := uuid.Parse(command.PostID)
+	if err != nil {
+		return dtos.RemovePostReactionResponse{}, errors.NewInvalidArgument("Invalid post ID")
+	}
+
+	removed, err := service.postRepo.RemovePostReaction(uuidReaction, uuidPost)
+	if err != nil {
+		return dtos.RemovePostReactionResponse{}, err
+	}
+	if !removed {
+		return dtos.RemovePostReactionResponse{}, errors.NewResourceNotFound("Reaction not found")
+	}
+
+	return dtos.RemovePostReactionResponse{
+		Message: "Reaction removed",
+	}, nil
+}

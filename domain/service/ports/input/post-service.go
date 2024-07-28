@@ -9,4 +9,5 @@ type PostService interface {
 	UpdatePost(command *dtos.UpdatePostCommand) (dtos.UpdatedPostResponse, error)
 	LoadOrderedPosts(query *dtos.LoadOrderedPostsQuery) ([]dtos.LoadedPostResponse, error)
 	ReactToPost(command *dtos.ReactToPostCommand) (dtos.ReactToPostResponse, error)
+	RemovePostReaction(command *dtos.RemovePostReactionCommand) (dtos.RemovePostReactionResponse, error)
 }

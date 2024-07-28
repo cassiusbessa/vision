@@ -84,35 +84,35 @@ func (repo *PostRepository) LoadOrderedPosts() ([]entities.ProjectPost, error) {
 
 func (repo *PostRepository) AddReactionToPost(reaction *entities.Reaction) error {
 
-	ctx := context.Background()
-
-	tx, err := repo.db.Begin(ctx)
-	if err != nil {
-		return err
-	}
-
-	defer func() {
-		if p := recover(); p != nil {
-			tx.Rollback(ctx)
-			panic(p)
-		} else if err != nil {
-			tx.Rollback(ctx)
+	return withTransaction(context.Background(), repo.db, func(ctx context.Context, qtx *sqlc.Queries) error {
+		err := qtx.CreateReaction(ctx, mappers.ReactionEntityToCreateReactionQueryParams(reaction))
+		if err != nil {
+			return err
 		}
-	}()
 
-	qtx := repo.queries.WithTx(tx)
+		err = qtx.AddReactionCount(ctx, reaction.PostID)
+		if err != nil {
+			return err
+		}
 
-	err = qtx.CreateReaction(ctx, mappers.ReactionEntityToCreateReactionQueryParams(reaction))
-	if err != nil {
-		return err
-	}
+		return nil
+	})
+}
 
-	err = qtx.AddReactionCount(ctx, reaction.PostID)
-	if err != nil {
-		return err
-	}
+func (repo *PostRepository) RemovePostReaction(reactionID, postID uuid.UUID) (bool, error) {
+	return true, withTransaction(context.Background(), repo.db, func(ctx context.Context, qtx *sqlc.Queries) error {
+		err := qtx.DeleteReactionById(ctx, reactionID)
+		if err != nil {
+			return err
+		}
 
-	return tx.Commit(ctx)
+		err = qtx.RemoveReactionCount(ctx, postID)
+		if err != nil {
+			return err
+		}
+
+		return nil
+	})
 }
 
 func withTransaction(ctx context.Context, db *pgx.Conn, fn func(context.Context, *sqlc.Queries) error) error {

@@ -52,5 +52,11 @@ UPDATE posts SET title = $2, content = $3, repo_link = $4, demo_link = $5, post_
 -- name: CreateReaction :exec
 INSERT INTO reactions (id, post_id, comment_id, user_id, reaction_type, created_at) VALUES ($1, $2, $3, $4, $5, $6);
 
+-- name: DeleteReactionById :exec
+DELETE FROM reactions WHERE id = $1;
+
 -- name: AddReactionCount :exec
 UPDATE posts SET like_count = like_count + 1 WHERE id = $1;
+
+-- name: RemoveReactionCount :exec
+UPDATE posts SET like_count = like_count - 1 WHERE id = $1;

@@ -27,6 +27,7 @@ func main() {
 	r.PUT("/posts", postController.UpdatePost)
 	r.GET("/posts", postController.GetPosts)
 	r.POST("/posts/react", postController.ReactToPost)
+	r.DELETE("/posts/react", postController.RemovePostReaction)
 
 	go func() {
 		log.Println("Server started on port 8888")
