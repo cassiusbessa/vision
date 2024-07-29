@@ -46,6 +46,9 @@ ORDER BY
 -- name: CreatePost :exec
 INSERT INTO posts (id, project_id, author_id, title, content, repo_link, demo_link, post_image, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);
 
+-- name: DeletePostById :exec
+DELETE FROM posts WHERE id = $1;
+
 -- name: UpdatePost :exec
 UPDATE posts SET title = $2, content = $3, repo_link = $4, demo_link = $5, post_image = $6, updated_at = $7 WHERE id = $1;
 

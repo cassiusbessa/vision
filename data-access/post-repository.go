@@ -27,6 +27,15 @@ func (repo *PostRepository) SavePost(post *entities.ProjectPost) error {
 	return err
 }
 
+func (repo *PostRepository) RemovePost(postID uuid.UUID) (bool, error) {
+	err := repo.queries.DeletePostById(context.Background(), postID)
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
+
 func (repo *PostRepository) UpdatePost(post *entities.ProjectPost) error {
 	err := repo.queries.UpdatePost(context.Background(), mappers.PostEntityToUpdateQueryParams(post))
 	return err

@@ -125,6 +125,15 @@ func (q *Queries) DeleteCommentById(ctx context.Context, id uuid.UUID) error {
 	return err
 }
 
+const deletePostById = `-- name: DeletePostById :exec
+DELETE FROM posts WHERE id = $1
+`
+
+func (q *Queries) DeletePostById(ctx context.Context, id uuid.UUID) error {
+	_, err := q.db.Exec(ctx, deletePostById, id)
+	return err
+}
+
 const deleteReactionById = `-- name: DeleteReactionById :exec
 DELETE FROM reactions WHERE id = $1
 `

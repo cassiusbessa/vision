@@ -9,6 +9,7 @@ import (
 type PostService interface {
 	CreatePost(command *postDTO.CreatePostCommand) (postDTO.CreatedPostResponse, error)
 	UpdatePost(command *postDTO.UpdatePostCommand) (postDTO.UpdatedPostResponse, error)
+	DeletePost(command *postDTO.RemovePostCommand) (postDTO.RemovedPostResponse, error)
 	LoadOrderedPosts(query *postDTO.LoadOrderedPostsQuery) ([]postDTO.LoadedPostResponse, error)
 	ReactToPost(command *reactionDTO.ReactToPostCommand) (reactionDTO.ReactToPostResponse, error)
 	RemovePostReaction(command *reactionDTO.RemovePostReactionCommand) (reactionDTO.RemovePostReactionResponse, error)

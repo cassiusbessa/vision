@@ -36,6 +36,22 @@ func (controller *PostController) CreatePost(c *gin.Context) {
 	c.JSON(http.StatusCreated, response)
 }
 
+func (controller *PostController) RemovePost(c *gin.Context) {
+	var command postDTO.RemovePostCommand
+	if err := c.ShouldBindJSON(&command); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	response, err := controller.postService.DeletePost(&command)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, response)
+}
+
 func (controller *PostController) UpdatePost(c *gin.Context) {
 	var command postDTO.UpdatePostCommand
 	if err := c.ShouldBindJSON(&command); err != nil {

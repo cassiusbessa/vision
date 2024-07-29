@@ -24,6 +24,7 @@ func main() {
 
 	r.Use(http.ErrorHandler())
 	r.POST("/posts", postController.CreatePost)
+	r.DELETE("/posts", postController.RemovePost)
 	r.PUT("/posts", postController.UpdatePost)
 	r.GET("/posts", postController.GetPosts)
 	r.POST("/posts/react", postController.ReactToPost)
