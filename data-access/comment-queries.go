@@ -40,3 +40,22 @@ func (repo *PostRepository) RemovePostComment(commentID, postID uuid.UUID) (bool
 		return nil
 	})
 }
+
+func (repo *PostRepository) LoadPostCommentsByPostID(postID uuid.UUID, limit, offSet int32) ([]entities.Comment, error) {
+	comments, err := repo.queries.LoadCommentsByPostID(context.Background(), sqlc.LoadCommentsByPostIDParams{
+		PostID: postID,
+		Limit:  limit,
+		Offset: offSet,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	var commentsEntities []entities.Comment
+
+	for _, comment := range comments {
+		commentsEntities = append(commentsEntities, *mappers.LoadedCommentToComment(comment))
+	}
+
+	return commentsEntities, nil
+}

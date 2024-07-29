@@ -115,6 +115,23 @@ func (controller *PostController) RemovePostReaction(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
+func (controller *PostController) LoadPostReactionsByPostID(c *gin.Context) {
+	postID := c.Param("postID")
+	reactions, err := controller.postService.LoadPostReactionsByPostID(
+		&reactionDTO.LoadOrderedReactionsQuery{
+			PostID: postID,
+			Limit:  10,
+			Offset: 0,
+		},
+	)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, reactions)
+}
+
 func (controller *PostController) AddCommentToPost(c *gin.Context) {
 	var command commentDTO.AddCommentToPostCommand
 	if err := c.ShouldBindJSON(&command); err != nil {
@@ -145,4 +162,21 @@ func (controller *PostController) RemovePostComment(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, response)
+}
+
+func (controller *PostController) LoadPostCommentsByPostID(c *gin.Context) {
+	postID := c.Param("postID")
+	comments, err := controller.postService.LoadPostCommentsByPostID(
+		&commentDTO.LoadOrderedCommentsQuery{
+			PostID: postID,
+			Limit:  10,
+			Offset: 0,
+		},
+	)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, comments)
 }

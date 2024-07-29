@@ -69,3 +69,23 @@ func (service *PostService) RemovePostComment(command *commentDTO.RemovePostComm
 		Message: "Comment removed",
 	}, nil
 }
+
+func (service *PostService) LoadPostCommentsByPostID(query *commentDTO.LoadOrderedCommentsQuery) ([]commentDTO.LoadedCommentResponse, error) {
+
+	uuidPost, err := uuid.Parse(query.PostID)
+	if err != nil {
+		return []commentDTO.LoadedCommentResponse{}, errors.NewInvalidArgument("Invalid post ID")
+	}
+
+	comments, err := service.postRepo.LoadPostCommentsByPostID(uuidPost, query.Limit, query.Offset)
+	if err != nil {
+		return []commentDTO.LoadedCommentResponse{}, err
+	}
+
+	commentsDTO := make([]commentDTO.LoadedCommentResponse, len(comments))
+	for i, comment := range comments {
+		commentsDTO[i] = mappers.CommentEntityToLoadedCommentResponse(comment)
+	}
+
+	return commentsDTO, nil
+}

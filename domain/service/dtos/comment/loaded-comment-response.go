@@ -1,6 +1,6 @@
 package dtos
 
-type LoadCommentResponse struct {
+type LoadedCommentResponse struct {
 	ID        string `json:"id"`
 	PostID    string `json:"post_id"`
 	ParentID  string `json:"parent_id"`

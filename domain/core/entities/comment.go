@@ -10,7 +10,7 @@ type Comment struct {
 	ID             uuid.UUID
 	PostID         uuid.UUID
 	ParentID       uuid.UUID
-	UserID         uuid.UUID
+	Author         Author
 	Content        string
 	Reactions      []Reaction
 	CreatedAt      time.Time
@@ -48,9 +48,21 @@ func CommentWithParentID(parentID uuid.UUID) CommentOption {
 	}
 }
 
-func CommentWithUserID(userID uuid.UUID) CommentOption {
+func CommentWithAuthorID(authorID uuid.UUID) CommentOption {
 	return func(c *Comment) {
-		c.UserID = userID
+		c.Author.ID = authorID
+	}
+}
+
+func CommentWithAuthorName(authorName string) CommentOption {
+	return func(c *Comment) {
+		c.Author.Name = authorName
+	}
+}
+
+func CommentWithAuthorImage(authorImage string) CommentOption {
+	return func(c *Comment) {
+		c.Author.Image = authorImage
 	}
 }
 

@@ -20,7 +20,7 @@ type Reaction struct {
 	ID             uuid.UUID
 	PostID         uuid.UUID
 	ParentID       uuid.NullUUID
-	UserID         uuid.UUID
+	Author         Author
 	Type           ReactionType
 	CreatedAt      time.Time
 	FailureMessage []string
@@ -56,9 +56,21 @@ func ReactionWithParentID(parentID uuid.NullUUID) ReactionOption {
 	}
 }
 
-func ReactionWithUserID(userID uuid.UUID) ReactionOption {
+func ReactionWithAuthorID(authorID uuid.UUID) ReactionOption {
 	return func(r *Reaction) {
-		r.UserID = userID
+		r.Author.ID = authorID
+	}
+}
+
+func ReactionWithAuthorName(authorName string) ReactionOption {
+	return func(r *Reaction) {
+		r.Author.Name = authorName
+	}
+}
+
+func ReactionWithAuthorImage(authorImage string) ReactionOption {
+	return func(r *Reaction) {
+		r.Author.Image = authorImage
 	}
 }
 

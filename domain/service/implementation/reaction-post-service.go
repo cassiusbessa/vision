@@ -24,7 +24,7 @@ func (service *PostService) ReactToPost(command *reactionDTO.ReactToPostCommand)
 		return reactionDTO.ReactToPostResponse{}, errors.NewResourceNotFound("Post not found")
 	}
 	for _, reaction := range post.Reactions {
-		if reaction.UserID == uuid.MustParse(command.UserID) {
+		if reaction.Author.ID == uuid.MustParse(command.UserID) {
 			return reactionDTO.ReactToPostResponse{}, errors.NewResourceAlreadyExists("User already reacted to this post")
 		}
 	}
@@ -72,4 +72,24 @@ func (service *PostService) RemovePostReaction(command *reactionDTO.RemovePostRe
 	return reactionDTO.RemovePostReactionResponse{
 		Message: "Reaction removed",
 	}, nil
+}
+
+func (service *PostService) LoadPostReactionsByPostID(query *reactionDTO.LoadOrderedReactionsQuery) ([]reactionDTO.LoadReactionResponse, error) {
+
+	uuidPost, err := uuid.Parse(query.PostID)
+	if err != nil {
+		return []reactionDTO.LoadReactionResponse{}, errors.NewInvalidArgument("Invalid post ID")
+	}
+
+	reactions, err := service.postRepo.LoadReactionsByPostID(uuidPost, query.Limit, query.Offset)
+	if err != nil {
+		return []reactionDTO.LoadReactionResponse{}, err
+	}
+
+	loadedReactions := make([]reactionDTO.LoadReactionResponse, 0)
+	for _, reaction := range reactions {
+		loadedReactions = append(loadedReactions, mappers.ReactionEntityToLoadedReactionResponse(reaction))
+	}
+
+	return loadedReactions, nil
 }

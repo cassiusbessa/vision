@@ -9,7 +9,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func commentEntityToLoadedCommentResponse(comment entities.Comment) commentDTO.LoadCommentResponse {
+func CommentEntityToLoadedCommentResponse(comment entities.Comment) commentDTO.LoadedCommentResponse {
 
 	var parentID string
 	if comment.ParentID == uuid.Nil {
@@ -18,9 +18,9 @@ func commentEntityToLoadedCommentResponse(comment entities.Comment) commentDTO.L
 		parentID = comment.ParentID.String()
 	}
 
-	return commentDTO.LoadCommentResponse{
+	return commentDTO.LoadedCommentResponse{
 		ID:        comment.ID.String(),
-		AuthorID:  comment.UserID.String(),
+		AuthorID:  comment.Author.ID.String(),
 		PostID:    comment.PostID.String(),
 		ParentID:  parentID,
 		Content:   comment.Content,
@@ -43,7 +43,7 @@ func AddCommentToPostCommandToCommentEntity(command commentDTO.AddCommentToPostC
 	comment := entities.NewComment(
 		entities.CommentWithID(uuid.New()),
 		entities.CommentWithPostID(uuidPost),
-		entities.CommentWithUserID(uuidUser),
+		entities.CommentWithAuthorID(uuidUser),
 		entities.CommentWithContent(command.Content),
 		entities.CommentWithCreatedAt(time.Now()),
 		entities.CommentWithUpdatedAt(time.Now()),

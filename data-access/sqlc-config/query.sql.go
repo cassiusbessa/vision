@@ -230,6 +230,77 @@ func (q *Queries) GetReactionsByPostID(ctx context.Context, postID uuid.UUID) ([
 	return items, nil
 }
 
+const loadCommentsByPostID = `-- name: LoadCommentsByPostID :many
+SELECT
+    c.id AS comment_id,
+    c.post_id,
+    c.parent_id,
+    c.user_id,
+    c.content AS comment_content,
+    c.created_at AS comment_created_at,
+    c.updated_at AS comment_updated_at,
+    pf.name AS author_name,
+    pf.image AS author_image
+FROM
+    comments c
+JOIN accounts a ON c.user_id = a.id
+JOIN profiles pf ON a.id = pf.account_id
+WHERE
+    c.post_id = $1
+ORDER BY
+    c.created_at DESC
+LIMIT $2
+OFFSET $3
+`
+
+type LoadCommentsByPostIDParams struct {
+	PostID uuid.UUID
+	Limit  int32
+	Offset int32
+}
+
+type LoadCommentsByPostIDRow struct {
+	CommentID        uuid.UUID
+	PostID           uuid.UUID
+	ParentID         uuid.NullUUID
+	UserID           uuid.UUID
+	CommentContent   string
+	CommentCreatedAt time.Time
+	CommentUpdatedAt time.Time
+	AuthorName       string
+	AuthorImage      sql.NullString
+}
+
+func (q *Queries) LoadCommentsByPostID(ctx context.Context, arg LoadCommentsByPostIDParams) ([]LoadCommentsByPostIDRow, error) {
+	rows, err := q.db.Query(ctx, loadCommentsByPostID, arg.PostID, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []LoadCommentsByPostIDRow
+	for rows.Next() {
+		var i LoadCommentsByPostIDRow
+		if err := rows.Scan(
+			&i.CommentID,
+			&i.PostID,
+			&i.ParentID,
+			&i.UserID,
+			&i.CommentContent,
+			&i.CommentCreatedAt,
+			&i.CommentUpdatedAt,
+			&i.AuthorName,
+			&i.AuthorImage,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const loadOrderedPosts = `-- name: LoadOrderedPosts :many
 SELECT
     p.id AS post_id,
@@ -300,6 +371,74 @@ func (q *Queries) LoadOrderedPosts(ctx context.Context, arg LoadOrderedPostsPara
 			&i.CommentCount,
 			&i.PostCreatedAt,
 			&i.PostUpdatedAt,
+			&i.AuthorName,
+			&i.AuthorImage,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const loadReactionsByPostID = `-- name: LoadReactionsByPostID :many
+SELECT
+    r.id AS reaction_id,
+    r.post_id,
+    r.comment_id,
+    r.user_id,
+    r.reaction_type,
+    r.created_at AS reaction_created_at,
+    pf.name AS author_name,
+    pf.image AS author_image
+FROM
+    reactions r
+JOIN accounts a ON r.user_id = a.id
+JOIN profiles pf ON a.id = pf.account_id
+WHERE
+    r.post_id = $1
+ORDER BY
+    r.created_at DESC
+LIMIT $2
+OFFSET $3
+`
+
+type LoadReactionsByPostIDParams struct {
+	PostID uuid.UUID
+	Limit  int32
+	Offset int32
+}
+
+type LoadReactionsByPostIDRow struct {
+	ReactionID        uuid.UUID
+	PostID            uuid.UUID
+	CommentID         uuid.NullUUID
+	UserID            uuid.UUID
+	ReactionType      string
+	ReactionCreatedAt time.Time
+	AuthorName        string
+	AuthorImage       sql.NullString
+}
+
+func (q *Queries) LoadReactionsByPostID(ctx context.Context, arg LoadReactionsByPostIDParams) ([]LoadReactionsByPostIDRow, error) {
+	rows, err := q.db.Query(ctx, loadReactionsByPostID, arg.PostID, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []LoadReactionsByPostIDRow
+	for rows.Next() {
+		var i LoadReactionsByPostIDRow
+		if err := rows.Scan(
+			&i.ReactionID,
+			&i.PostID,
+			&i.CommentID,
+			&i.UserID,
+			&i.ReactionType,
+			&i.ReactionCreatedAt,
 			&i.AuthorName,
 			&i.AuthorImage,
 		); err != nil {

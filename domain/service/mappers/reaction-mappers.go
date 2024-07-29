@@ -20,7 +20,7 @@ func ReactionEntityToLoadedReactionResponse(reaction entities.Reaction) reaction
 
 	return reactionDTO.LoadReactionResponse{
 		ID:        reaction.ID.String(),
-		UserID:    reaction.UserID.String(),
+		UserID:    reaction.Author.ID.String(),
 		PostID:    reaction.PostID.String(),
 		ParentID:  parentID,
 		Type:      reaction.Type,
@@ -64,7 +64,7 @@ func ReactToPostCommandToReactionEntity(command reactionDTO.ReactToPostCommand) 
 	reaction := entities.NewReaction(
 		entities.ReactionWithID(uuid.New()),
 		entities.ReactionWithPostID(uuidPost),
-		entities.ReactionWithUserID(uuidUser),
+		entities.ReactionWithAuthorID(uuidUser),
 		entities.ReactionWithReactionType(reactionType),
 		entities.ReactionWithParentID(parentId),
 		entities.ReactionWithCreatedAt(time.Now()),

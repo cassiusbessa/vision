@@ -69,9 +69,9 @@ func UpdatePostCommandToPostEntity(command postDTO.UpdatePostCommand, post entit
 
 func PostEntityToLoadedPostResponse(post entities.ProjectPost) postDTO.LoadedPostResponse {
 
-	comments := make([]commentDTO.LoadCommentResponse, 0)
+	comments := make([]commentDTO.LoadedCommentResponse, 0)
 	for _, comment := range post.Comments {
-		comments = append(comments, commentEntityToLoadedCommentResponse(comment))
+		comments = append(comments, CommentEntityToLoadedCommentResponse(comment))
 	}
 
 	reactions := make([]reactionDTO.LoadReactionResponse, 0)

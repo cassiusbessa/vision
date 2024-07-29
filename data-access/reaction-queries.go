@@ -41,3 +41,23 @@ func (repo *PostRepository) RemovePostReaction(reactionID, postID uuid.UUID) (bo
 		return nil
 	})
 }
+
+func (repo *PostRepository) LoadReactionsByPostID(postID uuid.UUID, limit, offSet int32) ([]entities.Reaction, error) {
+
+	reactions, err := repo.queries.LoadReactionsByPostID(context.Background(), sqlc.LoadReactionsByPostIDParams{
+		PostID: postID,
+		Limit:  limit,
+		Offset: offSet,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	var reactionsEntities []entities.Reaction
+
+	for _, reaction := range reactions {
+		reactionsEntities = append(reactionsEntities, *mappers.LoadedReactionToReaction(reaction))
+	}
+
+	return reactionsEntities, nil
+}

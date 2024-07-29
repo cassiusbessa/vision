@@ -13,6 +13,8 @@ type PostService interface {
 	LoadOrderedPosts(query *postDTO.LoadOrderedPostsQuery) ([]postDTO.LoadedPostResponse, error)
 	ReactToPost(command *reactionDTO.ReactToPostCommand) (reactionDTO.ReactToPostResponse, error)
 	RemovePostReaction(command *reactionDTO.RemovePostReactionCommand) (reactionDTO.RemovePostReactionResponse, error)
+	LoadPostReactionsByPostID(query *reactionDTO.LoadOrderedReactionsQuery) ([]reactionDTO.LoadReactionResponse, error)
 	AddCommentToPost(command *commentDTO.AddCommentToPostCommand) (commentDTO.AddCommentToPostResponse, error)
 	RemovePostComment(command *commentDTO.RemovePostCommentCommand) (commentDTO.RemovePostCommentResponse, error)
+	LoadPostCommentsByPostID(query *commentDTO.LoadOrderedCommentsQuery) ([]commentDTO.LoadedCommentResponse, error)
 }

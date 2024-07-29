@@ -17,7 +17,7 @@ type LoadedPostResponse struct {
 	PostImage    string                              `json:"post_image"`
 	LikeCount    int                                 `json:"like_count"`
 	CommentCount int                                 `json:"comment_count"`
-	Comments     []dtosComment.LoadCommentResponse   `json:"comments"`
+	Comments     []dtosComment.LoadedCommentResponse `json:"comments"`
 	Reactions    []dtosReaction.LoadReactionResponse `json:"reactions"`
 	CreatedAt    string                              `json:"created_at"`
 	UpdatedAt    string                              `json:"updated_at"`

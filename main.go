@@ -23,14 +23,19 @@ func main() {
 	r := http.Router()
 
 	r.Use(http.ErrorHandler())
+
 	r.POST("/posts", postController.CreatePost)
 	r.DELETE("/posts", postController.RemovePost)
 	r.PUT("/posts", postController.UpdatePost)
 	r.GET("/posts", postController.GetPosts)
+
 	r.POST("/posts/react", postController.ReactToPost)
 	r.DELETE("/posts/react", postController.RemovePostReaction)
+	r.GET("/posts/:postID/react", postController.LoadPostReactionsByPostID)
+
 	r.POST("/posts/comment", postController.AddCommentToPost)
 	r.DELETE("/posts/comment", postController.RemovePostComment)
+	r.GET("/posts/:postID/comment", postController.LoadPostCommentsByPostID)
 
 	go func() {
 		log.Println("Server started on port 8888")

@@ -13,6 +13,8 @@ type PostRepository interface {
 	LoadOrderedPosts(limit, offSet int32) ([]entities.ProjectPost, error)
 	AddReactionToPost(reaction *entities.Reaction) error
 	RemovePostReaction(reactionID, postID uuid.UUID) (bool, error)
+	LoadReactionsByPostID(postID uuid.UUID, limit, offSet int32) ([]entities.Reaction, error)
 	AddCommentToPost(comment *entities.Comment) error
 	RemovePostComment(commentID, postID uuid.UUID) (bool, error)
+	LoadPostCommentsByPostID(postID uuid.UUID, limit, offSet int32) ([]entities.Comment, error)
 }
