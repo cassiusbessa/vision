@@ -196,3 +196,27 @@ func (service *PostService) AddCommentToPost(command *commentDTO.AddCommentToPos
 		Message:   "Comment saved",
 	}, nil
 }
+
+func (service *PostService) RemovePostComment(command *commentDTO.RemovePostCommentCommand) (commentDTO.RemovePostCommentResponse, error) {
+	uuidComment, err := uuid.Parse(command.CommentID)
+	if err != nil {
+		return commentDTO.RemovePostCommentResponse{}, errors.NewInvalidArgument("Invalid comment ID")
+	}
+
+	uuidPost, err := uuid.Parse(command.PostID)
+	if err != nil {
+		return commentDTO.RemovePostCommentResponse{}, errors.NewInvalidArgument("Invalid post ID")
+	}
+
+	removed, err := service.postRepo.RemovePostComment(uuidComment, uuidPost)
+	if err != nil {
+		return commentDTO.RemovePostCommentResponse{}, err
+	}
+	if !removed {
+		return commentDTO.RemovePostCommentResponse{}, errors.NewResourceNotFound("Comment not found")
+	}
+
+	return commentDTO.RemovePostCommentResponse{
+		Message: "Comment removed",
+	}, nil
+}

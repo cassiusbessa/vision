@@ -52,11 +52,11 @@ UPDATE posts SET title = $2, content = $3, repo_link = $4, demo_link = $5, post_
 -- name: CreateReaction :exec
 INSERT INTO reactions (id, post_id, comment_id, user_id, reaction_type, created_at) VALUES ($1, $2, $3, $4, $5, $6);
 
--- name: DeleteReactionById :exec
-DELETE FROM reactions WHERE id = $1;
-
 -- name: AddReactionCount :exec
 UPDATE posts SET like_count = like_count + 1 WHERE id = $1;
+
+-- name: DeleteReactionById :exec
+DELETE FROM reactions WHERE id = $1;
 
 -- name: RemoveReactionCount :exec
 UPDATE posts SET like_count = like_count - 1 WHERE id = $1;
@@ -64,5 +64,11 @@ UPDATE posts SET like_count = like_count - 1 WHERE id = $1;
 -- name: CreateComment :exec
 INSERT INTO comments (id, post_id, parent_id, user_id, content, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7);
 
+-- name: DeleteCommentById :exec
+DELETE FROM comments WHERE id = $1;
+
 -- name: AddCommentCount :exec
 UPDATE posts SET comment_count = comment_count + 1 WHERE id = $1;
+
+-- name: RemoveCommentCount :exec
+UPDATE posts SET comment_count = comment_count - 1 WHERE id = $1;
