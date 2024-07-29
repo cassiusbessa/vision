@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/cassiusbessa/vision-social-media/domain/core/entities"
+	authorDTO "github.com/cassiusbessa/vision-social-media/domain/service/dtos/author"
 	commentDTO "github.com/cassiusbessa/vision-social-media/domain/service/dtos/comment"
 	postDTO "github.com/cassiusbessa/vision-social-media/domain/service/dtos/post"
 	reactionDTO "github.com/cassiusbessa/vision-social-media/domain/service/dtos/reaction"
@@ -50,7 +51,7 @@ func UpdatePostCommandToPostEntity(command postDTO.UpdatePostCommand, post entit
 	updatedPost := entities.NewProjectPost(
 		entities.PostWithID(uuidPost),
 		entities.PostWithProjectID(post.ProjectID),
-		entities.PostWithAuthorID(post.AuthorID),
+		entities.PostWithAuthorID(post.Author.ID),
 		entities.PostWithTitle(command.Title),
 		entities.PostWithContent(command.Content),
 		entities.PostWithRepoLink(command.RepoLink),
@@ -68,9 +69,19 @@ func UpdatePostCommandToPostEntity(command postDTO.UpdatePostCommand, post entit
 }
 
 func commentEntityToLoadedCommentResponse(comment entities.Comment) commentDTO.LoadCommentResponse {
+
+	var parentID string
+	if comment.ParentID == uuid.Nil {
+		parentID = ""
+	} else {
+		parentID = comment.ParentID.String()
+	}
+
 	return commentDTO.LoadCommentResponse{
 		ID:        comment.ID.String(),
 		AuthorID:  comment.UserID.String(),
+		PostID:    comment.PostID.String(),
+		ParentID:  parentID,
 		Content:   comment.Content,
 		CreatedAt: comment.CreatedAt.Format(time.RFC3339),
 		UpdatedAt: comment.UpdatedAt.Format(time.RFC3339),
@@ -79,13 +90,28 @@ func commentEntityToLoadedCommentResponse(comment entities.Comment) commentDTO.L
 
 func reactionEntityToLoadedReactionResponse(reaction entities.Reaction) reactionDTO.LoadReactionResponse {
 
+	var parentID string
+	if reaction.ParentID.UUID == uuid.Nil {
+		parentID = ""
+	} else {
+		parentID = reaction.ParentID.UUID.String()
+	}
+
 	return reactionDTO.LoadReactionResponse{
 		ID:        reaction.ID.String(),
 		UserID:    reaction.UserID.String(),
 		PostID:    reaction.PostID.String(),
-		ParentID:  reaction.ParentID.UUID.String(),
+		ParentID:  parentID,
 		Type:      reaction.Type,
 		CreatedAt: reaction.CreatedAt.Format(time.RFC3339),
+	}
+}
+
+func AuthorEnitityToLoadedResponse(author entities.Author) authorDTO.AuthorLoadedResponse {
+	return authorDTO.AuthorLoadedResponse{
+		AuthorID:    author.ID.String(),
+		AuthorName:  author.Name,
+		AuthorImage: author.Image,
 	}
 }
 
@@ -104,7 +130,7 @@ func PostEntityToLoadedPostResponse(post entities.ProjectPost) postDTO.LoadedPos
 	return postDTO.LoadedPostResponse{
 		ID:           post.ID.String(),
 		ProjectID:    post.ProjectID.String(),
-		AuthorID:     post.AuthorID.String(),
+		Author:       AuthorEnitityToLoadedResponse(post.Author),
 		Title:        post.Title,
 		Content:      post.Content,
 		RepoLink:     post.RepoLink,

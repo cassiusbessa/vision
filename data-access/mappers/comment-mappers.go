@@ -6,20 +6,6 @@ import (
 	"github.com/google/uuid"
 )
 
-func LoadOrderedPostRowToPostComment(post data.LoadOrderedPostsRow) *entities.Comment {
-
-	return entities.NewComment(
-		entities.CommentWithID(post.CommentID.UUID),
-		entities.CommentWithPostID(post.PostID),
-		entities.CommentWithParentID(post.CommentParentID.UUID),
-		entities.CommentWithUserID(post.CommentUserID.UUID),
-		entities.CommentWithContent(post.CommentContent.String),
-		entities.CommentWithReactions([]entities.Reaction{}),
-		entities.CommentWithCreatedAt(post.CommentCreatedAt.Time),
-		entities.CommentWithUpdatedAt(post.CommentUpdatedAt.Time),
-	)
-}
-
 func CommentDbEntityToComment(comment data.Comment) *entities.Comment {
 
 	return entities.NewComment(

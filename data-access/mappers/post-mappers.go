@@ -26,7 +26,7 @@ func PostEntityToCreateQueryParams(post *entities.ProjectPost) data.CreatePostPa
 	return data.CreatePostParams{
 		ID:        post.ID,
 		ProjectID: post.ProjectID,
-		AuthorID:  post.AuthorID,
+		AuthorID:  post.Author.ID,
 		Title:     post.Title,
 		Content:   post.Content,
 		RepoLink:  repoLink,
@@ -100,6 +100,8 @@ func LoadOrderedPostRowToProjectPosts(post data.LoadOrderedPostsRow) *entities.P
 		entities.PostWithID(post.PostID),
 		entities.PostWithProjectID(post.ProjectID),
 		entities.PostWithAuthorID(post.AuthorID),
+		entities.PostWithAuthorImage(post.AuthorImage.String),
+		entities.PostWithAuthorName(post.AuthorName),
 		entities.PostWithTitle(post.Title),
 		entities.PostWithContent(post.PostContent),
 		entities.PostWithRepoLink(post.RepoLink.String),

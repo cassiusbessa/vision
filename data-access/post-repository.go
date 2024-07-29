@@ -61,34 +61,22 @@ func (repo *PostRepository) GetPostByID(postID uuid.UUID) (*entities.ProjectPost
 	return mappers.PostDBEntityToProjectPost(post, comments, reactions), nil
 }
 
-func (repo *PostRepository) LoadOrderedPosts() ([]entities.ProjectPost, error) {
-	posts, err := repo.queries.LoadOrderedPosts(context.Background())
+func (repo *PostRepository) LoadOrderedPosts(limit, offSet int32) ([]entities.ProjectPost, error) {
+	dbPosts, err := repo.queries.LoadOrderedPosts(context.Background(), sqlc.LoadOrderedPostsParams{
+		Limit:  limit,
+		Offset: offSet,
+	})
 	if err != nil {
 		return nil, err
 	}
 
-	entitiesPosts := map[uuid.UUID]*entities.ProjectPost{}
-
-	for _, post := range posts {
-		if _, ok := entitiesPosts[post.PostID]; !ok {
-			entitiesPosts[post.PostID] = mappers.LoadOrderedPostRowToProjectPosts(post)
-		}
-
-		if post.CommentID.Valid {
-			entitiesPosts[post.PostID].AddComment(mappers.LoadOrderedPostRowToPostComment(post))
-		}
-
-		if post.ReactionID.Valid {
-			entitiesPosts[post.PostID].AddReaction(mappers.LoadOrderedPostRowToPostReaction(post))
-		}
+	var posts []entities.ProjectPost
+	for _, dbPost := range dbPosts {
+		posts = append(posts, *mappers.LoadOrderedPostRowToProjectPosts(dbPost))
 	}
 
-	result := make([]entities.ProjectPost, 0, len(entitiesPosts))
-	for _, post := range entitiesPosts {
-		result = append(result, *post)
-	}
+	return posts, nil
 
-	return result, nil
 }
 
 func (repo *PostRepository) AddReactionToPost(reaction *entities.Reaction) error {

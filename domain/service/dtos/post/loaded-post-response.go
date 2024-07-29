@@ -1,6 +1,7 @@
 package dtos
 
 import (
+	dtosAuthor "github.com/cassiusbessa/vision-social-media/domain/service/dtos/author"
 	dtosComment "github.com/cassiusbessa/vision-social-media/domain/service/dtos/comment"
 	dtosReaction "github.com/cassiusbessa/vision-social-media/domain/service/dtos/reaction"
 )
@@ -8,7 +9,7 @@ import (
 type LoadedPostResponse struct {
 	ID           string                              `json:"id"`
 	ProjectID    string                              `json:"project_id"`
-	AuthorID     string                              `json:"author_id"`
+	Author       dtosAuthor.AuthorLoadedResponse     `json:"author"` // Author struct
 	Title        string                              `json:"title"`
 	Content      string                              `json:"content"`
 	RepoLink     string                              `json:"repo_link"`

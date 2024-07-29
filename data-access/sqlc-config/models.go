@@ -11,6 +11,13 @@ import (
 	"github.com/google/uuid"
 )
 
+type Account struct {
+	ID           uuid.UUID
+	AccountLevel string
+	Email        string
+	Password     string
+}
+
 type Comment struct {
 	ID        uuid.UUID
 	PostID    uuid.UUID
@@ -34,6 +41,17 @@ type Post struct {
 	CommentCount int32
 	CreatedAt    time.Time
 	UpdatedAt    time.Time
+}
+
+type Profile struct {
+	ID          uuid.UUID
+	AccountID   uuid.UUID
+	Name        string
+	Title       sql.NullString
+	Description sql.NullString
+	Image       sql.NullString
+	Link        sql.NullString
+	StarProject uuid.NullUUID
 }
 
 type Reaction struct {

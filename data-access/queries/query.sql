@@ -21,27 +21,60 @@ SELECT
     p.comment_count,
     p.created_at AS post_created_at,
     p.updated_at AS post_updated_at,
+    pf.name AS author_name,
+    pf.image AS author_image
+FROM
+    posts p
+JOIN accounts a ON p.author_id = a.id
+JOIN profiles pf ON a.id = pf.account_id
+ORDER BY
+    p.created_at DESC
+LIMIT $1
+OFFSET $2;
+
+-- name: LoadCommentsByPostID :many
+SELECT
     c.id AS comment_id,
-    c.post_id AS comment_post_id,
-    c.parent_id AS comment_parent_id,
-    c.user_id AS comment_user_id,
+    c.post_id,
+    c.parent_id,
+    c.user_id,
     c.content AS comment_content,
     c.created_at AS comment_created_at,
     c.updated_at AS comment_updated_at,
-    r.id AS reaction_id,
-    r.post_id AS reaction_post_id,
-    r.comment_id AS reaction_comment_id,
-    r.user_id AS reaction_user_id,
-    r.reaction_type,
-    r.created_at AS reaction_created_at
+    pf.name AS author_name,
+    pf.image AS author_image
 FROM
-    posts p
-LEFT JOIN comments c ON p.id = c.post_id
-LEFT JOIN reactions r ON p.id = r.post_id
+    comments c
+JOIN accounts a ON c.user_id = a.id
+JOIN profiles pf ON a.id = pf.account_id
+WHERE
+    c.post_id = $1
 ORDER BY
-    p.created_at DESC,
-    c.created_at,
-    r.created_at;  
+    c.created_at DESC
+LIMIT $2
+OFFSET $3;
+
+-- name: LoadReactionsByPostID :many
+SELECT
+    r.id AS reaction_id,
+    r.post_id,
+    r.comment_id,
+    r.user_id,
+    r.reaction_type,
+    r.created_at AS reaction_created_at,
+    pf.name AS author_name,
+    pf.image AS author_image
+FROM
+    reactions r
+JOIN accounts a ON r.user_id = a.id
+JOIN profiles pf ON a.id = pf.account_id
+WHERE
+    r.post_id = $1
+ORDER BY
+    r.created_at DESC
+LIMIT $2
+OFFSET $3;
+
 
 -- name: CreatePost :exec
 INSERT INTO posts (id, project_id, author_id, title, content, repo_link, demo_link, post_image, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);

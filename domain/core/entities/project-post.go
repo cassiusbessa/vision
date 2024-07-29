@@ -9,7 +9,7 @@ import (
 type ProjectPost struct {
 	ID             uuid.UUID
 	ProjectID      uuid.UUID
-	AuthorID       uuid.UUID
+	Author         Author
 	Title          string
 	Content        string
 	RepoLink       string
@@ -50,7 +50,19 @@ func PostWithProjectID(projectID uuid.UUID) PostOption {
 
 func PostWithAuthorID(authorID uuid.UUID) PostOption {
 	return func(p *ProjectPost) {
-		p.AuthorID = authorID
+		p.Author.ID = authorID
+	}
+}
+
+func PostWithAuthorName(authorName string) PostOption {
+	return func(p *ProjectPost) {
+		p.Author.Name = authorName
+	}
+}
+
+func PostWithAuthorImage(authorImage string) PostOption {
+	return func(p *ProjectPost) {
+		p.Author.Image = authorImage
 	}
 }
 

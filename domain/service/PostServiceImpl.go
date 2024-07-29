@@ -103,7 +103,7 @@ func (service *PostService) UpdatePost(command *postDTO.UpdatePostCommand) (post
 
 func (service *PostService) LoadOrderedPosts(query *postDTO.LoadOrderedPostsQuery) ([]postDTO.LoadedPostResponse, error) {
 
-	posts, err := service.postRepo.LoadOrderedPosts()
+	posts, err := service.postRepo.LoadOrderedPosts(query.Limit, query.Offset)
 	if err != nil {
 		return nil, err
 	}

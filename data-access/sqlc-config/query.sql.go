@@ -244,59 +244,42 @@ SELECT
     p.comment_count,
     p.created_at AS post_created_at,
     p.updated_at AS post_updated_at,
-    c.id AS comment_id,
-    c.post_id AS comment_post_id,
-    c.parent_id AS comment_parent_id,
-    c.user_id AS comment_user_id,
-    c.content AS comment_content,
-    c.created_at AS comment_created_at,
-    c.updated_at AS comment_updated_at,
-    r.id AS reaction_id,
-    r.post_id AS reaction_post_id,
-    r.comment_id AS reaction_comment_id,
-    r.user_id AS reaction_user_id,
-    r.reaction_type,
-    r.created_at AS reaction_created_at
+    pf.name AS author_name,
+    pf.image AS author_image
 FROM
     posts p
-LEFT JOIN comments c ON p.id = c.post_id
-LEFT JOIN reactions r ON p.id = r.post_id
+JOIN accounts a ON p.author_id = a.id
+JOIN profiles pf ON a.id = pf.account_id
 ORDER BY
-    p.created_at DESC,
-    c.created_at,
-    r.created_at
+    p.created_at DESC
+LIMIT $1
+OFFSET $2
 `
 
-type LoadOrderedPostsRow struct {
-	PostID            uuid.UUID
-	AuthorID          uuid.UUID
-	ProjectID         uuid.UUID
-	Title             string
-	PostContent       string
-	RepoLink          sql.NullString
-	DemoLink          sql.NullString
-	PostImage         sql.NullString
-	LikeCount         int32
-	CommentCount      int32
-	PostCreatedAt     time.Time
-	PostUpdatedAt     time.Time
-	CommentID         uuid.NullUUID
-	CommentPostID     uuid.NullUUID
-	CommentParentID   uuid.NullUUID
-	CommentUserID     uuid.NullUUID
-	CommentContent    sql.NullString
-	CommentCreatedAt  sql.NullTime
-	CommentUpdatedAt  sql.NullTime
-	ReactionID        uuid.NullUUID
-	ReactionPostID    uuid.NullUUID
-	ReactionCommentID uuid.NullUUID
-	ReactionUserID    uuid.NullUUID
-	ReactionType      sql.NullString
-	ReactionCreatedAt sql.NullTime
+type LoadOrderedPostsParams struct {
+	Limit  int32
+	Offset int32
 }
 
-func (q *Queries) LoadOrderedPosts(ctx context.Context) ([]LoadOrderedPostsRow, error) {
-	rows, err := q.db.Query(ctx, loadOrderedPosts)
+type LoadOrderedPostsRow struct {
+	PostID        uuid.UUID
+	AuthorID      uuid.UUID
+	ProjectID     uuid.UUID
+	Title         string
+	PostContent   string
+	RepoLink      sql.NullString
+	DemoLink      sql.NullString
+	PostImage     sql.NullString
+	LikeCount     int32
+	CommentCount  int32
+	PostCreatedAt time.Time
+	PostUpdatedAt time.Time
+	AuthorName    string
+	AuthorImage   sql.NullString
+}
+
+func (q *Queries) LoadOrderedPosts(ctx context.Context, arg LoadOrderedPostsParams) ([]LoadOrderedPostsRow, error) {
+	rows, err := q.db.Query(ctx, loadOrderedPosts, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -317,19 +300,8 @@ func (q *Queries) LoadOrderedPosts(ctx context.Context) ([]LoadOrderedPostsRow, 
 			&i.CommentCount,
 			&i.PostCreatedAt,
 			&i.PostUpdatedAt,
-			&i.CommentID,
-			&i.CommentPostID,
-			&i.CommentParentID,
-			&i.CommentUserID,
-			&i.CommentContent,
-			&i.CommentCreatedAt,
-			&i.CommentUpdatedAt,
-			&i.ReactionID,
-			&i.ReactionPostID,
-			&i.ReactionCommentID,
-			&i.ReactionUserID,
-			&i.ReactionType,
-			&i.ReactionCreatedAt,
+			&i.AuthorName,
+			&i.AuthorImage,
 		); err != nil {
 			return nil, err
 		}
