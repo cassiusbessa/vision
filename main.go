@@ -5,7 +5,7 @@ import (
 
 	data "github.com/cassiusbessa/vision-social-media/data-access"
 	sqlc "github.com/cassiusbessa/vision-social-media/data-access/sqlc-config"
-	service "github.com/cassiusbessa/vision-social-media/domain/service"
+	service "github.com/cassiusbessa/vision-social-media/domain/service/implementation"
 	http "github.com/cassiusbessa/vision-social-media/http"
 )
 
