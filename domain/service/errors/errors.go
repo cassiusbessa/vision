@@ -63,3 +63,17 @@ func NewValidationError(message string) *ValidationError {
 		Message: message,
 	}
 }
+
+type Unauthorized struct {
+	Message string
+}
+
+func (u *Unauthorized) Error() string {
+	return u.Message
+}
+
+func NewUnauthorized(message string) *Unauthorized {
+	return &Unauthorized{
+		Message: message,
+	}
+}

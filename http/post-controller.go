@@ -11,12 +11,14 @@ import (
 )
 
 type PostController struct {
-	postService ports.PostService
+	postService  ports.PostService
+	tokenService ports.TokenService
 }
 
-func NewPostController(postService ports.PostService) *PostController {
+func NewPostController(postService ports.PostService, tokenService ports.TokenService) *PostController {
 	return &PostController{
-		postService: postService,
+		postService:  postService,
+		tokenService: tokenService,
 	}
 }
 
@@ -90,6 +92,13 @@ func (controller *PostController) ReactToPost(c *gin.Context) {
 		return
 	}
 
+	userID, err := controller.tokenService.GetPayload(c.GetHeader("Authorization"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+	command.UserID = userID
+
 	response, err := controller.postService.ReactToPost(&command)
 	if err != nil {
 		c.Error(err)
@@ -105,6 +114,13 @@ func (controller *PostController) RemovePostReaction(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	userID, err := controller.tokenService.GetPayload(c.GetHeader("Authorization"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+	command.UserID = userID
 
 	response, err := controller.postService.RemovePostReaction(&command)
 	if err != nil {
@@ -139,6 +155,13 @@ func (controller *PostController) AddCommentToPost(c *gin.Context) {
 		return
 	}
 
+	userID, err := controller.tokenService.GetPayload(c.GetHeader("Authorization"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+	command.AuthorID = userID
+
 	response, err := controller.postService.AddCommentToPost(&command)
 	if err != nil {
 		c.Error(err)
@@ -154,6 +177,13 @@ func (controller *PostController) RemovePostComment(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	userID, err := controller.tokenService.GetPayload(c.GetHeader("Authorization"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+	command.UserID = userID
 
 	response, err := controller.postService.RemovePostComment(&command)
 	if err != nil {

@@ -15,8 +15,9 @@ func main() {
 	postRepo := data.NewPostRepository(queries, postgresDb)
 
 	postService := service.NewPostService(postRepo)
+	tokenService := service.NewTokenService()
 
-	postController := http.NewPostController(postService)
+	postController := http.NewPostController(postService, tokenService)
 
 	sqlc.CreateTable(postgresDb)
 

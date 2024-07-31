@@ -14,6 +14,8 @@ func ErrorHandler() gin.HandlerFunc {
 
 		for _, err := range c.Errors {
 			switch err.Err.(type) {
+			case *errors.Unauthorized:
+				c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": err.Err.Error()})
 			case *errors.ValidationError:
 				c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Err.Error()})
 			case *errors.InvalidArgument:
