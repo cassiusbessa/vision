@@ -2,6 +2,7 @@ package http
 
 import (
 	"net/http"
+	"strconv"
 
 	commentDTO "github.com/cassiusbessa/vision-social-media/domain/service/dtos/comment"
 	postDTO "github.com/cassiusbessa/vision-social-media/domain/service/dtos/post"
@@ -71,10 +72,22 @@ func (controller *PostController) UpdatePost(c *gin.Context) {
 }
 
 func (controller *PostController) GetPosts(c *gin.Context) {
+	limitQuery := c.DefaultQuery("limit", "10")
+	offsetQuery := c.DefaultQuery("offset", "0")
+
+	limit, err := strconv.Atoi(limitQuery)
+	if err != nil {
+		limit = 10
+	}
+	offset, err := strconv.Atoi(offsetQuery)
+	if err != nil {
+		offset = 0
+	}
+
 	posts, err := controller.postService.LoadOrderedPosts(
 		&postDTO.LoadOrderedPostsQuery{
-			Limit:  10,
-			Offset: 0,
+			Limit:  int32(limit),
+			Offset: int32(offset),
 		},
 	)
 	if err != nil {
@@ -133,11 +146,22 @@ func (controller *PostController) RemovePostReaction(c *gin.Context) {
 
 func (controller *PostController) LoadPostReactionsByPostID(c *gin.Context) {
 	postID := c.Param("postID")
+	limitQuery := c.DefaultQuery("limit", "10")
+	offsetQuery := c.DefaultQuery("offset", "0")
+
+	limit, err := strconv.Atoi(limitQuery)
+	if err != nil {
+		limit = 10
+	}
+	offset, err := strconv.Atoi(offsetQuery)
+	if err != nil {
+		offset = 0
+	}
 	reactions, err := controller.postService.LoadPostReactionsByPostID(
 		&reactionDTO.LoadOrderedReactionsQuery{
 			PostID: postID,
-			Limit:  10,
-			Offset: 0,
+			Limit:  int32(limit),
+			Offset: int32(offset),
 		},
 	)
 	if err != nil {
@@ -196,11 +220,23 @@ func (controller *PostController) RemovePostComment(c *gin.Context) {
 
 func (controller *PostController) LoadPostCommentsByPostID(c *gin.Context) {
 	postID := c.Param("postID")
+	limitQuery := c.DefaultQuery("limit", "10")
+	offsetQuery := c.DefaultQuery("offset", "0")
+
+	limit, err := strconv.Atoi(limitQuery)
+	if err != nil {
+		limit = 10
+	}
+	offset, err := strconv.Atoi(offsetQuery)
+	if err != nil {
+		offset = 0
+	}
+
 	comments, err := controller.postService.LoadPostCommentsByPostID(
 		&commentDTO.LoadOrderedCommentsQuery{
 			PostID: postID,
-			Limit:  10,
-			Offset: 0,
+			Limit:  int32(limit),
+			Offset: int32(offset),
 		},
 	)
 	if err != nil {
