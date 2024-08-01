@@ -1,17 +1,17 @@
 package dtos
 
 type UpdatePostCommand struct {
-	ID        string `json:"id"`
+	ProjectID string `json:"project_id"`
 	Title     string `json:"title"`
 	Content   string `json:"content"`
-	RepoLink  string `json:"repoLink"`
-	DemoLink  string `json:"demoLink"`
-	PostImage string `json:"postImage"`
+	RepoLink  string `json:"repo_link"`
+	DemoLink  string `json:"demo_link"`
+	PostImage string `json:"post_image"`
 }
 
-func NewUpdatePostCommand(id, title, content, repoLink, demoLink, postImage string) *UpdatePostCommand {
+func NewUpdatePostCommand(projectID, title, content, repoLink, demoLink, postImage string) *UpdatePostCommand {
 	return &UpdatePostCommand{
-		ID:        id,
+		ProjectID: projectID,
 		Title:     title,
 		Content:   content,
 		RepoLink:  repoLink,

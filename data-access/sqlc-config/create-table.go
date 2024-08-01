@@ -5,7 +5,7 @@ import "context"
 func CreateTable(db DBTX) {
 	_, err := db.Exec(context.Background(), `CREATE TABLE IF NOT EXISTS posts (
     id UUID PRIMARY KEY,
-    project_id UUID NOT NULL,
+    project_id UUID,
     author_id UUID NOT NULL,
     title VARCHAR(255) NOT NULL,
     content TEXT NOT NULL,
@@ -16,7 +16,7 @@ func CreateTable(db DBTX) {
     comment_count INT DEFAULT 0,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (project_id) REFERENCES projects(id),
+    FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
     FOREIGN KEY (author_id) REFERENCES accounts(id)
     );`)
 	if err != nil {

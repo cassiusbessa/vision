@@ -158,4 +158,10 @@ func (p *ProjectPost) Validate() {
 	if p.PostImage != "" && len(p.PostImage) > 255 {
 		p.FailureMessage = append(p.FailureMessage, "Project post image link cannot be more than 255 characters")
 	}
+	if p.ProjectID == uuid.Nil {
+		p.FailureMessage = append(p.FailureMessage, "Project ID cannot be empty")
+	}
+	if p.Author.ID == uuid.Nil {
+		p.FailureMessage = append(p.FailureMessage, "Author ID cannot be empty")
+	}
 }

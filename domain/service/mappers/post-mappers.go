@@ -42,13 +42,8 @@ func CreatePostCommandToPostEntity(command postDTO.CreatePostCommand) (*entities
 
 func UpdatePostCommandToPostEntity(command postDTO.UpdatePostCommand, post entities.ProjectPost) (*entities.ProjectPost, error) {
 
-	uuidPost, err := uuid.Parse(command.ID)
-	if err != nil {
-		return &entities.ProjectPost{}, errors.NewInvalidArgument("Invalid post ID")
-	}
-
 	updatedPost := entities.NewProjectPost(
-		entities.PostWithID(uuidPost),
+		entities.PostWithID(post.ID),
 		entities.PostWithProjectID(post.ProjectID),
 		entities.PostWithAuthorID(post.Author.ID),
 		entities.PostWithTitle(command.Title),

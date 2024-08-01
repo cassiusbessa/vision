@@ -134,6 +134,15 @@ func (q *Queries) DeletePostById(ctx context.Context, id uuid.UUID) error {
 	return err
 }
 
+const deletePostByProjectId = `-- name: DeletePostByProjectId :exec
+DELETE FROM posts WHERE project_id = $1
+`
+
+func (q *Queries) DeletePostByProjectId(ctx context.Context, projectID uuid.UUID) error {
+	_, err := q.db.Exec(ctx, deletePostByProjectId, projectID)
+	return err
+}
+
 const deleteReactionById = `-- name: DeleteReactionById :exec
 DELETE FROM reactions WHERE id = $1
 `
@@ -181,6 +190,30 @@ SELECT id, project_id, author_id, title, content, repo_link, demo_link, post_ima
 
 func (q *Queries) GetPostByID(ctx context.Context, id uuid.UUID) (Post, error) {
 	row := q.db.QueryRow(ctx, getPostByID, id)
+	var i Post
+	err := row.Scan(
+		&i.ID,
+		&i.ProjectID,
+		&i.AuthorID,
+		&i.Title,
+		&i.Content,
+		&i.RepoLink,
+		&i.DemoLink,
+		&i.PostImage,
+		&i.LikeCount,
+		&i.CommentCount,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const getPostByProjectID = `-- name: GetPostByProjectID :one
+SELECT id, project_id, author_id, title, content, repo_link, demo_link, post_image, like_count, comment_count, created_at, updated_at FROM posts WHERE project_id = $1
+`
+
+func (q *Queries) GetPostByProjectID(ctx context.Context, projectID uuid.UUID) (Post, error) {
+	row := q.db.QueryRow(ctx, getPostByProjectID, projectID)
 	var i Post
 	err := row.Scan(
 		&i.ID,
@@ -487,6 +520,33 @@ type UpdatePostParams struct {
 func (q *Queries) UpdatePost(ctx context.Context, arg UpdatePostParams) error {
 	_, err := q.db.Exec(ctx, updatePost,
 		arg.ID,
+		arg.Title,
+		arg.Content,
+		arg.RepoLink,
+		arg.DemoLink,
+		arg.PostImage,
+		arg.UpdatedAt,
+	)
+	return err
+}
+
+const updatePostByProjectId = `-- name: UpdatePostByProjectId :exec
+UPDATE posts SET title = $2, content = $3, repo_link = $4, demo_link = $5, post_image = $6, updated_at = $7 WHERE project_id = $1
+`
+
+type UpdatePostByProjectIdParams struct {
+	ProjectID uuid.UUID
+	Title     string
+	Content   string
+	RepoLink  sql.NullString
+	DemoLink  sql.NullString
+	PostImage sql.NullString
+	UpdatedAt time.Time
+}
+
+func (q *Queries) UpdatePostByProjectId(ctx context.Context, arg UpdatePostByProjectIdParams) error {
+	_, err := q.db.Exec(ctx, updatePostByProjectId,
+		arg.ProjectID,
 		arg.Title,
 		arg.Content,
 		arg.RepoLink,

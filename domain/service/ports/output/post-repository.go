@@ -7,9 +7,10 @@ import (
 
 type PostRepository interface {
 	SavePost(post *entities.ProjectPost) error
-	UpdatePost(post *entities.ProjectPost) error
-	RemovePost(postID uuid.UUID) (bool, error)
+	UpdatePostByProjectID(post *entities.ProjectPost) error
+	RemovePostByProjectID(projectID uuid.UUID) (bool, error)
 	GetPostByID(postID uuid.UUID) (*entities.ProjectPost, error)
+	GetPostByProjectID(projectID uuid.UUID) (*entities.ProjectPost, error)
 	LoadOrderedPosts(limit, offSet int32) ([]entities.ProjectPost, error)
 	AddReactionToPost(reaction *entities.Reaction) error
 	RemovePostReaction(reactionID, postID uuid.UUID) (bool, error)

@@ -37,7 +37,7 @@ func PostEntityToCreateQueryParams(post *entities.ProjectPost) data.CreatePostPa
 	}
 }
 
-func PostEntityToUpdateQueryParams(post *entities.ProjectPost) data.UpdatePostParams {
+func PostEntityToUpdateQueryParams(post *entities.ProjectPost) data.UpdatePostByProjectIdParams {
 	var repoLink, demoLink, postImage sql.NullString
 
 	if post.RepoLink != "" {
@@ -53,8 +53,8 @@ func PostEntityToUpdateQueryParams(post *entities.ProjectPost) data.UpdatePostPa
 		postImage.Valid = true
 	}
 
-	return data.UpdatePostParams{
-		ID:        post.ID,
+	return data.UpdatePostByProjectIdParams{
+		ProjectID: post.ProjectID,
 		Title:     post.Title,
 		Content:   post.Content,
 		RepoLink:  repoLink,

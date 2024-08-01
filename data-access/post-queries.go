@@ -2,6 +2,7 @@ package data
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/cassiusbessa/vision-social-media/data-access/mappers"
 	sqlc "github.com/cassiusbessa/vision-social-media/data-access/sqlc-config"
@@ -14,8 +15,9 @@ func (repo *PostRepository) SavePost(post *entities.ProjectPost) error {
 	return err
 }
 
-func (repo *PostRepository) RemovePost(postID uuid.UUID) (bool, error) {
-	err := repo.queries.DeletePostById(context.Background(), postID)
+func (repo *PostRepository) RemovePostByProjectID(projectID uuid.UUID) (bool, error) {
+	fmt.Println(projectID)
+	err := repo.queries.DeletePostByProjectId(context.Background(), projectID)
 	if err != nil {
 		return false, err
 	}
@@ -23,8 +25,8 @@ func (repo *PostRepository) RemovePost(postID uuid.UUID) (bool, error) {
 	return true, nil
 }
 
-func (repo *PostRepository) UpdatePost(post *entities.ProjectPost) error {
-	err := repo.queries.UpdatePost(context.Background(), mappers.PostEntityToUpdateQueryParams(post))
+func (repo *PostRepository) UpdatePostByProjectID(post *entities.ProjectPost) error {
+	err := repo.queries.UpdatePostByProjectId(context.Background(), mappers.PostEntityToUpdateQueryParams(post))
 	return err
 }
 
@@ -41,6 +43,25 @@ func (repo *PostRepository) GetPostByID(postID uuid.UUID) (*entities.ProjectPost
 	}
 
 	reactions, err := repo.queries.GetReactionsByPostID(context.Background(), postID)
+	if err != nil {
+		return nil, err
+	}
+
+	return mappers.PostDBEntityToProjectPost(post, comments, reactions), nil
+}
+
+func (repo *PostRepository) GetPostByProjectID(projectID uuid.UUID) (*entities.ProjectPost, error) {
+	post, err := repo.queries.GetPostByProjectID(context.Background(), projectID)
+	if err != nil {
+		return nil, err
+	}
+
+	comments, err := repo.queries.GetCommentsByPostID(context.Background(), post.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	reactions, err := repo.queries.GetReactionsByPostID(context.Background(), post.ID)
 	if err != nil {
 		return nil, err
 	}

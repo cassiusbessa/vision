@@ -34,12 +34,12 @@ func (service *PostService) CreatePost(command *postDTO.CreatePostCommand) (post
 
 func (service *PostService) DeletePost(command *postDTO.RemovePostCommand) (postDTO.RemovedPostResponse, error) {
 
-	uuidPost, err := uuid.Parse(command.PostID)
+	uuidProject, err := uuid.Parse(command.ProjectID)
 	if err != nil {
 		return postDTO.RemovedPostResponse{}, errors.NewInvalidArgument("Invalid post ID")
 	}
 
-	removed, err := service.postRepo.RemovePost(uuidPost)
+	removed, err := service.postRepo.RemovePostByProjectID(uuidProject)
 	if err != nil {
 		return postDTO.RemovedPostResponse{}, err
 	}
@@ -54,12 +54,12 @@ func (service *PostService) DeletePost(command *postDTO.RemovePostCommand) (post
 
 func (service *PostService) UpdatePost(command *postDTO.UpdatePostCommand) (postDTO.UpdatedPostResponse, error) {
 
-	uuidPost, err := uuid.Parse(command.ID)
+	projectID, err := uuid.Parse(command.ProjectID)
 	if err != nil {
-		return postDTO.UpdatedPostResponse{}, errors.NewInvalidArgument("Invalid post ID")
+		return postDTO.UpdatedPostResponse{}, errors.NewInvalidArgument("Invalid project ID")
 	}
 
-	post, err := service.postRepo.GetPostByID(uuidPost)
+	post, err := service.postRepo.GetPostByProjectID(projectID)
 	if err != nil {
 		return postDTO.UpdatedPostResponse{}, err
 	}
@@ -77,7 +77,7 @@ func (service *PostService) UpdatePost(command *postDTO.UpdatePostCommand) (post
 		return postDTO.UpdatedPostResponse{}, errors.NewValidationError(strings.Join(post.FailureMessage, ", "))
 	}
 
-	err = service.postRepo.UpdatePost(updatedPost)
+	err = service.postRepo.UpdatePostByProjectID(updatedPost)
 	if err != nil {
 		return postDTO.UpdatedPostResponse{}, err
 	}

@@ -1,6 +1,9 @@
 -- name: GetPostByID :one
 SELECT * FROM posts WHERE id = $1;
 
+-- name: GetPostByProjectID :one
+SELECT * FROM posts WHERE project_id = $1;
+
 -- name: GetReactionsByPostID :many
 SELECT * FROM reactions WHERE post_id = $1;
 
@@ -82,8 +85,14 @@ INSERT INTO posts (id, project_id, author_id, title, content, repo_link, demo_li
 -- name: DeletePostById :exec
 DELETE FROM posts WHERE id = $1;
 
+-- name: DeletePostByProjectId :exec
+DELETE FROM posts WHERE project_id = $1;
+
 -- name: UpdatePost :exec
 UPDATE posts SET title = $2, content = $3, repo_link = $4, demo_link = $5, post_image = $6, updated_at = $7 WHERE id = $1;
+
+-- name: UpdatePostByProjectId :exec
+UPDATE posts SET title = $2, content = $3, repo_link = $4, demo_link = $5, post_image = $6, updated_at = $7 WHERE project_id = $1;
 
 -- name: CreateReaction :exec
 INSERT INTO reactions (id, post_id, comment_id, user_id, reaction_type, created_at) VALUES ($1, $2, $3, $4, $5, $6);
