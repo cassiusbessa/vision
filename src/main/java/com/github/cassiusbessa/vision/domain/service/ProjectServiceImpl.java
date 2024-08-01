@@ -106,8 +106,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         log.info("Project deleted successfully: {}", command.projectId());
 
-
-
+//        fireProjectDeletedEvent(isDeleted);
         return new ProjectDeletedResponse("Project deleted successfully");
     }
 
@@ -167,6 +166,13 @@ public class ProjectServiceImpl implements ProjectService {
 
     private void fireProjectCreatedEvent(Project project) {
         CompletableFuture.runAsync(() -> {
+            try {
+                Thread.sleep(10000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                log.error("Thread was interrupted while waiting fire create project event", e);
+            }
+
             new ProjectCreatedEvent(project, new Date(), projectEventPublisher).fire();
             log.info("Project created event fired: {}", project.getId().getValue());
         });
@@ -174,6 +180,12 @@ public class ProjectServiceImpl implements ProjectService {
 
     private void fireProjectUpdatedEvent(Project project) {
         CompletableFuture.runAsync(() -> {
+            try {
+                Thread.sleep(10000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                log.error("Thread was interrupted while waiting fire updated project event", e);
+            }
             new ProjectUpdatedEvent(project, new Date(), projectEventPublisher).fire();
             log.info("Project updated event fired: {}", project.getId().getValue());
         });
