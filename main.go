@@ -3,10 +3,14 @@ package main
 import (
 	"log"
 
+	httpNet "net/http"
+
 	data "github.com/cassiusbessa/vision-social-media/data-access"
 	sqlc "github.com/cassiusbessa/vision-social-media/data-access/sqlc-config"
 	service "github.com/cassiusbessa/vision-social-media/domain/service/implementation"
 	http "github.com/cassiusbessa/vision-social-media/http"
+	"github.com/gin-gonic/gin"
+	"github.com/hashicorp/consul/api"
 )
 
 func main() {
@@ -38,11 +42,38 @@ func main() {
 	r.DELETE("/posts/comment", postController.RemovePostComment)
 	r.GET("/posts/:postID/comment", postController.LoadPostCommentsByPostID)
 
-	go func() {
-		log.Println("Server started on port 8888")
-	}()
+	r.GET("/health", func(c *gin.Context) {
+		c.JSON(httpNet.StatusOK, gin.H{
+			"status": "healthy",
+		})
+	})
 
+	// Registrar serviço no Consul
+	client, err := api.NewClient(api.DefaultConfig())
+	if err != nil {
+		log.Fatalf("Erro ao criar cliente Consul: %v", err)
+	}
+
+	registration := new(api.AgentServiceRegistration)
+	registration.ID = "vision-social-media"
+	registration.Name = "vision-social-media"
+	registration.Port = 8888
+	registration.Tags = []string{"social-media", "post-service"}
+	registration.Address = "127.0.0.1"
+
+	check := new(api.AgentServiceCheck)
+	check.HTTP = "http://127.0.0.1:8888/health"
+	check.Interval = "10s"
+	check.Timeout = "1s"
+	registration.Check = check
+
+	err = client.Agent().ServiceRegister(registration)
+	if err != nil {
+		log.Fatalf("Erro ao registrar serviço no Consul: %v", err)
+	}
+
+	log.Println("Server started on port 8888")
 	if err := r.Run(":8888"); err != nil {
-		panic(err)
+		log.Fatalf("Erro ao iniciar o servidor: %v", err)
 	}
 }
