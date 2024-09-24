@@ -1,0 +1,15 @@
+spring:
+  server:
+    port: 7777
+  datasource:
+    url: jdbc:postgresql://localhost:5432/vision?createDatabaseIfNotExist=true
+    username: root
+    password: root
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  security:
+    basic:
+      enabled: false
