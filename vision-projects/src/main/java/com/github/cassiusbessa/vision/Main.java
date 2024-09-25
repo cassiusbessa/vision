@@ -10,13 +10,6 @@ import java.util.Map;
 public class Main {
 
     public static void main(String[] args) {
-
-        SpringApplication app = new SpringApplication(Main.class);
-        app.setDefaultProperties(
-                Map.of(
-                        "server.port", "7777"
-                )
-        );
-        app.run(args);
+        SpringApplication.run(Main.class, args);
     }
 }

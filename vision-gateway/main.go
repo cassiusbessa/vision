@@ -14,22 +14,22 @@ func main() {
 	r := gin.Default()
 
 	r.Any("/account/*proxyPath", func(c *gin.Context) {
-		proxyRequest(c, "http://localhost:8080")
+		proxyRequest(c, "http://vision-user:8081")
 	})
 
 	r.Any("/profile/*proxyPath", func(c *gin.Context) {
-		proxyRequest(c, "http://localhost:8080")
+		proxyRequest(c, "http://vision-user:8081")
 	})
 
 	r.Any("/project/*proxyPath", func(c *gin.Context) {
-		proxyRequest(c, "http://localhost:7777")
+		proxyRequest(c, "http://vision-projects:8080")
 	})
 
 	r.Any("/posts/*proxyPath", func(c *gin.Context) {
-		proxyRequest(c, "http://localhost:8888")
+		proxyRequest(c, "http://vision-social-media:8082")
 	})
 
-	r.Run(":4444")
+	r.Run(":8888")
 }
 
 func proxyRequest(c *gin.Context, target string) {

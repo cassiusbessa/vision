@@ -1,0 +1,78 @@
+version: '3.8'
+services:
+  vision-projects:
+    build:
+      context: ./vision-projects
+      dockerfile: Dockerfile
+    container_name: vision-projects
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/vision
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+    networks:
+      - vision-network
+
+  vision-user:
+    build:
+      context: ./vision-user
+      dockerfile: Dockerfile
+    container_name: vision-user
+    ports:
+      - "8081:8081"
+    depends_on:
+      - db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/vision
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+    networks:
+      - vision-network
+
+  vision-social-media:
+    build:
+      context: ./vision-social-media
+      dockerfile: Dockerfile
+    container_name: vision-social-media
+    ports:
+      - "8082:8082"
+    depends_on:
+      - db
+    networks:
+      - vision-network
+    
+  vision-gateway:
+    build:
+      context: ./vision-gateway
+      dockerfile: Dockerfile
+    container_name: vision-gateway
+    ports:
+      - "8888:8888"
+    depends_on:
+      - db
+    networks:
+      - vision-network
+
+  db:
+    image: postgres:16.3
+    container_name: vision_postgres
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: vision
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - vision-network
+
+volumes:
+  postgres_data:
+
+networks:
+  vision-network:
+    driver: bridge

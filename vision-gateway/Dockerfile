@@ -15,7 +15,7 @@ COPY . .
 RUN go build -o app
 
 # Expõe a porta em que sua aplicação estará escutando (ajuste conforme necessário)
-EXPOSE 8082
+EXPOSE 8888
 
 # Define o comando que será executado ao iniciar o contêiner
 CMD ["./app"]
