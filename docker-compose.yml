@@ -56,6 +56,18 @@ services:
     networks:
       - vision-network
 
+  vision-front:
+    build:
+      context: ./vision-front  # Diretório onde está o Dockerfile do frontend
+      dockerfile: Dockerfile
+    container_name: vision-front
+    ports:
+      - "3000:3000"  # Porta padrão do Next.js
+    depends_on:
+      - db
+    networks:
+      - vision-network
+
   db:
     image: postgres:16.3
     container_name: vision_postgres
