@@ -48,6 +48,9 @@ public class Account extends AggregateRoot<AccountId> {
         if (password == null || password.getValue().isEmpty()) {
             failureMessages.add("Password is required");
         }
+        if (password != null && password.getValue().length() < 6) {
+            failureMessages.add("Password must have at least 6 characters");
+        }
         if (accountLevel == null) {
             failureMessages.add("Account level is required");
         }
