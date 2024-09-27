@@ -61,12 +61,17 @@ services:
       context: ./vision-front  # Diretório onde está o Dockerfile do frontend
       dockerfile: Dockerfile
     container_name: vision-front
+    environment:
+      - CHOKIDAR_USEPOLLING=true
     ports:
       - "3000:3000"  # Porta padrão do Next.js
     depends_on:
       - db
     networks:
       - vision-network
+    volumes:
+      - ./vision-front:/app  # Mapeamento do diretório do frontend para dentro do container
+      - /app/node_modules
 
   db:
     image: postgres:16.3
