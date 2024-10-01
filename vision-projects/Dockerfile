@@ -1,3 +1,6 @@
+
+# PARA FAZER O BUILD APENAS O JDK
+
 # Etapa 1: Construir o aplicativo
 FROM jelastic/maven:3.9.4-openjdk-22.ea-b17 AS build
 WORKDIR /usr/src/app
@@ -9,6 +12,8 @@ COPY src ./src
 # Construir o aplicativo
 RUN mvn package -DskipTests
 
+
+# PARA RODAR APENAS JRE
 # Etapa 2: Criar a imagem final
 FROM openjdk:22-slim
 WORKDIR /app

@@ -2,6 +2,8 @@
     "conventionalCommits.scopes": [
       "vision-front",
       "devops",
+      "vision-user",
+      "vision-gateway",
       "vision-user"
     ]
 }
