@@ -1,65 +1,51 @@
 package main
 
 import (
-	"fmt"
+	"log"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
 	"strings"
-
-	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	r := gin.Default()
+	mux := http.NewServeMux()
 
-	r.Any("/account/*proxyPath", func(c *gin.Context) {
-		proxyRequest(c, "http://vision-user:8081")
-	})
+	// Adiciona o handler para /account
+	mux.Handle("/account", reverseProxy("http://localhost:8081/account"))
 
-	r.Any("/profile/*proxyPath", func(c *gin.Context) {
-		proxyRequest(c, "http://vision-user:8081")
-	})
-
-	r.Any("/project/*proxyPath", func(c *gin.Context) {
-		proxyRequest(c, "http://vision-projects:8080")
-	})
-
-	r.Any("/posts/*proxyPath", func(c *gin.Context) {
-		proxyRequest(c, "http://vision-social-media:8082")
-	})
-
-	r.Run(":8888")
+	// Adiciona o CORS handler
+	http.ListenAndServe(":8888", corsHandler(mux))
 }
 
-func proxyRequest(c *gin.Context, target string) {
-	targetURL, err := url.Parse(target)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Invalid target URL"})
-		return
+func reverseProxy(target string) http.Handler {
+	url, _ := url.Parse(target)
+	proxy := httputil.NewSingleHostReverseProxy(url)
+
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		log.Printf("Método HTTP: %s, Path: %s", r.Method, r.URL.Path)
+
+		if strings.HasPrefix(r.URL.Path, "/account") {
+			println("Passou pelo reverse proxy")
+			proxy.ServeHTTP(w, r)
+		} else {
+			http.NotFound(w, r)
+		}
+	})
+}
+
+func corsHandler(h http.Handler) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == "OPTIONS" {
+			w.Header().Set("Access-Control-Allow-Origin", "*")
+			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATH, OPTIONS")
+			w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+			w.Header().Set("Access-Control-Max-Age", "86400")
+			w.WriteHeader(http.StatusOK)
+			w.Write([]byte("OK"))
+		} else {
+			h.ServeHTTP(w, r)
+		}
 	}
-
-	proxy := httputil.NewSingleHostReverseProxy(targetURL)
-
-	prefix := c.Param("proxyPath")
-	if strings.HasPrefix(prefix, "/") {
-		prefix = prefix[1:]
-	}
-
-	newPath := strings.TrimPrefix(c.Request.URL.Path, "/"+prefix)
-
-	if strings.HasSuffix(newPath, "/") && newPath != "/" {
-		newPath = newPath[:len(newPath)-1]
-	}
-
-	c.Request.URL.Scheme = targetURL.Scheme
-	c.Request.URL.Host = targetURL.Host
-	c.Request.URL.Path = newPath
-	c.Request.Host = targetURL.Host
-
-	fmt.Printf("Original Path: %s\n", c.Request.URL.Path)
-	fmt.Printf("Forwarding to: %s%s\n", targetURL.String(), c.Request.URL.Path)
-	fmt.Printf("Full URL: %s\n", targetURL.ResolveReference(c.Request.URL).String())
-
-	proxy.ServeHTTP(c.Writer, c.Request)
 }
