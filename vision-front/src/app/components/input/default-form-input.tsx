@@ -1,13 +1,20 @@
-/* eslint-disable react/require-default-props */
 /* eslint-disable react/jsx-props-no-spreading */
+/* eslint-disable react/require-default-props */
 import React from 'react';
-import { FieldValues, UseFormRegister } from 'react-hook-form';
+import { UseFormRegister, Path, FieldValues } from 'react-hook-form';
 
-function DefaultInput({
+interface DefaultInputProps<T extends FieldValues> {
+  register: UseFormRegister<T>;
+  type: string;
+  placeholder: string;
+  autoComplete: string;
+  data: Path<T>;
+  className?: string;
+}
+
+function DefaultInput<T extends FieldValues>({
   register, type, placeholder, autoComplete, data, className,
-}:
-{ register: UseFormRegister<FieldValues>,
-  type: string, placeholder: string, autoComplete: string, data:string, className?: string }) {
+}: DefaultInputProps<T>) {
   return (
     <input
       className={`w-full border-2 rounded-3xl p-4 bg-[#4f4f4f] placeholder-white ${className}`}

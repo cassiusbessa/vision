@@ -61,6 +61,8 @@ services:
       context: ./vision-front  # Diretório onde está o Dockerfile do frontend
       dockerfile: Dockerfile
     container_name: vision-front
+    env_file:
+      - ./vision-front/.env
     environment:
       - CHOKIDAR_USEPOLLING=true
     ports:

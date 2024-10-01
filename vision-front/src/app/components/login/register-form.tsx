@@ -1,12 +1,30 @@
-import { useForm } from 'react-hook-form';
+import { useForm, SubmitHandler } from 'react-hook-form';
 import React from 'react';
+import Account from '@/app/services/dtos/account';
+import createAccount from '@/app/services/user';
 import DefaultInput from '../input/default-form-input';
 
-function RegisterForm() {
-  const { register, handleSubmit } = useForm();
+interface FormData {
+  name: string;
+  email: string;
+  password: string;
+}
 
-  const onSubmit = (data:any) => {
-    console.log(data);
+function RegisterForm() {
+  const { register, handleSubmit } = useForm<FormData>();
+
+  const onSubmit: SubmitHandler<FormData> = async (data) => {
+    const account = new Account(data.name, data.email, data.password);
+
+    const errors = account.validate();
+    if (errors.length > 0) {
+      console.error(errors);
+      return;
+    }
+
+    console.log(account.toJSON());
+
+    await createAccount(account);
   };
 
   return (
