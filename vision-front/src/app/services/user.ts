@@ -1,6 +1,7 @@
 import Account from './dtos/account';
+import Credentials from './dtos/credentials';
 
-export default async function createAccount(account: Account) {
+export async function createAccount(account: Account) {
   const accountURL = process.env.NEXT_PUBLIC_VISION_ACCOUNT;
 
   const response = await fetch(`${accountURL}`, {
@@ -11,6 +12,41 @@ export default async function createAccount(account: Account) {
     body: account.toJSON(),
   });
 
-  const data = await response.json();
-  console.log(data);
+  let data;
+  try {
+    data = await response.json();
+  } catch (error) {
+    data = null;
+  }
+
+  return {
+    ok: response.ok,
+    status: response.status,
+    data,
+  };
+}
+
+export async function loginAccount(account: Credentials) {
+  const accountURL = process.env.NEXT_PUBLIC_VISION_ACCOUNT;
+
+  const response = await fetch(`${accountURL}/auth`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: account.toJSON(),
+  });
+
+  let data;
+  try {
+    data = await response.json();
+  } catch (error) {
+    data = null;
+  }
+
+  return {
+    ok: response.ok,
+    status: response.status,
+    data,
+  };
 }

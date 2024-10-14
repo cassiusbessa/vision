@@ -1,7 +1,9 @@
 import { useForm, SubmitHandler } from 'react-hook-form';
-import React from 'react';
+import { useRouter } from 'next/navigation';
+import React, { useState } from 'react';
 import Account from '@/app/services/dtos/account';
-import createAccount from '@/app/services/user';
+import { createAccount } from '@/app/services/user';
+import getResponseMessage from '@/app/services/getResponseMessage';
 import DefaultInput from '../input/default-form-input';
 
 interface FormData {
@@ -12,19 +14,24 @@ interface FormData {
 
 function RegisterForm() {
   const { register, handleSubmit } = useForm<FormData>();
+  const router = useRouter();
+  const [errors, setErrors] = useState<string>('');
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     const account = new Account(data.name, data.email, data.password);
 
-    const errors = account.validate();
+    setErrors(account.validate().join(','));
     if (errors.length > 0) {
-      console.error(errors);
       return;
     }
 
-    console.log(account.toJSON());
+    const response = await createAccount(account);
 
-    await createAccount(account);
+    if (!response.ok) {
+      setErrors(getResponseMessage(response.status, 'Conta'));
+      return;
+    }
+    router.push('/');
   };
 
   return (
@@ -32,6 +39,7 @@ function RegisterForm() {
       <DefaultInput register={register} type="name" placeholder="Nome" autoComplete="name" data="name" />
       <DefaultInput register={register} type="email" placeholder="Email" autoComplete="email" data="email" />
       <DefaultInput register={register} type="password" placeholder="Senha" autoComplete="password" data="password" />
+      {errors.length > 0 && <p className="text-red-500 text-sm">{errors}</p>}
       <button
         className="btn btn-secondary bg-[#C14080] hover:scale-[1.01] rounded-3xl mt-3 w-full"
         type="submit"

@@ -1,11 +1,16 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
-import { FieldValues, UseFormRegister } from 'react-hook-form';
+import { FieldValues, Path, UseFormRegister } from 'react-hook-form';
 
-function DefaultCheckBox({
+interface DefaultCheckBoxProps<T extends FieldValues> {
+  register: UseFormRegister<T>;
+  label: string;
+  data: Path<T>;
+}
+
+function DefaultCheckBox<T extends FieldValues>({
   register, label, data,
-}:
-{ register: UseFormRegister<FieldValues>, label: string, data: string }) {
+}: DefaultCheckBoxProps<T>) {
   return (
     <label
       className="font-light text-xl hover:cursor-pointer w-full"
