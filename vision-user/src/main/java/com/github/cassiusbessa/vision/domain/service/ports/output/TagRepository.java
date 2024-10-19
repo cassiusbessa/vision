@@ -9,4 +9,6 @@ public interface TagRepository {
     boolean existsAllTags(List<UUID> tagIds);
 
     List<Tag> findAllById(List<UUID> tagIds);
+
+		List<Tag> findAll();
 }

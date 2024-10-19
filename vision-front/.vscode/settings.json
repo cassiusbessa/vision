@@ -1,5 +1,6 @@
 {
   "conventionalCommits.scopes": [
-    "vision-front"
-  ]
+		"vision-front",
+		"vision-user"
+	]
 }
