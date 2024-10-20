@@ -7,6 +7,7 @@ public class ProfileCreateCommand {
 
     private final String name;
     private final String title;
+		private final String image;
     private final String description;
     private final List<UUID> technologies;
     private  UUID accountId;
@@ -16,14 +17,16 @@ public class ProfileCreateCommand {
         this.link = null;
         this.name = null;
         this.title = null;
+				this.image = null;
         this.description = null;
         this.technologies = null;
         this.accountId = null;
     }
 
-    public ProfileCreateCommand(String name, String title, String description, List<UUID> technologies, UUID accountId, String link) {
+    public ProfileCreateCommand(String name, String title, String image, String description, List<UUID> technologies, UUID accountId, String link) {
         this.name = name;
         this.title = title;
+				this.image = image;
         this.description = description;
         this.technologies = technologies;
         this.accountId = accountId;
@@ -37,6 +40,10 @@ public class ProfileCreateCommand {
     public String getTitle() {
         return title;
     }
+
+		public String getImage() {
+				return image;
+		}
 
     public String getDescription() {
         return description;

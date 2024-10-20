@@ -30,6 +30,7 @@ public class ProfileDataMapper {
                 .withId(UUID.randomUUID())
                 .withName(command.getName())
                 .withTitle(command.getTitle())
+								.withImage(command.getImage())
                 .withDescription(command.getDescription())
                 .withTechnologies(new HashSet<>(tags))
                 .withAccount(account)
