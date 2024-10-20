@@ -82,7 +82,7 @@ public class Profile extends AggregateRoot<ProfileId> {
         }
 
         if (description == null || description.length() < 3 || description.length() > 2000 || description.isBlank()){
-            failureMessages.add("Description must be between 3 and 500 characters");
+            failureMessages.add("Description must be between 3 and 2000 characters");
         }
 
         if (technologies.size() > 6){
