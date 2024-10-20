@@ -4,7 +4,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, SubmitHandler } from 'react-hook-form';
 import { FrameWork } from '@/app/interfaces';
 import { loadTags } from '@/app/services/tag';
 import Profile from '@/app/services/dtos/requests/profile';
@@ -14,12 +14,21 @@ import getResponseMessage from '@/app/services/helpers/getResponseMessage';
 import DefaultInput from '../input/default-form-input';
 import FrameworksDropdown from '../input/frameworks-dropdown';
 
+interface FormData {
+  title: string;
+  name: string;
+  image: string;
+  description: string;
+  link: string;
+}
+
 function ProfileForm() {
   const router = useRouter();
-  const { register, handleSubmit } = useForm();
+  const { register, handleSubmit } = useForm<FormData>();
   const [selectedFrameworks, setSelectedFrameworks] = useState<string[]>();
   const [frameworks, setFrameworks] = useState<FrameWork[]>([]);
   const [errors, setErrors] = useState<string>('');
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   useEffect(
     () => {
@@ -33,7 +42,9 @@ function ProfileForm() {
     [],
   );
 
-  const onSubmit = async (data:any) => {
+  const onSubmit: SubmitHandler<FormData> = async (data) => {
+    setIsSubmitting(true);
+
     const profile = new Profile(
       data.title,
       data.name,
@@ -43,20 +54,29 @@ function ProfileForm() {
       data.link,
     );
 
-    setErrors(profile.validate().join(','));
-    if (errors.length > 0) {
+    const profileErrors = profile.validate();
+    if (profileErrors.length > 0) {
+      setErrors(profileErrors.join('. '));
+      setIsSubmitting(false);
       return;
     }
 
     const response = await createProfile(profile);
-    console.log(response);
+
+    if (response.status === 409) {
+      setErrors('Já existe um perfil com esse link');
+      setIsSubmitting(false);
+      return;
+    }
 
     if (!response.ok) {
       setErrors(getResponseMessage(response.status, 'Perfil'));
+      setIsSubmitting(false);
       return;
     }
 
     if (response.ok) {
+      setIsSubmitting(false);
       router.push('/');
     }
   };
@@ -75,11 +95,12 @@ function ProfileForm() {
               setSelectedFrameworks={setSelectedFrameworks}
             />
             )}
-
+      {errors.length > 0 && <p className="text-red-500 text-sm">{errors}</p>}
       <button
         type="submit"
         className="btn btn-secondary bg-[#C14080] hover:scale-[1.01] rounded-3xl mt-3 w-full"
         onSubmit={handleSubmit(onSubmit)}
+        disabled={isSubmitting}
       >
         <span className="text-white text-xl font-light">Confirmar Atualizações</span>
       </button>

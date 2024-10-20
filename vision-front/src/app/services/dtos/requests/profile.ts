@@ -69,6 +69,7 @@ export default class Profile {
     return JSON.stringify({
       title: this.title,
       name: this.name,
+      image: this.image,
       description: this.description,
       technologies: this.technologies,
       link: this.link,
