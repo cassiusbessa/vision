@@ -63,6 +63,7 @@ public class ProfileDataMapper {
                 .withId(command.getProfileId())
                 .withName(command.getName())
                 .withTitle(command.getTitle())
+								.withImage(command.getImage())
                 .withDescription(command.getDescription())
                 .withTechnologies(new HashSet<>(tags))
                 .withStarProject(startProject)

@@ -104,4 +104,20 @@ public class ProfileController {
         }
     }
 
+		@GetMapping("/link/{link}")
+		public ResponseEntity<LoadProfileResponse> loadProfileByLink(@PathVariable("link") String link) {
+				try {
+						LoadProfileResponse response = profileService.loadProfileByLink(new LoadProfileByLinkQuery(
+										link
+						));
+						return ResponseEntity.ok(response);
+				} catch (ResourceNotFoundException e) {
+						return new ResponseEntity<>(new LoadProfileResponse(null, e.getMessage()), HttpStatus.NOT_FOUND);
+				}
+				catch (Exception e) {
+						log.error("Error loading profile", e);
+						return new ResponseEntity<>(new LoadProfileResponse(null, e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+				}
+		}
+
 }
