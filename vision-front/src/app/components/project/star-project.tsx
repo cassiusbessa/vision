@@ -1,6 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
 import React from 'react';
-import PropTypes from 'prop-types';
 import { Project } from '../../interfaces';
 import ProjectCardLinks from './project-card-links';
 import ProjectCardTags from './project-card-tags';
@@ -26,33 +25,3 @@ export default function StarProject({ className, project }: { className: string,
     </div>
   );
 }
-
-StarProject.defaultProps = {
-  className: '',
-  project: {
-    id: '1',
-    title: 'Super Project',
-    description: 'This is a super project',
-    tags: ['best', 'project'],
-    links: {
-      github: 'github.com',
-      demo: 'demo.com',
-    },
-    image: 'https://daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.jpg',
-  },
-};
-
-StarProject.propTypes = {
-  className: PropTypes.string,
-  project: PropTypes.shape({
-    id: PropTypes.string,
-    title: PropTypes.string,
-    description: PropTypes.string,
-    tags: PropTypes.arrayOf(PropTypes.string),
-    links: PropTypes.shape({
-      github: PropTypes.string,
-      demo: PropTypes.string,
-    }),
-    image: PropTypes.string,
-  }),
-};

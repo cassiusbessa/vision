@@ -1,6 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
 import React from 'react';
-import PropTypes from 'prop-types';
 import { ProjectInfo } from '@/app/interfaces';
 // import projectImage from '@/app/assets/project.jpg';
 import ProjectCardTags from './project-card-tags';
@@ -32,47 +31,3 @@ export default function ProjectCard({ className, projectInfo, profile }: { class
     </div>
   );
 }
-
-ProjectCard.defaultProps = {
-  className: '',
-  profile: false,
-  projectInfo: {
-    project: {
-      id: '',
-      title: '',
-      description: '',
-      tags: [],
-      links: {
-        github: '',
-        demo: '',
-      },
-      image: '',
-    },
-    user: {
-      fullName: '',
-      image: '',
-    },
-  },
-};
-
-ProjectCard.propTypes = {
-  className: PropTypes.string,
-  projectInfo: PropTypes.shape({
-    project: PropTypes.shape({
-      id: PropTypes.string,
-      title: PropTypes.string,
-      description: PropTypes.string,
-      tags: PropTypes.arrayOf(PropTypes.string),
-      links: PropTypes.shape({
-        github: PropTypes.string,
-        demo: PropTypes.string,
-      }),
-      image: PropTypes.string,
-    }),
-    user: PropTypes.shape({
-      fullName: PropTypes.string,
-      image: PropTypes.string,
-    }),
-  }),
-  profile: PropTypes.bool,
-};

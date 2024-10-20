@@ -11,3 +11,14 @@ export interface Message {
 export interface Token extends Message {
   token: string;
 }
+
+export interface LoadedProfile extends Message {
+  profile: {
+    title: string;
+    name: string;
+    image: string;
+    description: string;
+    technologies: string[];
+    link: string;
+  };
+}

@@ -77,7 +77,7 @@ function ProfileForm() {
 
     if (response.ok) {
       setIsSubmitting(false);
-      router.push('/');
+      router.push(`/profile/${data.link}`);
     }
   };
 
