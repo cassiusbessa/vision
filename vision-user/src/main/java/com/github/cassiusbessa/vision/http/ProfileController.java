@@ -33,10 +33,8 @@ public class ProfileController {
     @PostMapping()
     public ResponseEntity<ProfileCreatedResponse> createProfile(@RequestBody ProfileCreateCommand command, @RequestHeader("Authorization") String token){
         try {
-            if (!tokenService.getAccountId(token).equals(command.getAccountId())) {
-                log.error("Unauthorized profile creation, invalid token");
-                return new ResponseEntity<>(new ProfileCreatedResponse("Unauthorized"), HttpStatus.UNAUTHORIZED);
-            }
+						UUID accountId = tokenService.getAccountId(token);
+						command.setAccountId(accountId);
             ProfileCreatedResponse response = profileService.createProfile(command);
             return ResponseEntity.ok(response);
         } catch (ValidationException | DomainException e) {

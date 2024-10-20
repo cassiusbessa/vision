@@ -9,7 +9,7 @@ public class ProfileCreateCommand {
     private final String title;
     private final String description;
     private final List<UUID> technologies;
-    private final UUID accountId;
+    private  UUID accountId;
     private final String link;
 
     public ProfileCreateCommand() {
@@ -51,5 +51,9 @@ public class ProfileCreateCommand {
     }
 
     public String getLink() { return link; }
+
+		public void setAccountId(UUID accountId) {
+				this.accountId = accountId;
+		}
 
 }
