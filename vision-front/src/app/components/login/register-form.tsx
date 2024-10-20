@@ -1,9 +1,11 @@
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
-import Account from '@/app/services/dtos/account';
-import { createAccount } from '@/app/services/user';
-import getResponseMessage from '@/app/services/getResponseMessage';
+import Account from '@/app/services/dtos/requests/account';
+import { createAccount, loginAccount } from '@/app/services/account';
+import getResponseMessage from '@/app/services/helpers/getResponseMessage';
+import Credentials from '@/app/services/dtos/requests/credentials';
+import { setTokenLocalStorage } from '@/app/services/token';
 import DefaultInput from '../input/default-form-input';
 
 interface FormData {
@@ -25,13 +27,24 @@ function RegisterForm() {
       return;
     }
 
-    const response = await createAccount(account);
+    const createAccountResponse = await createAccount(account);
 
-    if (!response.ok) {
-      setErrors(getResponseMessage(response.status, 'Conta'));
+    if (!createAccountResponse.ok) {
+      setErrors(getResponseMessage(createAccountResponse.status, 'Conta'));
       return;
     }
-    router.push('/');
+
+    const credentials = new Credentials(data.email, data.password);
+
+    const loginResponse = await loginAccount(credentials);
+    if (!loginResponse.ok) {
+      router.push('/login');
+      return;
+    }
+    if (loginResponse.ok && loginResponse.data) {
+      setTokenLocalStorage(loginResponse.data.token);
+      router.push('/profile-manager');
+    }
   };
 
   return (

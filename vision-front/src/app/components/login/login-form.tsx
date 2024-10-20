@@ -2,8 +2,9 @@
 import React, { useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
-import Credentials from '@/app/services/dtos/credentials';
-import { loginAccount } from '@/app/services/user';
+import Credentials from '@/app/services/dtos/requests/credentials';
+import { loginAccount } from '@/app/services/account';
+import { setTokenLocalStorage, setTokenSessionStorage } from '@/app/services/token';
 import DefaultInput from '../input/default-form-input';
 import DefaultCheckBox from '../input/default-form-checkbox';
 
@@ -28,9 +29,14 @@ function LoginForm() {
 
     const response = await loginAccount(credentials);
 
-    if (!response.ok) {
+    if (!response.ok && response.data) {
       setErrors(response.data.message);
       return;
+    }
+
+    if (response.ok && response.data) {
+      setTokenLocalStorage(response.data.token);
+      setTokenSessionStorage(response.data.token);
     }
     router.push('/');
   };

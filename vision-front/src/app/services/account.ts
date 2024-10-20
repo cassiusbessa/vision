@@ -1,7 +1,8 @@
-import Account from './dtos/account';
-import Credentials from './dtos/credentials';
+import Account from './dtos/requests/account';
+import Credentials from './dtos/requests/credentials';
+import { Message, DefaultResponse, Token } from './dtos/responses/default-response';
 
-export async function createAccount(account: Account) {
+export async function createAccount(account: Account): Promise<DefaultResponse<Message>> {
   const accountURL = process.env.NEXT_PUBLIC_VISION_ACCOUNT;
 
   const response = await fetch(`${accountURL}`, {
@@ -14,7 +15,7 @@ export async function createAccount(account: Account) {
 
   let data;
   try {
-    data = await response.json();
+    data = await response.json() as Message;
   } catch (error) {
     data = null;
   }
@@ -26,7 +27,7 @@ export async function createAccount(account: Account) {
   };
 }
 
-export async function loginAccount(account: Credentials) {
+export async function loginAccount(account: Credentials): Promise<DefaultResponse<Token>> {
   const accountURL = process.env.NEXT_PUBLIC_VISION_ACCOUNT;
 
   const response = await fetch(`${accountURL}/auth`, {
@@ -39,7 +40,7 @@ export async function loginAccount(account: Credentials) {
 
   let data;
   try {
-    data = await response.json();
+    data = await response.json() as Token;
   } catch (error) {
     data = null;
   }

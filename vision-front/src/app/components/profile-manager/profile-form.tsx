@@ -3,53 +3,79 @@
 
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { FrameWork } from '@/app/interfaces';
+import { loadTags } from '@/app/services/tag';
+import Profile from '@/app/services/dtos/requests/profile';
+import { createProfile } from '@/app/services/profile';
+import { useRouter } from 'next/navigation';
+import getResponseMessage from '@/app/services/helpers/getResponseMessage';
 import DefaultInput from '../input/default-form-input';
 import FrameworksDropdown from '../input/frameworks-dropdown';
 
-const frameworks = [
-  { id: '1', name: 'React', image: '' },
-  { id: '2', name: 'Vue', image: '' },
-  { id: '3', name: 'Angular', image: '' },
-  { id: '4', name: 'Svelte', image: '' },
-  { id: '5', name: 'C', image: '' },
-  { id: '6', name: 'C++', image: '' },
-  { id: '7', name: 'C#', image: '' },
-  { id: '8', name: 'Java', image: '' },
-  { id: '9', name: 'Python', image: '' },
-  { id: '10', name: 'Go', image: '' },
-  { id: '11', name: 'PHP', image: '' },
-  { id: '12', name: 'Javascript', image: '' },
-  { id: '13', name: 'Ruby', image: '' },
-  { id: '14', name: 'Rust', image: '' },
-  { id: '15', name: 'Swift', image: '' },
-  { id: '16', name: 'Kotlin', image: '' },
-  { id: '17', name: 'Dart', image: '' },
-  { id: '18', name: 'Scala', image: '' },
-  { id: '19', name: 'Perl', image: '' },
-  { id: '20', name: 'Lua', image: '' },
-];
-
 function ProfileForm() {
+  const router = useRouter();
   const { register, handleSubmit } = useForm();
   const [selectedFrameworks, setSelectedFrameworks] = useState<string[]>();
+  const [frameworks, setFrameworks] = useState<FrameWork[]>([]);
+  const [errors, setErrors] = useState<string>('');
 
-  const onSubmit = (data:any) => {
-    console.log({
-      name: data.name,
-      title: data.title,
-      description: data.description,
-      frameworks: selectedFrameworks,
-    });
+  useEffect(
+    () => {
+      const fetchFrameworks = async () => {
+        const response = await loadTags();
+        const data = response.data as FrameWork[];
+        setFrameworks(data);
+      };
+      fetchFrameworks();
+    },
+    [],
+  );
+
+  const onSubmit = async (data:any) => {
+    const profile = new Profile(
+      data.title,
+      data.name,
+      data.image,
+      data.description,
+      selectedFrameworks || [],
+      data.link,
+    );
+
+    setErrors(profile.validate().join(','));
+    if (errors.length > 0) {
+      return;
+    }
+
+    const response = await createProfile(profile);
+    console.log(response);
+
+    if (!response.ok) {
+      setErrors(getResponseMessage(response.status, 'Perfil'));
+      return;
+    }
+
+    if (response.ok) {
+      router.push('/');
+    }
   };
 
   return (
     <form className="h-full gap-4 flex flex-col" onSubmit={handleSubmit(onSubmit)}>
       <DefaultInput register={register} type="text" placeholder="Nome Exibido" autoComplete="name" data="name" />
       <DefaultInput register={register} type="text" placeholder="Título Profissional" autoComplete="title" data="title" />
+      <DefaultInput register={register} type="text" placeholder="Link para o Perfil" autoComplete="profile" data="link" />
+      <DefaultInput register={register} type="text" placeholder="Link da Imagem" autoComplete="image" data="image" />
       <textarea className="w-full border-2 rounded-3xl p-4 bg-[#4f4f4f] placeholder-white" placeholder="Descrição" {...register('description', { required: true })} />
-      <FrameworksDropdown frameWorks={frameworks} setSelectedFrameworks={setSelectedFrameworks} />
+      {frameworks.length > 0
+            && (
+            <FrameworksDropdown
+              frameWorks={frameworks}
+              setSelectedFrameworks={setSelectedFrameworks}
+            />
+            )}
+
       <button
         type="submit"
         className="btn btn-secondary bg-[#C14080] hover:scale-[1.01] rounded-3xl mt-3 w-full"
