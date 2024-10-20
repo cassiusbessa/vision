@@ -4,6 +4,8 @@ import com.github.cassiusbessa.vision.domain.core.entities.Account;
 import com.github.cassiusbessa.vision.domain.core.entities.Profile;
 import com.github.cassiusbessa.vision.domain.core.entities.Project;
 import com.github.cassiusbessa.vision.domain.core.entities.Tag;
+import com.github.cassiusbessa.vision.domain.core.valueobjects.AccountId;
+import com.github.cassiusbessa.vision.domain.core.valueobjects.ProfileId;
 import com.github.cassiusbessa.vision.domain.service.dtos.profile.*;
 import com.github.cassiusbessa.vision.domain.service.exceptions.ResourceAlreadyExistsException;
 import com.github.cassiusbessa.vision.domain.service.exceptions.ResourceNotFoundException;
@@ -53,6 +55,8 @@ public class ProfileServiceImpl implements ProfileService {
             throw new ResourceAlreadyExistsException("Profile already exists for account: " + command.getAccountId());
         }
 
+				checkProfileLinkExists(command.getLink(), null);
+
         List<Tag> tags = getTags(command.getTechnologies());
 
         Profile profile = profileDataMapper.profileCreateCommandToProfile(command, account, tags);
@@ -69,6 +73,8 @@ public class ProfileServiceImpl implements ProfileService {
 
             Account account = getAccount(command.getAccountId());
 
+						checkProfileLinkExists(command.getLink(), account.getId());
+						
             List<Tag> tags = getTags(command.getTechnologies());
 
             Project startProject = projectRepository.findByProjectId(command.getStarProjectId());
@@ -120,6 +126,21 @@ public class ProfileServiceImpl implements ProfileService {
         return new LoadProfileResponse(profileDTO, "Loaded profile successfully");
     }
 
+		@Override
+		public LoadProfileResponse loadProfileByLink(LoadProfileByLinkQuery query) {
+				log.info("Loading profile by link: {}", query.link());
+
+				Profile profile = profileRepository.findByLink(query.link());
+				if (profile == null) {
+						log.error("Profile not found by link: {}", query.link());
+						throw new ResourceNotFoundException("Profile not found by link: " + query.link());
+				}
+
+				ProfileDTO profileDTO = profileDataMapper.profileToProfileDTO(profile);
+				return new LoadProfileResponse(profileDTO, "Loaded profile successfully");
+		}
+
+
     private Account getAccount(UUID accountId) {
         if (accountId == null) {
             log.error("Account ID is required");
@@ -140,6 +161,17 @@ public class ProfileServiceImpl implements ProfileService {
             throw new ValidationException(profile.getFailureMessagesAsString());
         }
     }
+
+		private void checkProfileLinkExists(String link, AccountId accountId) {
+			if (accountId == null) {
+				return;
+			}
+			Profile profile = profileRepository.findByLink(link);
+			if (profile != null && !profile.getAccount().getId().equals(accountId)) {
+				log.error("Profile link already exists: {}", link);
+				throw new ResourceAlreadyExistsException("Profile link already exists: " + link);
+			}
+		}
 
     private List<Tag> getTags(List<UUID> tagIds) {
         List<Tag> tags = tagRepository.findAllById(tagIds);

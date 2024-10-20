@@ -13,4 +13,6 @@ import java.util.UUID;
 public interface ProfileJpaRepository extends JpaRepository<ProfileDataBaseEntity, UUID> {
 
     Optional<ProfileDataBaseEntity> findByAccountId(UUID accountId);
+
+		Optional<ProfileDataBaseEntity> findByLink(String link);
 }

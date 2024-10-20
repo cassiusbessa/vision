@@ -10,6 +10,8 @@ public interface ProfileRepository {
 
     Profile findByAccountId(UUID accountId);
 
+		Profile findByLink(String link);
+
     void save(Profile profile);
 
     void update(Profile profile);

@@ -7,7 +7,9 @@ import java.util.Set;
 import java.util.UUID;
 
 @Entity
-@Table(name = "profiles")
+@Table(name = "profiles", indexes = {
+	@Index(name = "idx_profile_link", columnList = "link")
+	})
 public class ProfileDataBaseEntity {
 
     @Id

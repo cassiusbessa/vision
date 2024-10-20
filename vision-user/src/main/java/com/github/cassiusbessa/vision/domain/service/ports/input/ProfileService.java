@@ -11,4 +11,6 @@ public interface ProfileService {
     LoadProfileResponse loadProfileById(LoadProfileByIdQuery query);
 
     LoadProfileResponse loadProfileByAccountId(LoadProfileByAccountIdQuery query);
+
+		LoadProfileResponse loadProfileByLink(LoadProfileByLinkQuery query);
 }

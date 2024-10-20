@@ -41,6 +41,15 @@ public class ProfileRepositoryImpl implements ProfileRepository {
         return profileDataBaseMapper.dbEntityToProfile(profileDataBaseEntity);
     }
 
+		@Override
+		public Profile findByLink(String link) {
+				ProfileDataBaseEntity profileDataBaseEntity = profileRepository.findByLink(link).orElse(null);
+				if (profileDataBaseEntity == null) {
+						return null;
+				}
+				return profileDataBaseMapper.dbEntityToProfile(profileDataBaseEntity);
+		}
+
     @Override
     public void save(Profile profile) {
         profileRepository.save(profileDataBaseMapper.profileToDbEntity(profile));
