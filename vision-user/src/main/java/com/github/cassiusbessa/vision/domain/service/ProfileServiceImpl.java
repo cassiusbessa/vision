@@ -5,7 +5,6 @@ import com.github.cassiusbessa.vision.domain.core.entities.Profile;
 import com.github.cassiusbessa.vision.domain.core.entities.Project;
 import com.github.cassiusbessa.vision.domain.core.entities.Tag;
 import com.github.cassiusbessa.vision.domain.core.valueobjects.AccountId;
-import com.github.cassiusbessa.vision.domain.core.valueobjects.ProfileId;
 import com.github.cassiusbessa.vision.domain.service.dtos.profile.*;
 import com.github.cassiusbessa.vision.domain.service.exceptions.ResourceAlreadyExistsException;
 import com.github.cassiusbessa.vision.domain.service.exceptions.ResourceNotFoundException;
