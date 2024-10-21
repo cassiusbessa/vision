@@ -83,17 +83,19 @@ function ProfileForm() {
 
   return (
     <form className="h-full gap-4 flex flex-col" onSubmit={handleSubmit(onSubmit)}>
-      <DefaultInput register={register} type="text" placeholder="Nome Exibido" autoComplete="name" data="name" />
-      <DefaultInput register={register} type="text" placeholder="Título Profissional" autoComplete="title" data="title" />
-      <DefaultInput register={register} type="text" placeholder="Link para o Perfil" autoComplete="profile" data="link" />
-      <DefaultInput register={register} type="text" placeholder="Link da Imagem" autoComplete="image" data="image" />
-      <textarea className="w-full border-2 rounded-3xl p-4 bg-[#4f4f4f] placeholder-white" placeholder="Descrição" {...register('description', { required: true })} />
       {frameworks.length > 0
             && (
-            <FrameworksDropdown
-              frameWorks={frameworks}
-              setSelectedFrameworks={setSelectedFrameworks}
-            />
+            <>
+              <DefaultInput register={register} type="text" placeholder="Nome Exibido" autoComplete="name" data="name" />
+              <DefaultInput register={register} type="text" placeholder="Título Profissional" autoComplete="title" data="title" />
+              <DefaultInput register={register} type="text" placeholder="Link para o Perfil" autoComplete="profile" data="link" />
+              <DefaultInput register={register} type="text" placeholder="Link da Imagem" autoComplete="image" data="image" />
+              <textarea className="w-full border-2 rounded-3xl p-4 bg-[#4f4f4f] placeholder-white" placeholder="Descrição" {...register('description', { required: true })} />
+              <FrameworksDropdown
+                frameWorks={frameworks}
+                setSelectedFrameworks={setSelectedFrameworks}
+              />
+            </>
             )}
       {errors.length > 0 && <p className="text-red-500 text-sm">{errors}</p>}
       <button

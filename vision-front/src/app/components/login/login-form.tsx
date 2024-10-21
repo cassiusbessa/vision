@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import Credentials from '@/app/services/dtos/requests/credentials';
 import { loginAccount } from '@/app/services/account';
 import { setTokenLocalStorage, setTokenSessionStorage } from '@/app/services/token';
+import { loadProfileByToken } from '@/app/services/profile';
+import getResponseMessage from '@/app/services/helpers/getResponseMessage';
 import DefaultInput from '../input/default-form-input';
 import DefaultCheckBox from '../input/default-form-checkbox';
 
@@ -18,27 +20,41 @@ function LoginForm() {
   const { register, handleSubmit } = useForm<FormData>();
   const router = useRouter();
   const [errors, setErrors] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const onSubmit: SubmitHandler<FormData> = async (data) => {
-    const credentials = new Credentials(data.email, data.password);
+  const onSubmit: SubmitHandler<FormData> = async (form) => {
+    setIsLoading(true);
+
+    const credentials = new Credentials(form.email, form.password);
 
     setErrors(credentials.validate().join(','));
     if (errors.length > 0) {
       return;
     }
 
-    const response = await loginAccount(credentials);
+    const { data, ok, status } = await loginAccount(credentials);
 
-    if (!response.ok && response.data) {
-      setErrors(response.data.message);
+    if (!ok && data) {
+      setErrors(getResponseMessage(status, 'Email'));
+      setIsLoading(false);
       return;
     }
 
-    if (response.ok && response.data) {
-      setTokenLocalStorage(response.data.token);
-      setTokenSessionStorage(response.data.token);
+    if (ok && data) {
+      if (form.remember) {
+        setTokenLocalStorage(data.token);
+      } else {
+        setTokenSessionStorage(data.token);
+      }
+      const profile = await loadProfileByToken();
+      if (profile.ok && profile.data) {
+        setIsLoading(false);
+        router.push('/');
+      } else {
+        setIsLoading(false);
+        router.push('/profile-manager');
+      }
     }
-    router.push('/');
   };
 
   return (
@@ -50,6 +66,7 @@ function LoginForm() {
       <button
         type="submit"
         className="btn btn-secondary bg-[#C14080] hover:scale-[1.01] rounded-3xl mt-3 w-full"
+        disabled={isLoading}
       >
         <span className="text-white text-xl font-light">Continuar com Vision</span>
       </button>

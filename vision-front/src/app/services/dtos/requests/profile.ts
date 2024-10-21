@@ -50,7 +50,7 @@ export default class Profile {
       errors.push('Descrição é obrigatória');
     }
 
-    if (this.description && (this.description.length < 3 || this.description.length > 255)) {
+    if (this.description && (this.description.length < 3 || this.description.length > 2000)) {
       errors.push('Descrição deve ter entre 3 e 255 caracteres');
     }
 
