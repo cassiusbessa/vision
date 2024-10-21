@@ -14,6 +14,10 @@ export default function ProfileIconDropDown({ profileImage, profileLink, logout 
     router.push(`/profile/${profileLink}`);
   };
 
+  const redirectEditProfile = () => {
+    router.push('/profile-manager');
+  };
+
   return (
     <details className="dropdown dropdown-end">
       <summary tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
@@ -27,7 +31,7 @@ export default function ProfileIconDropDown({ profileImage, profileLink, logout 
           </button>
         </li>
         <li>
-          <button type="button" className="w-full text-left">
+          <button type="button" onClick={redirectEditProfile} className="w-full text-left">
             Editar Perfil
           </button>
         </li>

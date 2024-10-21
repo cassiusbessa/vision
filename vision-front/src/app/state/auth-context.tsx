@@ -4,6 +4,7 @@ import React, {
   createContext, ReactNode, useContext, useMemo, useState,
 } from 'react';
 import { LoadedProfile } from '../services/dtos/responses/default-response';
+import { removeTokenLocalStorage, removeTokenSessionStorage } from '../services/token';
 
 interface AuthContextType {
   profile: LoadedProfile | null;
@@ -22,6 +23,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = () => {
     setProfile(null);
+    removeTokenLocalStorage();
+    removeTokenSessionStorage();
   };
 
   const contextValue = useMemo(() => ({
