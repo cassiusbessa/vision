@@ -40,4 +40,10 @@ public class TagRepositoryImpl implements TagRepository {
 			List<TagDataBaseEntity> tagDataBaseEntities = tagRepository.findAll();
 			return tagDataBaseEntities.stream().map(tagDataBaseMapper::dbEntityToTag).toList();
 		}
+
+		@Override
+		public void create(Tag tag) {
+			TagDataBaseEntity tagDataBaseEntity = tagDataBaseMapper.tagToDbEntity(tag);
+			tagRepository.save(tagDataBaseEntity);
+		}
 }

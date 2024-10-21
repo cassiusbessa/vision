@@ -11,4 +11,6 @@ public interface TagRepository {
     List<Tag> findAllById(List<UUID> tagIds);
 
 		List<Tag> findAll();
+
+		void create(Tag tag);
 }
