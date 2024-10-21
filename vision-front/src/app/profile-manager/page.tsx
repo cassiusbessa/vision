@@ -10,7 +10,7 @@ const inter = Josefin_Sans({ subsets: ['latin'] });
 
 function ProfileManagerPage() {
   return (
-    <div className={`${inter.className} bg-cover bg-gradient-to-b from-[#291D32] via-[#392039] to-[#291D32] flex flex-col items-center min-h-screen`}>
+    <div className={`${inter.className} bg-cover bg-gradient-to-b from-[#291D32] via-[#392039] to-[#291D32] flex flex-col items-center min-h-screen overflow-auto`}>
       <Header />
       <ProfileManager />
     </div>
