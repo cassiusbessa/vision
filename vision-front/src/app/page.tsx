@@ -1,11 +1,14 @@
+'use client';
+
 import React from 'react';
 import Header from './components/header';
 import { projectsMock } from './mocks';
 import { ProjectPostContainer } from './components/project';
 import NewPostInput from './components/input/new-post-input';
 import CreateProjectModal from './components/modal/create-project-modal';
+import withProfile from './components/hoc/withProfile';
 
-export default function Home() {
+function Home() {
   const user = {
     fullName: 'John Doe',
     image: 'https://i.pravatar.cc/150?img=68',
@@ -21,3 +24,5 @@ export default function Home() {
     </div>
   );
 }
+
+export default withProfile(Home);
