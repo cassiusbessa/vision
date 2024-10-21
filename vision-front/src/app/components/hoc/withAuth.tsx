@@ -1,3 +1,5 @@
+'use client';
+
 /* eslint-disable react/jsx-props-no-spreading */
 import { getToken } from '@/app/services/token';
 import { useRouter } from 'next/navigation';
