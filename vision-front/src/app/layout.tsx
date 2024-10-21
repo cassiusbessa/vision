@@ -3,6 +3,7 @@ import { Josefin_Sans } from 'next/font/google';
 import './globals.css';
 import React from 'react';
 import portfolioImage from '@/app/assets/portfolio.png';
+import { AuthProvider } from '@/app/state/auth-context';
 
 const inter = Josefin_Sans({ subsets: ['latin'] });
 export const metadata: Metadata = {
@@ -19,7 +20,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-br">
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        <AuthProvider>
+          {children}
+        </AuthProvider>
+      </body>
     </html>
   );
 }
