@@ -126,6 +126,22 @@ public class ProjectServiceImpl implements ProjectService {
         return new LoadedProjectsResponse(projects, "Projects loaded successfully");
     }
 
+		@Override
+		public LoadedProjectsResponse loadProjectsByProfileId(LoadProjectsByAccountIdQuery query) {
+				log.info("Getting projects for profile: {}", query.accountId());
+
+				List<ProjectDTO> projects = projectRepository.findAllByProfileId(query.accountId()).stream().map(projectMapper::projectToProjectDTO).toList();
+
+				log.info("Projects found: {}", projects.size());
+
+				if (projects.isEmpty()) {
+						log.error("No projects found for profile: {}", query.accountId());
+						throw new ResourceNotFoundException("No projects found for profile: " + query.accountId());
+				}
+
+				return new LoadedProjectsResponse(projects, "Projects loaded successfully");
+		}
+
 
     private void validateProject(Project project) {
         project.validate();

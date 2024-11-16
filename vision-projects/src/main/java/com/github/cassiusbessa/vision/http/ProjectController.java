@@ -115,4 +115,18 @@ public class ProjectController {
             return new ResponseEntity<>(new LoadedProjectsResponse(null, e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+		@GetMapping("/profile/{profileId}")
+		public ResponseEntity<LoadedProjectsResponse> loadProjectsByProfileId(@PathVariable("profileId") UUID profileId) {
+				try {
+						LoadedProjectsResponse projects = projectService.loadProjectsByProfileId(new LoadProjectsByAccountIdQuery(profileId));
+						return ResponseEntity.ok(projects);
+				} catch (ResourceNotFoundException e) {
+						return new ResponseEntity<>(new LoadedProjectsResponse(null, e.getMessage()), HttpStatus.NOT_FOUND);
+				}
+				catch (Exception e) {
+						log.error("Error loading projects", e);
+						return new ResponseEntity<>(new LoadedProjectsResponse(null, e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+				}
+		}
 }

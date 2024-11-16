@@ -21,4 +21,6 @@ public interface ProjectService {
     ProjectDeletedResponse deleteProject(ProjectDeleteCommand command);
 
     LoadedProjectsResponse loadProjectsByAccountId(LoadProjectsByAccountIdQuery query);
+
+		LoadedProjectsResponse loadProjectsByProfileId(LoadProjectsByAccountIdQuery query);
 }

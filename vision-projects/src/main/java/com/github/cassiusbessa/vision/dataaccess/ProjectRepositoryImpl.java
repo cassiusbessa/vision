@@ -18,13 +18,11 @@ import java.util.*;
 public class ProjectRepositoryImpl implements ProjectRepository {
 
     private final ProjectJpaRepository projectRepository;
-    private final TagJpaRepository tagJpaRepository;
     private final ProjectDataBaseMapper projectDataBaseMapper;
 
     @Autowired
-    public ProjectRepositoryImpl(ProjectJpaRepository projectRepository, TagJpaRepository tagJpaRepository, ProjectDataBaseMapper projectDataBaseMapper) {
+    public ProjectRepositoryImpl(ProjectJpaRepository projectRepository, ProjectDataBaseMapper projectDataBaseMapper) {
         this.projectRepository = projectRepository;
-        this.tagJpaRepository = tagJpaRepository;
         this.projectDataBaseMapper = projectDataBaseMapper;
     }
 
@@ -33,6 +31,11 @@ public class ProjectRepositoryImpl implements ProjectRepository {
     public List<Project> findAllByAccountId(UUID accountId) {
         return projectRepository.findAllByAccountId(accountId).stream().map(projectDataBaseMapper::dbEntityToProject).toList();
     }
+
+		@Override
+		public List<Project> findAllByProfileId(UUID profileId) {
+				return projectRepository.findAllByProfileId(profileId).stream().map(projectDataBaseMapper::dbEntityToProject).toList();
+		}
 
     @Override
     public Project findByTitle(String title) {
@@ -61,15 +64,6 @@ public class ProjectRepositoryImpl implements ProjectRepository {
         if (projectDataBaseEntity.isEmpty()) {
             throw new ResourceNotFoundException("Project not found");
         }
-
-        Set<TagDataBaseEntity> tags = projectDataBaseEntity.get().getTechnologies();
-
-//        for (TagDataBaseEntity tag : tags) {
-//            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-//            System.out.println(tag.getName());
-//            tag.getProjects().remove(projectDataBaseEntity.get());
-//            tagJpaRepository.save(tag);
-//        }
 
         projectRepository.delete(projectDataBaseEntity.get());
         return projectDataBaseMapper.dbEntityToProject(projectDataBaseEntity.get());

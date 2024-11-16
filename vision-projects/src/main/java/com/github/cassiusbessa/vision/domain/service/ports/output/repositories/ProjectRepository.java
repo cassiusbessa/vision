@@ -10,6 +10,8 @@ public interface ProjectRepository {
 
     List<Project> findAllByAccountId(UUID accountId);
 
+		List<Project> findAllByProfileId(UUID profileId);
+
     Project findByTitle(String title);
 
     void save(Project project);
