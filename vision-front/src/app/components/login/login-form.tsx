@@ -60,8 +60,6 @@ function LoginForm() {
         router.push('/profile-manager');
       }
     }
-
-    setIsLoading(false);
   };
 
   return (

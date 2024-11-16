@@ -5,6 +5,7 @@ import { Josefin_Sans } from 'next/font/google';
 import { useRouter } from 'next/navigation';
 import { loadProfileByUrl } from '@/app/services/profile';
 import { LoadedProfile } from '@/app/services/dtos/responses/default-response';
+import Header from '@/app/components/header';
 import ProfileCard from '../../components/profile-card';
 import { ProjectProfileContainer, StarProject } from '../../components/project';
 import { projectsMock } from '../../mocks';
@@ -32,7 +33,7 @@ export default function Profile({ params: { link } }: { params: { link: string }
 
   return (
     <div className={`${inter.className} bg-base-200 flex flex-col items-center min-h-screen`}>
-      {/* <Header /> */}
+      <Header />
       { profile
         && (
         <>
