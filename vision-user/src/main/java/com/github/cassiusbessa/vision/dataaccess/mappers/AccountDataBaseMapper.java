@@ -15,6 +15,7 @@ public class AccountDataBaseMapper {
                 .withId(dbEntity.getId())
                 .withEmail(new Email(dbEntity.getEmail()))
                 .withPassword(new EncryptedPassword(dbEntity.getPassword()))
+								.withAccountLevel(dbEntity.getAccountLevel())
                 .build();
     }
 

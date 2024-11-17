@@ -119,22 +119,4 @@ public class ProfileController {
 						return new ResponseEntity<>(new LoadProfileResponse(null, e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
 				}
 		}
-
-		@GetMapping("/me")
-		public ResponseEntity<LoadProfileResponse> loadProfileByToken(@RequestHeader("Authorization") String token) {
-				try {
-						UUID accountId = tokenService.getAccountId(token);
-						LoadProfileResponse response = profileService.loadProfileByAccountId(new LoadProfileByAccountIdQuery(
-										accountId
-						));
-						return ResponseEntity.ok(response);
-				} catch (ResourceNotFoundException e) {
-						return new ResponseEntity<>(new LoadProfileResponse(null, e.getMessage()), HttpStatus.NOT_FOUND);
-				}
-				catch (Exception e) {
-						log.error("Error loading profile", e);
-						return new ResponseEntity<>(new LoadProfileResponse(null, e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
-				}
-		}
-
 }

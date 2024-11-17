@@ -6,6 +6,9 @@ import com.github.cassiusbessa.vision.domain.core.valueobjects.Email;
 import com.github.cassiusbessa.vision.domain.core.valueobjects.EncryptedPassword;
 import com.github.cassiusbessa.vision.domain.service.crypto.CryptoService;
 import com.github.cassiusbessa.vision.domain.service.dtos.account.AccountCreateCommand;
+import com.github.cassiusbessa.vision.domain.service.dtos.account.AccountDTO;
+import com.github.cassiusbessa.vision.domain.service.dtos.account.LoadedAccountResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -29,4 +32,12 @@ public class AccountDataMapper {
                 .withAccountLevel(AccountLevel.FREE)
                 .build();
     }
+
+		public AccountDTO accountToAccountDTO(Account account) {
+				return new AccountDTO(
+						account.getId().toString(),
+						account.getEmail().toString(),
+						account.getAccountLevel().toString()
+				);
+		}
 }

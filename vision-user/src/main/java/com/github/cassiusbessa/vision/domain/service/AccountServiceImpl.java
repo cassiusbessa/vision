@@ -4,6 +4,7 @@ import com.github.cassiusbessa.vision.domain.core.entities.Account;
 import com.github.cassiusbessa.vision.domain.service.crypto.CryptoService;
 import com.github.cassiusbessa.vision.domain.service.dtos.account.AccountCreateCommand;
 import com.github.cassiusbessa.vision.domain.service.dtos.account.AccountCreatedResponse;
+import com.github.cassiusbessa.vision.domain.service.dtos.account.LoadedAccountResponse;
 import com.github.cassiusbessa.vision.domain.service.dtos.auth.AuthCredentials;
 import com.github.cassiusbessa.vision.domain.service.dtos.auth.AuthResponse;
 import com.github.cassiusbessa.vision.domain.service.exceptions.ResourceAlreadyExistsException;
@@ -15,6 +16,9 @@ import com.github.cassiusbessa.vision.domain.service.ports.input.AccountService;
 import com.github.cassiusbessa.vision.domain.service.ports.output.AccountRepository;
 import com.github.cassiusbessa.vision.domain.service.token.JwtTokenService;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -80,4 +84,16 @@ public class AccountServiceImpl implements AccountService {
         log.info("Logged in successfully with email: {}", credentials.getEmail());
         return new AuthResponse(tokenService.generateToken(account.getId().getValue()), "Logged in successfully");
     }
+
+		@Override
+		public LoadedAccountResponse loadAccountById(UUID accountId) {
+				log.info("Loading account with id: {}", accountId);
+				Account account = accountRepository.findById(accountId);
+				if (account == null) {
+					log.error("Account not found with id: {}", accountId);
+						throw new ResourceNotFoundException("Account not found with id: " + accountId);
+					}
+				log.info("Account loaded successfully with id: {}", accountId);
+				return new LoadedAccountResponse(accountDataMapper.accountToAccountDTO(account), "Account loaded successfully");
+		}
 }
