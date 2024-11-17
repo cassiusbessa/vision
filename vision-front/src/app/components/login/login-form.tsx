@@ -3,9 +3,8 @@ import React, { useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import Credentials from '@/app/services/dtos/requests/credentials';
-import { loginAccount } from '@/app/services/account';
+import { loadMe, loginAccount } from '@/app/services/account';
 import { setTokenLocalStorage, setTokenSessionStorage } from '@/app/services/token';
-import { loadProfileByToken } from '@/app/services/profile';
 import getResponseMessage from '@/app/services/helpers/getResponseMessage';
 import { useAuth } from '@/app/state/auth-context';
 import DefaultInput from '../input/default-form-input';
@@ -22,7 +21,7 @@ function LoginForm() {
   const router = useRouter();
   const [errors, setErrors] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const { setProfile } = useAuth();
+  const { setMe } = useAuth();
 
   const onSubmit: SubmitHandler<FormData> = async (form) => {
     setIsLoading(true);
@@ -52,9 +51,9 @@ function LoginForm() {
         setTokenSessionStorage(data.token);
       }
 
-      const profile = await loadProfileByToken();
-      if (profile.ok && profile.data) {
-        setProfile(profile.data);
+      const me = await loadMe(data.token);
+      if (me.ok && me.data) {
+        setMe(me.data);
         router.push('/');
       } else {
         router.push('/profile-manager');

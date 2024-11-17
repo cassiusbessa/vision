@@ -3,35 +3,35 @@
 import React, {
   createContext, ReactNode, useContext, useMemo, useState,
 } from 'react';
-import { LoadedProfile } from '../services/dtos/responses/default-response';
+import { Me } from '../services/dtos/responses/default-response';
 import { removeTokenLocalStorage, removeTokenSessionStorage } from '../services/token';
 
 interface AuthContextType {
-  profile: LoadedProfile | null;
-  setProfile: (loadedProfile: LoadedProfile) => void;
+  me: Me | null;
+  setMe: (me: Me) => void;
   logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [profile, setProfile] = useState<LoadedProfile | null>(null);
+  const [me, setMe] = useState<Me | null>(null);
 
-  const saveProfile = (loadedProfile: LoadedProfile) => {
-    setProfile(loadedProfile);
+  const saveMe = (meResponse: Me) => {
+    setMe(meResponse);
   };
 
   const logout = () => {
-    setProfile(null);
+    setMe(null);
     removeTokenLocalStorage();
     removeTokenSessionStorage();
   };
 
   const contextValue = useMemo(() => ({
-    profile,
-    setProfile: saveProfile,
+    me,
+    setMe: saveMe,
     logout,
-  }), [profile]);
+  }), [me]);
 
   return (
     <AuthContext.Provider value={contextValue}>

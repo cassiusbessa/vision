@@ -12,13 +12,40 @@ export interface Token extends Message {
   token: string;
 }
 
+export interface AccountDTO {
+  id: string;
+  email: string;
+  level: string;
+}
+
+export interface ProfileDTO {
+  id: string;
+  title: string;
+  name: string;
+  image: string;
+  description: string;
+  technologies: string[];
+  link: string;
+  startProjects: string;
+}
+
 export interface LoadedProfile extends Message {
-  profile: {
-    title: string;
-    name: string;
-    image: string;
-    description: string;
-    technologies: string[];
-    link: string;
-  };
+  profile: ProfileDTO
+}
+
+export interface ProjectDTO {
+  id: string;
+  title: string;
+  description: string;
+  image: string;
+  technologies: string[];
+  link: string;
+}
+export interface LoadedProject extends Message {
+  project: ProjectDTO;
+}
+
+export interface Me extends Message {
+  account: AccountDTO;
+  profile: ProfileDTO;
 }

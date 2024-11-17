@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { loadProfileByUrl } from '@/app/services/profile';
 import { LoadedProfile } from '@/app/services/dtos/responses/default-response';
 import Header from '@/app/components/header';
+import { useAuth } from '@/app/state/auth-context';
 import ProfileCard from '../../components/profile-card';
 import { ProjectProfileContainer, StarProject } from '../../components/project';
 import { projectsMock } from '../../mocks';
@@ -14,6 +15,8 @@ const inter = Josefin_Sans({ subsets: ['latin'] });
 
 export default function Profile({ params: { link } }: { params: { link: string } }) {
   const [profile, setProfile] = useState<LoadedProfile | null>(null);
+  const { profile: me } = useAuth();
+  const [myself, setMyself] = useState<boolean>(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -21,6 +24,9 @@ export default function Profile({ params: { link } }: { params: { link: string }
       const profileResponse = await loadProfileByUrl(link);
       if (profileResponse.ok && profileResponse.data) {
         setProfile(profileResponse.data);
+        if (me && me.profile.link === link) {
+          setMyself(true);
+        }
         return;
       }
 
@@ -29,7 +35,7 @@ export default function Profile({ params: { link } }: { params: { link: string }
       }
     }
     fetchData();
-  }, [link, router]);
+  }, [link, me, router]);
 
   return (
     <div className={`${inter.className} bg-base-200 flex flex-col items-center min-h-screen`}>

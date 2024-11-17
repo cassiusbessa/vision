@@ -52,28 +52,3 @@ export async function loadProfileByUrl(url: string): Promise<DefaultResponse<Loa
     data,
   };
 }
-
-export async function loadProfileByToken(): Promise<DefaultResponse<LoadedProfile>> {
-  const profileURL = process.env.NEXT_PUBLIC_VISION_PROFILE;
-
-  const response = await fetch(`${profileURL}/me`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: getToken() || '',
-    },
-  });
-
-  let data;
-  try {
-    data = await response.json() as LoadedProfile;
-  } catch (error) {
-    data = null;
-  }
-
-  return {
-    ok: response.ok,
-    status: response.status,
-    data,
-  };
-}

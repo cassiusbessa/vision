@@ -2,27 +2,28 @@
 
 /* eslint-disable react/jsx-props-no-spreading */
 
-import { loadProfileByToken } from '@/app/services/profile';
+import { loadMe } from '@/app/services/account';
+
 import { getToken } from '@/app/services/token';
 import { useAuth } from '@/app/state/auth-context';
 import React, { useEffect, ComponentType } from 'react';
 
 function withProfile<T>(WrappedComponent: ComponentType<T>) {
   return function WithProfile(props: T & JSX.IntrinsicAttributes) {
-    const { setProfile, profile } = useAuth();
+    const { setMe, me } = useAuth();
 
     useEffect(() => {
       const token = getToken();
 
-      if (token && !profile) {
-        loadProfileByToken().then((response) => {
+      if (token && !me) {
+        loadMe(token).then((response) => {
           if (response.ok && response.data) {
-            setProfile(response.data);
+            setMe(response.data);
           }
-          return profile;
+          return me;
         });
       }
-    }, [setProfile, profile]);
+    }, [setMe, me]);
     return <WrappedComponent {...props} />;
   };
 }
