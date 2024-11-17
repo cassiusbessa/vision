@@ -35,7 +35,7 @@ public class AccountDataMapper {
 
 		public AccountDTO accountToAccountDTO(Account account) {
 				return new AccountDTO(
-						account.getId().toString(),
+						account.getId().getValue().toString(),
 						account.getEmail().toString(),
 						account.getAccountLevel().toString()
 				);
