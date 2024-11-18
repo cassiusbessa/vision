@@ -4,28 +4,40 @@ import React, { useEffect, useState } from 'react';
 import { Josefin_Sans } from 'next/font/google';
 import { useRouter } from 'next/navigation';
 import { loadProfileByUrl } from '@/app/services/profile';
-import { LoadedProfile } from '@/app/services/dtos/responses/default-response';
+import { LoadedProfile, ProjectDTO } from '@/app/services/dtos/responses/default-response';
 import Header from '@/app/components/header';
 import { useAuth } from '@/app/state/auth-context';
+import { loadProjectsByProfileId } from '@/app/services/projects';
 import ProfileCard from '../../components/profile-card';
 import { ProjectProfileContainer, StarProject } from '../../components/project';
-import { projectsMock } from '../../mocks';
 
 const inter = Josefin_Sans({ subsets: ['latin'] });
 
 export default function Profile({ params: { link } }: { params: { link: string } }) {
   const [profile, setProfile] = useState<LoadedProfile | null>(null);
-  const { profile: me } = useAuth();
+  const [projects, setProjects] = useState<ProjectDTO[] | null>([]);
+  const [startProject, setStartProject] = useState<ProjectDTO | null>(null);
+  const { me } = useAuth();
   const [myself, setMyself] = useState<boolean>(false);
   const router = useRouter();
 
+  console.log('link', link);
   useEffect(() => {
     async function fetchData() {
+      console.log('link', link);
       const profileResponse = await loadProfileByUrl(link);
       if (profileResponse.ok && profileResponse.data) {
         setProfile(profileResponse.data);
         if (me && me.profile.link === link) {
           setMyself(true);
+        }
+        const projectsResponse = await loadProjectsByProfileId(profileResponse.data.profile.id);
+        if (projectsResponse.ok && projectsResponse.data) {
+          setProjects(projectsResponse.data.map((project) => project.project));
+          const startProjectFinded = projectsResponse.data.find(
+            (project) => project.project.id === profileResponse.data?.profile.startProjects,
+          )?.project || null;
+          setStartProject(startProjectFinded);
         }
         return;
       }
@@ -50,8 +62,15 @@ export default function Profile({ params: { link } }: { params: { link: string }
             userImage={profile.profile.image}
             bio={profile.profile.description}
           />
-          <StarProject project={projectsMock[0].project} className="w-11/12 my-12 h-fit md:h-[450px] bg-base-300" />
-          <ProjectProfileContainer projectsInfo={projectsMock} className="w-11/12 my-12 bg-base-100" />
+          {startProject && (
+          <StarProject
+            project={startProject}
+            className="w-11/12 my-12 bg-base-100"
+          />
+          )}
+          {projects && projects.length > 0 && (
+            <ProjectProfileContainer projects={projects} className="w-11/12 my-12 bg-base-100" />
+          )}
         </>
         )}
     </div>

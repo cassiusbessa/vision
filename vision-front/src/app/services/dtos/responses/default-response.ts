@@ -39,7 +39,10 @@ export interface ProjectDTO {
   description: string;
   image: string;
   technologies: string[];
-  link: string;
+  link: {
+    github: string;
+    demo: string;
+  }
 }
 export interface LoadedProject extends Message {
   project: ProjectDTO;

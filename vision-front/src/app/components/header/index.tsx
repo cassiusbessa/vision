@@ -6,9 +6,10 @@ import MobileHeader from './mobile-header';
 import ProfileIconDropDown from './profile-icon-dropdown';
 
 export default function Header() {
-  const { profile, logout } = useAuth();
+  const { me, logout } = useAuth();
 
-  const profileImage = profile?.profile.image || 'https://e7.pngegg.com/pngimages/84/165/png-clipart-united-states-avatar-organization-information-user-avatar-service-computer-wallpaper-thumbnail.png';
+  const profileImage = me?.profile?.image || 'https://e7.pngegg.com/pngimages/84/165/png-clipart-united-states-avatar-organization-information-user-avatar-service-computer-wallpaper-thumbnail.png';
+  const profile = me?.profile;
 
   return (
     <div className="navbar bg-cover bg-gradient-to-b from-[#291D32] via-[#392039] to-[#291D32]">
@@ -19,7 +20,7 @@ export default function Header() {
       <div className="navbar-end">
         <ProfileIconDropDown
           profileImage={profileImage}
-          profileLink={profile?.profile.link || ''}
+          profileLink={profile?.link || ''}
           logout={logout}
         />
       </div>

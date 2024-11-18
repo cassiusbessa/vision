@@ -1,11 +1,11 @@
 /* eslint-disable @next/next/no-img-element */
 import React from 'react';
-import { Project } from '../../interfaces';
+import { ProjectDTO } from '@/app/services/dtos/responses/default-response';
 import ProjectCardLinks from './project-card-links';
 import ProjectCardTags from './project-card-tags';
 
 export default function StarProject({ className, project }: { className: string,
-  project: Project }) {
+  project: ProjectDTO }) {
   return (
     <div className={`card md:card-side shadow-xl ${className}`}>
       <div className="card-body h-2/5 w-full md:h-full md:w-1/2 flex flex-col pb-0">
@@ -15,8 +15,8 @@ export default function StarProject({ className, project }: { className: string,
         </article>
         <div className="flex-grow" />
         <div className="hidden md:flex justify-between align-bottom">
-          <ProjectCardLinks links={project.links} />
-          <ProjectCardTags tags={project.tags} />
+          <ProjectCardLinks links={project.link} />
+          <ProjectCardTags tags={project.technologies} />
         </div>
       </div>
       <figure className="flex justify-center items-center h-3/5 w-full md:h-full md:w-1/2">
