@@ -21,10 +21,8 @@ export default function Profile({ params: { link } }: { params: { link: string }
   const [myself, setMyself] = useState<boolean>(false);
   const router = useRouter();
 
-  console.log('link', link);
   useEffect(() => {
     async function fetchData() {
-      console.log('link', link);
       const profileResponse = await loadProfileByUrl(link);
       if (profileResponse.ok && profileResponse.data) {
         setProfile(profileResponse.data);
