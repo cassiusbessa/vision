@@ -13,7 +13,7 @@ export interface Token extends Message {
 }
 
 export interface AccountDTO {
-  id: string;
+  accountId: string;
   email: string;
   level: string;
 }

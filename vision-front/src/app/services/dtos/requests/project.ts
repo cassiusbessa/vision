@@ -1,38 +1,34 @@
 export default class Project {
-  id: string;
-
   account: string;
 
   title: string;
 
-  image: string;
-
   description: string;
 
-  links: string[];
+  imageLink: string;
+
+  githubLink: string;
+
+  demoLink: string;
 
   technologies: string[];
 
-  createdAt: Date;
-
   constructor(
-    id: string,
     account: string,
     title: string,
-    image: string,
     description: string,
-    links: string[],
+    githubLink: string,
+    demoLink: string,
+    imageLink: string,
     technologies: string[],
-    createdAt: Date,
   ) {
-    this.id = id;
     this.account = account;
     this.title = title;
-    this.image = image;
+    this.imageLink = imageLink;
     this.description = description;
-    this.links = links;
+    this.githubLink = githubLink;
+    this.demoLink = demoLink;
     this.technologies = technologies;
-    this.createdAt = createdAt;
   }
 
   validate() {
@@ -58,8 +54,16 @@ export default class Project {
       errors.push('Conta é obrigatória');
     }
 
-    if (this.links && this.links.length === 0) {
-      errors.push('Pelo menos um link é obrigatório');
+    if (this.githubLink && this.githubLink.length > 500) {
+      errors.push('GitHub deve ter no máximo 500 caracteres');
+    }
+
+    if (this.demoLink && this.demoLink.length > 500) {
+      errors.push('Demo deve ter no máximo 500 caracteres');
+    }
+
+    if (this.imageLink && this.imageLink.length > 500) {
+      errors.push('Imagem deve ter no máximo 500 caracteres');
     }
 
     return errors;
@@ -67,14 +71,13 @@ export default class Project {
 
   public toJSON() {
     return JSON.stringify({
-      id: this.id,
-      account: this.account,
+      accountId: this.account,
       title: this.title,
-      image: this.image,
       description: this.description,
-      links: this.links,
+      githubLink: this.githubLink,
+      demoLink: this.demoLink,
+      imageLink: this.imageLink,
       technologies: this.technologies,
-      createdAt: this.createdAt,
     });
   }
 }

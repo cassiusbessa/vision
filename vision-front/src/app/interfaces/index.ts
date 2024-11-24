@@ -3,23 +3,23 @@ export type ProjectLinks = {
   demo?: string;
 };
 
-export type Project = {
-  id: string;
-  title: string;
-  description: string;
-  tags: string[];
-  links: ProjectLinks;
-  image: string;
-};
-
 export type User = {
   fullName: string;
   image: string;
 };
 
 export type ProjectInfo = {
-  project: Project;
+  project: LoadedProject;
   user: User;
+};
+
+export type LoadedProject = {
+  id: string;
+  title: string;
+  description: string;
+  tags: string[];
+  links: ProjectLinks;
+  image: string;
 };
 
 export type ReactionsCount = {

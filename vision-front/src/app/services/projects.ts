@@ -1,5 +1,6 @@
-/* eslint-disable import/prefer-default-export */
-import { DefaultResponse, LoadedProject } from './dtos/responses/default-response';
+import Project from './dtos/requests/project';
+import { DefaultResponse, LoadedProject, Message } from './dtos/responses/default-response';
+import { getToken } from './token';
 
 export async function loadProjectsByProfileId(id: string):
 Promise<DefaultResponse<LoadedProject[]>> {
@@ -15,6 +16,32 @@ Promise<DefaultResponse<LoadedProject[]>> {
   let data;
   try {
     data = await response.json() as LoadedProject[];
+  } catch (error) {
+    data = null;
+  }
+
+  return {
+    ok: response.ok,
+    status: response.status,
+    data,
+  };
+}
+
+export async function createProject(project: Project): Promise<DefaultResponse<Message>> {
+  const projectURL = process.env.NEXT_PUBLIC_VISION_PROJECT;
+
+  const response = await fetch(`${projectURL}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: getToken() || '',
+    },
+    body: project.toJSON(),
+  });
+
+  let data;
+  try {
+    data = await response.json() as Message;
   } catch (error) {
     data = null;
   }
