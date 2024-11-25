@@ -38,14 +38,15 @@ export interface ProjectDTO {
   title: string;
   description: string;
   image: string;
-  technologies: string[];
-  link: {
-    github: string;
-    demo: string;
-  }
+  technologies: { name: string, id: string }[];
+  links: { demo: string; repository: string; };
 }
 export interface LoadedProject extends Message {
   project: ProjectDTO;
+}
+
+export interface LoadedProjects extends Message {
+  projects: ProjectDTO[];
 }
 
 export interface Me extends Message {

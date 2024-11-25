@@ -30,11 +30,12 @@ export default function Profile({ params: { link } }: { params: { link: string }
           setMyself(true);
         }
         const projectsResponse = await loadProjectsByProfileId(profileResponse.data.profile.id);
+        console.log(projectsResponse);
         if (projectsResponse.ok && projectsResponse.data) {
-          setProjects(projectsResponse.data.map((project) => project.project));
-          const startProjectFinded = projectsResponse.data.find(
-            (project) => project.project.id === profileResponse.data?.profile.startProjects,
-          )?.project || null;
+          setProjects(projectsResponse.data.projects);
+          const startProjectFinded = projectsResponse.data.projects.find(
+            (project) => project.id === profileResponse.data?.profile.startProjects,
+          ) || null;
           setStartProject(startProjectFinded);
         }
         return;

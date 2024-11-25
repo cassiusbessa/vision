@@ -2,7 +2,7 @@
 
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useState, useEffect } from 'react';
-import { set, SubmitHandler, useForm } from 'react-hook-form';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import { FrameWork } from '@/app/interfaces';
 import { loadTags } from '@/app/services/tag';
 import Project from '@/app/services/dtos/requests/project';
